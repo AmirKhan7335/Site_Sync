@@ -1,14 +1,12 @@
-
-
 class Activity {
-  String id;
+  String id; // Unique identifier
   String name;
-  String startDate;
-  String finishDate;
+  String startDate; // Change the type to String
+  String finishDate; // Change the type to String
   int order;
 
   Activity({
-    this.id = '',
+    required this.id,
     required this.name,
     required this.startDate,
     required this.finishDate,

@@ -1,14 +1,13 @@
 {
   "project_info": {
-    "project_number": "619023235306",
-    "firebase_url": "https://progress-tracking-90a2c-default-rtdb.firebaseio.com",
-    "project_id": "progress-tracking-90a2c",
-    "storage_bucket": "progress-tracking-90a2c.appspot.com"
+    "project_number": "808199129562",
+    "project_id": "amir-e8895",
+    "storage_bucket": "amir-e8895.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:619023235306:android:ee90a254f311fe426e3f93",
+        "mobilesdk_app_id": "1:808199129562:android:0a8acf919070ea6ccd98e3",
         "android_client_info": {
           "package_name": "com.khantech.progress_tracking_app"
         }
@@ -16,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDjzsedspJ8sVc7EaHBESj577g2k7iEsm0"
+          "current_key": "AIzaSyDnvM_puN-A5Up-w6CL8m_94cJWy30CpfE"
         }
       ],
       "services": {

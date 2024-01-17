@@ -1,8 +1,7 @@
-import 'package:amir_khan1/screens/schedulescreen.dart';
-import 'package:amir_khan1/screens/taskdetailsscreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/schedulescreen.dart';
 import 'package:flutter/material.dart';
 
-import '../main.dart';
+import '../../main.dart';
 import 'chatscreen.dart';
 import 'notificationsscreen.dart';
 
@@ -53,82 +52,6 @@ class _FoundationScheduleScreenState extends State<FoundationScheduleScreen> {
           _buildActivityTile('Concreting', '16/10/23 - 25/11/23'),
           _buildActivityTile('Curing', '20/11/23 - 15/12/23'),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 38, 50, 56),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.yellow,
-        // Set the background color
-        currentIndex: currentIndex,
-        // Set the current tab index
-        onTap: (int index) {
-          // Handle tab tap, change the current index
-          setState(() {
-            currentIndex = index;
-          });
-          if (index == 1) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const ChatScreen()));
-          } else if (index == 2) {
-            // Assuming "Add" icon is at index 2
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const TaskDetailsScreen();
-            }));
-          } // Navigate to TaskDetailsScreen
-          else if (index == 0) {
-            // Assuming "Add" icon is at index 2
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const MyHomePage(title: 'My Home Page');
-            })); // Navigate to TaskDetailsScreen
-          } else if (index == 3) {
-            // Assuming "Add" icon is at index 2
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const ScheduleScreen();
-            })); // Navigate to TaskDetailsScreen
-          } else {
-            // Assuming "Add" icon is at index 2
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const NotificationsScreen();
-            })); // Navigate to TaskDetailsScreen
-          }
-        },
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.yellow,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: const Icon(Icons.add, color: Colors.black, size: 30.0),
-                ),
-              ),
-            ),
-            label: 'Add',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
-            label: 'Schedule',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
-        ],
-        // Set the height of the BottomNavigationBar
-        // Adjust this value as needed
-        iconSize: 20.0,
       ),
     );
   }

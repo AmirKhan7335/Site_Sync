@@ -25,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -47,32 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDPxxQ-ughvjEwubUSBB5fnr-UPDBwD7nw',
-    appId: '1:619023235306:web:7abebf961050e2566e3f93',
-    messagingSenderId: '619023235306',
-    projectId: 'progress-tracking-90a2c',
-    authDomain: 'progress-tracking-90a2c.firebaseapp.com',
-    databaseURL: 'https://progress-tracking-90a2c-default-rtdb.firebaseio.com',
-    storageBucket: 'progress-tracking-90a2c.appspot.com',
-    measurementId: 'G-JCT7RWEMV7',
+    apiKey: 'AIzaSyDxwATsup8vJOtkyK6dbfQHfWtYxCEcQQI',
+    appId: '1:808199129562:web:96cefe98af7f3ffecd98e3',
+    messagingSenderId: '808199129562',
+    projectId: 'amir-e8895',
+    authDomain: 'amir-e8895.firebaseapp.com',
+    storageBucket: 'amir-e8895.appspot.com',
+    measurementId: 'G-T8EQZFYKT8',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDjzsedspJ8sVc7EaHBESj577g2k7iEsm0',
-    appId: '1:619023235306:android:ee90a254f311fe426e3f93',
-    messagingSenderId: '619023235306',
-    projectId: 'progress-tracking-90a2c',
-    databaseURL: 'https://progress-tracking-90a2c-default-rtdb.firebaseio.com',
-    storageBucket: 'progress-tracking-90a2c.appspot.com',
+    apiKey: 'AIzaSyDnvM_puN-A5Up-w6CL8m_94cJWy30CpfE',
+    appId: '1:808199129562:android:0a8acf919070ea6ccd98e3',
+    messagingSenderId: '808199129562',
+    projectId: 'amir-e8895',
+    storageBucket: 'amir-e8895.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDH_DRln-fhqorzqsWIJTEf4cWLpJTafqQ',
-    appId: '1:619023235306:ios:951ad1ed96d2dfcb6e3f93',
-    messagingSenderId: '619023235306',
-    projectId: 'progress-tracking-90a2c',
-    databaseURL: 'https://progress-tracking-90a2c-default-rtdb.firebaseio.com',
-    storageBucket: 'progress-tracking-90a2c.appspot.com',
+    apiKey: 'AIzaSyAW_bp6X87ZosrXDdwVZqzukKbu8csA7L4',
+    appId: '1:808199129562:ios:e6ad100d851622becd98e3',
+    messagingSenderId: '808199129562',
+    projectId: 'amir-e8895',
+    storageBucket: 'amir-e8895.appspot.com',
     iosBundleId: 'com.example.amirKhan1',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAW_bp6X87ZosrXDdwVZqzukKbu8csA7L4',
+    appId: '1:808199129562:ios:6ddd2336852e93eecd98e3',
+    messagingSenderId: '808199129562',
+    projectId: 'amir-e8895',
+    storageBucket: 'amir-e8895.appspot.com',
+    iosBundleId: 'com.example.amirKhan1.RunnerTests',
   );
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:amir_khan1/screens/activity.dart';
-import '../components/my_button.dart';
-import '../components/mytextfield.dart';
+import 'package:amir_khan1/screens/engineer_screens/activity.dart';
+import '../../components/my_button.dart';
+import '../../components/mytextfield.dart';
 
 
 class EditActivityScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class EditActivityScreenState extends State<EditActivityScreen> {
     _nameController = TextEditingController(text: widget.activity.name);
     _startDateController = TextEditingController(text: widget.activity.startDate);
     _finishDateController = TextEditingController(text: widget.activity.finishDate);
-    _orderController = TextEditingController(text: (widget.activity.order + 1).toString());
+    _orderController = TextEditingController(text: (widget.activity.order).toString());
   }
 
   @override
@@ -136,13 +136,14 @@ class EditActivityScreenState extends State<EditActivityScreen> {
 
     if (newName.isNotEmpty && newStartDate.isNotEmpty && newFinishDate.isNotEmpty && newOrder != null) {
       Activity updatedActivity = Activity(
+        id: widget.activity.id, // Use the ID from the existing activity
         name: newName,
         startDate: newStartDate,
         finishDate: newFinishDate,
-        order: newOrder - 1, // Subtract 1 here to get the actual order
+        order: newOrder,
       );
 
-      widget.onSave(updatedActivity, newOrder - 1); // Use the onSave callback to update the activity
+      widget.onSave(updatedActivity, newOrder); // Use the onSave callback to update the activity
 
       Navigator.pop(context, updatedActivity); // Pass updated activity back to previous screen
     } else {

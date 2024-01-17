@@ -1,13 +1,13 @@
-import 'package:amir_khan1/screens/rolescreen.dart';
-import 'package:amir_khan1/screens/signinscreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/rolescreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/signinscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../components/my_button.dart';
-import '../components/mytextfield.dart';
-import '../helper/helper_functions.dart';
+import '../../components/my_button.dart';
+import '../../components/mytextfield.dart';
+import '../../helper/helper_functions.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key, required this.onTap});
@@ -36,7 +36,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       await createUserDocument(userCredential, false);
-      displayMessageToUser("Account created successfully!", context);
+     // displayMessageToUser("Account created successfully!", context.mounted as BuildContext);
       navigateToRoleScreen();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -45,7 +45,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         showErrorDialog('The account already exists for that email.');
       }
     } catch (e) {
-      showErrorDialog('An error occurred. Please try again later.');
+      showErrorDialog('An error occurred. ${e}');
     }
   }
 

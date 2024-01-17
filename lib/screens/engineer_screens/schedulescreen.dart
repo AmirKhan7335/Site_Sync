@@ -1,13 +1,12 @@
-import 'package:amir_khan1/screens/taskdetailsscreen.dart';
-import 'package:amir_khan1/screens/editactivityscreen.dart';
-import 'package:amir_khan1/screens/activity.dart';
+import 'package:amir_khan1/screens/engineer_screens/editactivityscreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/activity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart';
 import 'dart:io' if (dart.library.html) 'dart:typed_data';
-import '../components/mytextfield.dart';
-import '../main.dart';
+import '../../components/mytextfield.dart';
+import '../../main.dart';
 import 'chatscreen.dart';
 import 'detailsscreen.dart';
 import 'foundationschedulescreen.dart';
@@ -17,7 +16,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({Key? key}) : super(key: key);
+  const ScheduleScreen({super.key});
 
   @override
   State<ScheduleScreen> createState() => ScheduleScreenState();
@@ -28,7 +27,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   bool isLoading = false;
   static List<Activity> loadedActivities = [];
   int? newUserOrder;
-  bool isSaving = false; // Add a variable to track saving/uploading state
   // Define TextEditingController variables
   final TextEditingController _newOrderController = TextEditingController();
   final TextEditingController _newActivityNameController = TextEditingController();
@@ -54,24 +52,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  // This method needs to be updated to handle reordering of activities
-  Future<void> reorderActivities(int oldIndex, int newIndex) async {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-
-    final Activity item = loadedActivities.removeAt(oldIndex);
-    loadedActivities.insert(newIndex, item);
-
-    // Update the order in Firestore for all activities
-    for (int i = 0; i < loadedActivities.length; i++) {
-      loadedActivities[i].order = i;
-      await uploadActivityToFirebase(loadedActivities[i]);
-    }
-
-    setState(() {});
-  }
-
   Future<void> pickFile() async {
     setState(() {
       isLoading = true; // Start loading when file picking begins
@@ -90,7 +70,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         var excel = Excel.decodeBytes(bytes);
 
         List<Activity> tempActivities = [];
-        int order = 0; // Initialize the order counter
+        int order = 1; // Initialize the order counter
 
         for (var table in excel.tables.keys) {
           var sheet = excel.tables[table]!;
@@ -107,11 +87,11 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             }
 
             String name = row[0]?.value?.toString().trim() ?? '';
-            debugPrint('Activity Name: $name');
+            // debugPrint('Activity Name: $name');
             String startDate = row[1]?.value?.toString().trim() ?? '';
             String finishDate = row[2]?.value?.toString().trim() ?? '';
-            debugPrint('Start Date String: $startDate');
-            debugPrint('Finish Date String: $finishDate');
+            // debugPrint('Start Date String: $startDate');
+            // debugPrint('Finish Date String: $finishDate');
 
 
             if (name.isEmpty || startDate.isEmpty || finishDate.isEmpty) {
@@ -129,15 +109,16 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               continue;
             }
 
-            // Convert to 'dd-MM-yy' format for displaying
-            String formattedStartDate = DateFormat('dd-MM-yyyy').format(startDateParsed);
-            String formattedFinishDate = DateFormat('dd-MM-yyyy').format(finishDateParsed);
+            // Convert to 'dd/MM/yy' format for displaying
+            String formattedStartDate = DateFormat('dd/MM/yyyy').format(startDateParsed);
+            String formattedFinishDate = DateFormat('dd/MM/yyyy').format(finishDateParsed);
 
             var activity = Activity(
+              id: 'your_unique_identifier', // Update this accordingly
               name: name,
               startDate: formattedStartDate,
               finishDate: formattedFinishDate,
-              order: order++, // Assign and increment the order
+              order: order++,
             );
             tempActivities.add(activity);
           }
@@ -172,22 +153,31 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
 
   DateTime parseDate(String dateString) {
-    List<String> formats = [
-      'yyyy-MM-ddTHH:mm:ss.000', // ISO 8601 format
-      'dd/MM/yyyy', // Common date format
-      'dd-MM-yyyy', 'dd-MM-yy', '44945'// Common date format
-      // Add more formats as needed
-    ];
-    for (String format in formats) {
-      try {
-        final DateFormat formatter = DateFormat(format);
-        return formatter.parseStrict(dateString); // Use strict parsing
-      } catch (e) {
-        // Continue to next format if parsing fails
+    try {
+      return DateTime.parse(dateString);
+    } catch (e) {
+      List<String> formats = [
+        'dd/MM/yyyy', // Common date format
+        'dd-MM-yyyy',
+        'dd-MM-yy',
+        '44945'
+        // Add more formats as needed
+      ];
+
+      for (String format in formats) {
+        try {
+          final DateFormat formatter = DateFormat(format);
+          return formatter.parseStrict(dateString); // Use strict parsing
+        } catch (_) {
+          // Continue to the next format if parsing fails
+        }
       }
+
+      throw FormatException('Date not in expected format', dateString);
     }
-    throw FormatException('Date not in expected format', dateString);
   }
+
+
 
 
 
@@ -206,7 +196,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _buildActivityContainer(Activity activity, String mainHeading, String subHeading) {
     // Use a pattern like "1. Foundation" for displaying the activity name
-    String displayText = '${activity.order + 1}. ${capitalize(activity.name)}';
+    String displayText = '${activity.order}. ${capitalize(activity.name)}';
+    // Replace "-" with "/" in start and finish dates
+    String formattedStartDate = activity.startDate.replaceAll('-', '/');
+    String formattedFinishDate = activity.finishDate.replaceAll('-', '/');
 
     return InkWell(
       onTap: () {
@@ -258,7 +251,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    subHeading,
+                    '$formattedStartDate - $formattedFinishDate',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11.0,
@@ -310,100 +303,105 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           activity: selectedActivity,
           index: index,
           onSave: (Activity updatedActivity, int? newOrder) async {
-
             // Start the loading process
-            setState(() => isSaving = true);
+            setState(() => isLoading = true);
 
-            // Determine if the order has changed and needs reordering
-            if (newOrder != null && newOrder != selectedActivity.order) {
-              // Reorder activities and update Firestore
-              await reorderAndUpdateActivities(updatedActivity, newOrder);
-            } else {
-              // If the order hasn't changed, just update the details
-              await uploadActivityToFirebase(updatedActivity);
+            bool nameChanged = selectedActivity.name != updatedActivity.name;
+            bool startDateChanged = selectedActivity.startDate != updatedActivity.startDate;
+            bool finishDateChanged = selectedActivity.finishDate != updatedActivity.finishDate;
+            bool orderChanged = newOrder != null && newOrder != selectedActivity.order;
+            bool alreadyUpdated = false; // Flag to track if update already done
+
+            if (orderChanged) {
+              // If the order is changed, perform reordering first
+              String updatedActivityId = await reorderAndUpdateActivities(updatedActivity, newOrder);
+
+              // Find the updated activity by ID
+              Activity updatedActivityAfterReorder = loadedActivities.firstWhere((activity) => activity.id == updatedActivityId);
+
+              // Update other details if needed
+              if (nameChanged || startDateChanged || finishDateChanged) {
+                await updateActivityDetails(updatedActivityAfterReorder, nameChanged, startDateChanged, finishDateChanged);
+                alreadyUpdated = true; // Mark as updated
+              }
             }
 
+            if ((nameChanged || startDateChanged || finishDateChanged) && !alreadyUpdated) {
+              // If order hasn't changed, but other properties have, and not updated yet
+              await deleteActivityFromFirebase(selectedActivity.id);
+              updatedActivity.id = 'activity_${DateTime.now().millisecondsSinceEpoch}';
+              await uploadActivityToFirebase(updatedActivity);
+              updateLocalActivity(updatedActivity);
+            }
+
+            fetchActivitiesFromFirebase();
+
             // End the loading process
-            setState(() {
-              loadedActivities[index] = updatedActivity;
-              isSaving = false;
-            });
+            setState(() => isLoading = false);
           },
         ),
       ),
     );
-    setState(() {
-      loadedActivities[index] = updatedActivity!;
-      isSaving = false;
-    });
+
+    if (updatedActivity == null) {
+      if (kDebugMode) {
+        print('No activity updated');
+      }
+      return;
+    }
   }
-  Future<void> reorderAndUpdateActivities(Activity updatedActivity, int newOrder) async {
+
+
+  Future<void> updateActivityDetails(Activity activity, bool nameChanged, bool startDateChanged, bool finishDateChanged) async {
+    if (nameChanged || startDateChanged || finishDateChanged) {
+      await deleteActivityFromFirebase(activity.id);
+      activity.id = 'activity_${DateTime.now().millisecondsSinceEpoch}';
+      await uploadActivityToFirebase(activity);
+      updateLocalActivity(activity);
+    }
+  }
+
+  Future<String> reorderAndUpdateActivities(Activity updatedActivity, int newOrder) async {
     setState(() => isLoading = true); // Start loading
 
+    String updatedActivityId = updatedActivity.id; // Store the updated activity's ID
+
     try {
-      // Find the old index of the activity that is being updated
-      int oldIndex = loadedActivities.indexWhere((activity) => activity.name == updatedActivity.name);
+      int oldIndex = loadedActivities.indexWhere((activity) => activity.id == updatedActivity.id);
 
-      if (oldIndex == -1) {
-        debugPrint("Activity not found in the list");
-        return;
-      }
+      if (oldIndex != -1) {
+        // Remove the old version of the edited activity
+        loadedActivities.removeAt(oldIndex);
 
-      // Adjust the newOrder if necessary
-      if (newOrder > oldIndex) {
-        newOrder--;
-      }
+        // Insert the updated activity at the new position
+        loadedActivities.insert(newOrder - 1, updatedActivity); // Adjust for zero-based indexing
 
-      // Update the order of the existing activities
-      for (int i = 0; i < loadedActivities.length; i++) {
-        if (i >= newOrder && i != oldIndex) {
-          loadedActivities[i].order++;
-        } else if (i > oldIndex && newOrder <= oldIndex) {
-          loadedActivities[i].order--;
+        // Correct the order values for all activities
+        for (int i = 0; i < loadedActivities.length; i++) {
+          loadedActivities[i].order = i + 1; // Orders should start from 1
+          if (i == newOrder - 1) {
+            updatedActivityId = loadedActivities[i].id; // Update the ID after reordering
+          }
+        }
+
+        // Update activities in Firestore
+        for (var activity in loadedActivities) {
+          await updateActivityInFirestore(activity);
         }
       }
-
-      // Remove the old version of the edited activity from Firestore
-      await deleteActivityFromFirebasee(loadedActivities[oldIndex].name);
-
-      // Remove the old version of the edited activity from the list
-      loadedActivities.removeAt(oldIndex);
-
-      // Update the order of the edited activity
-      updatedActivity.order = newOrder;
-
-      // Insert the updated activity at the correct position
-      loadedActivities.insert(newOrder, updatedActivity);
-
-      // Update activities in Firestore
-      for (var activity in loadedActivities) {
-        await uploadActivityToFirebase(activity);
-        if (kDebugMode) {
-          print("Updated Activity in Firestore: Name: ${activity.name}, Order: ${activity.order}");
-        }
-      }
-      setState(() => isLoading = false);
     } catch (e) {
-      // Handle exceptions if any
       debugPrint("An error occurred: $e");
     } finally {
       setState(() => isLoading = false); // Stop loading
     }
+
+    return updatedActivityId; // Return the updated activity ID
   }
 
-  Future<void> deleteActivityFromFirebasee(String activityName) async {
-    // Assuming you are using activity names as Firestore document IDs
-    var email = FirebaseAuth.instance.currentUser!.email;
-    await FirebaseFirestore.instance
-        .collection('schedules')
-        .doc(email)
-        .collection('activities')
-        .doc(activityName)
-        .delete();
-  }
 
 
   void _addActivity() async {
+    setState(() => isLoading = true);
     // Show a dialog to get activity details (name, start date, finish date, and order)
     final result = await showDialog(
       context: context,
@@ -416,26 +414,30 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               hintText: 'Activity Name',
               obscureText: false,
               controller: _newActivityNameController,
-              icon: Icons.event, keyboardType: TextInputType.text, // Use text input type for name
+              icon: Icons.event,
+              keyboardType: TextInputType.text, // Use text input type for name
             ),
             MyTextField(
               hintText: 'Start Date',
               obscureText: false,
               controller: _newActivityStartDateController,
-              icon: Icons.date_range, keyboardType: TextInputType.number,
+              icon: Icons.date_range,
+              keyboardType: TextInputType.number,
             ),
             MyTextField(
               hintText: 'Finish Date',
               obscureText: false,
               controller: _newActivityFinishDateController,
-              icon: Icons.date_range, keyboardType: TextInputType.number,
+              icon: Icons.date_range,
+              keyboardType: TextInputType.number,
             ),
             MyTextField(
               hintText: 'Order (e.g., 1)',
               obscureText: false,
-              controller: _newOrderController, // Add a TextEditingController for order
-              icon: Icons.format_list_numbered, keyboardType: TextInputType.number, // Provide an icon for order
-            )
+              controller: _newOrderController,
+              icon: Icons.format_list_numbered,
+              keyboardType: TextInputType.number,
+            ),
           ],
         ),
         actions: [
@@ -450,25 +452,21 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               final newName = _newActivityNameController.text;
               final newStartDate = _newActivityStartDateController.text;
               final newFinishDate = _newActivityFinishDateController.text;
+              final newOrderText = _newOrderController.text;
+              newUserOrder = int.tryParse(newOrderText); // Parse the new order
+
               if (newName.isNotEmpty &&
                   newStartDate.isNotEmpty &&
                   newFinishDate.isNotEmpty &&
                   newUserOrder != null) {
                 // Create the new activity with the specified order
                 final newActivity = Activity(
+                  id: 'activity_${DateTime.now().millisecondsSinceEpoch}', // Unique ID
                   name: newName,
                   startDate: newStartDate,
                   finishDate: newFinishDate,
                   order: newUserOrder!,
                 );
-
-                // Adjust the order of existing activities as needed
-                for (int i = 0; i < loadedActivities.length; i++) {
-                  final activity = loadedActivities[i];
-                  if (activity.order >= newUserOrder!) {
-                    activity.order++; // Increment order for existing activities after the new one
-                  }
-                }
 
                 Navigator.of(context).pop(newActivity); // Return the new activity
               } else {
@@ -483,74 +481,115 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       ),
     );
 
-    // If a new activity was added, update Firestore and the local list
+    // If a new activity was added
     if (result != null) {
-      await uploadActivityToFirebase(result);
-      setState(() {
+      newUserOrder = int.tryParse(_newOrderController.text);
+
+      if (newUserOrder != null) {
+        // Create a list to track activities whose order changed
+        List<Activity> activitiesWithChangedOrder = [];
+
+        // Adjust the order of existing activities
+        for (var activity in loadedActivities) {
+          if (activity.order >= newUserOrder!) {
+            activitiesWithChangedOrder.add(activity);
+            activity.order++;
+          }
+        }
+
+        // Add the new activity and sort the list
         loadedActivities.add(result);
-      });
+        loadedActivities.sort((a, b) => a.order.compareTo(b.order));
+
+        // Delete and re-upload activities whose order changed
+        for (var activity in activitiesWithChangedOrder) {
+          await deleteActivityFromFirebase(activity.id);
+          await uploadActivityToFirebase(activity);
+        }
+
+        // Upload the new activity
+        await uploadActivityToFirebase(result);
+
+        // Fetch activities from Firestore
+        if (mounted) {
+          fetchActivitiesFromFirebase();
+        }
+      } else {
+        ScaffoldMessenger.of(context.mounted as BuildContext).showSnackBar(
+          const SnackBar(content: Text('Please specify a valid order number')),
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() => isLoading = false); // Stop loading
     }
   }
+
+
+
 
   void _deleteActivity() async {
-    final Activity? confirmed = await showDialog<Activity?>(
+    final Activity? activityToDelete = await showDialog<Activity?>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        backgroundColor: const Color(0xFF6B8D9F), // Set background color
-        title: const Text('Confirm Delete', style: TextStyle(color: Colors.white)), // Set title text color
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: loadedActivities.map((activity) => Align(
-              alignment: Alignment.centerLeft, // Align to the left
-              child: TextButton(
-                onPressed: () => Navigator.of(context).pop(activity),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white, alignment: Alignment.centerLeft, // Align text to the left
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF6B8D9F),
+          title: const Text('Confirm Delete', style: TextStyle(color: Colors.white)),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: loadedActivities.map((activity) => Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(activity),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text(activity.name),
                 ),
-                child: Text(activity.name),
-              ),
-            )).toList(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(null),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white, // Set text color of actions
+              )).toList(),
             ),
-            child: const Text('Cancel'),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(null),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
 
-    if (confirmed != null) {
-      await deleteActivityFromFirebase(confirmed.name);
+    if (activityToDelete != null) {
+      // Start the loading process
+      setState(() => isLoading = true);
 
-      // Adjust the order of existing activities after deletion
-      loadedActivities.remove(confirmed);
-      for (int i = 0; i < loadedActivities.length; i++) {
-        final activity = loadedActivities[i];
-        if (activity.order > confirmed.order) {
-          activity.order--;
-        }
-      }
+      // Delete the activity from Firestore using the ID
+      await deleteActivityFromFirebase(activityToDelete.id);
 
-      setState(() {});
+      // Remove the activity from the local state
+      setState(() {
+        loadedActivities.removeWhere((activity) => activity.id == activityToDelete.id);
+      });
+
+      // End the loading process
+      setState(() => isLoading = false);
     }
   }
 
 
 
-  Future<void> deleteActivityFromFirebase(String activityName) async {
+  Future<void> deleteActivityFromFirebase(String activityId) async {
     var email = FirebaseAuth.instance.currentUser!.email;
-    String sanitizedActivityName = activityName.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
-    var activityRef = FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('schedules')
         .doc(email)
         .collection('activities')
-        .doc(sanitizedActivityName);
-    await activityRef.delete();
+        .doc(activityId)
+        .delete();
   }
 
   @override
@@ -572,10 +611,11 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     for (var doc in activitiesSnapshot.docs) {
       var data = doc.data();
       tempActivities.add(Activity(
+        id: doc.id, // Use the Firestore document ID as the activity ID
         name: data['name'],
         startDate: data['startDate'],
         finishDate: data['finishDate'],
-        order: data['order'], // Include the 'order' field from Firestore
+        order: data['order'],
       ));
     }
 
@@ -584,80 +624,99 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
+  Future<void> updateActivityInFirestore(Activity updatedActivity) async {
+    var email = FirebaseAuth.instance.currentUser!.email;
+    await FirebaseFirestore.instance
+        .collection('schedules')
+        .doc(email)
+        .collection('activities')
+        .doc(updatedActivity.id)
+        .update({
+      'name': updatedActivity.name,
+      'startDate': updatedActivity.startDate,
+      'finishDate': updatedActivity.finishDate,
+      'order': updatedActivity.order,
+    });
+  }
+
+
+  void updateLocalActivity(Activity updatedActivity) {
+    int index = loadedActivities.indexWhere((activity) => activity.id == updatedActivity.id);
+    if (index != -1) {
+      setState(() {
+        loadedActivities[index] = updatedActivity;
+      });
+    }
+  }
+
+
   Future<void> uploadActivityToFirebase(Activity activity) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var activitiesCollection = firestore.collection('schedules').doc(email).collection('activities');
 
-    // Start a batch write
-    WriteBatch batch = firestore.batch();
+    String sanitizedActivityName = activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
+    String documentId = '${sanitizedActivityName}_${DateTime.now().millisecondsSinceEpoch}';
+    activity.id = documentId; // Set the ID for the activity
 
-    // Delete all existing activities
-    var querySnapshot = await activitiesCollection.get();
-    for (var doc in querySnapshot.docs) {
-      batch.delete(doc.reference);
-    }
-
-    // Add all activities from the updated list
-    for (var activity in loadedActivities) {
-      String sanitizedActivityName = activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
-      String documentId = '${sanitizedActivityName}_${DateTime.now().millisecondsSinceEpoch}';
-
-      var activityRef = activitiesCollection.doc(documentId);
-
-      batch.set(activityRef, {
-        'id': documentId,
-        'name': activity.name,
-        'startDate': activity.startDate,
-        'finishDate': activity.finishDate,
-        'order': activity.order,
-      });
-    }
-
-    // Commit the batch write
-    await batch.commit();
+    var activityRef = activitiesCollection.doc(documentId);
+    await activityRef.set({
+      'id': documentId,
+      'name': activity.name,
+      'startDate': activity.startDate,
+      'finishDate': activity.finishDate,
+      'order': activity.order,
+    });
   }
+
 
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('Schedule')),
-        backgroundColor: const Color(0xFF212832),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.file_upload),
-            onPressed: isLoading ? null : pickFile,
-            color: const Color(0xFFFED36A),
+    return Container(
+      height: MediaQuery.of(context).size.height,
+     
+          width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 32,right: 32,top: 32,),
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Center(child: Text('Schedule',style: TextStyle(
+                      
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    
+                    ),)),IconButton(
+              icon: const Icon(Icons.file_upload),
+              onPressed: isLoading ? null : pickFile,
+              color: const Color(0xFFFED36A),
+            ),],
+                    
+                    
+                  ),
           ),
-        ],
-      ),
-      backgroundColor: const Color(0xFF212832),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+       isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.blue))
           : Column(
         children: [
           const SizedBox(height: 10),
           if (loadedActivities.isNotEmpty)
-          Expanded(
-            child: SingleChildScrollView(
+            SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
-                      children: loadedActivities.map((activity) {
-                        return _buildActivityContainer(
-                          activity,
-                          activity.name,
-                          '${activity.startDate} - ${activity.finishDate}',
-                        );
-                      }).toList(),
-                    ),
+                children: loadedActivities.map((activity) {
+                  return _buildActivityContainer(
+                    activity,
+                    activity.name,
+                    '${activity.startDate} - ${activity.finishDate}',
+                  );
+                }).toList(),
+              ),
             ),
-          ),
-        if (loadedActivities.isEmpty)
-          Expanded(
-            child: Center(
+          if (loadedActivities.isEmpty)
+            Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -673,7 +732,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 ],
               ),
             ),
-          ),
           if (loadedActivities.isNotEmpty)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -704,71 +762,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             )
         ],
       ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 38, 50, 56),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.yellow,
-        currentIndex: 3,
-        onTap: (int index) {
-          setState(() {
-            currentIndex = index;
-          });
-          if (index == 1) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => const ChatScreen()));
-          } else if (index == 2) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const TaskDetailsScreen();
-            }));
-          } else if (index == 0) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => const MyHomePage(title: 'My Home Page')));
-          } else if (index == 3) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => const ScheduleScreen()));
-          } else {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => const NotificationsScreen()));
-          }
-        },
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.yellow,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: const Icon(Icons.add, color: Colors.black, size: 30.0),
-                ),
-              ),
-            ),
-            label: 'Add',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
-            label: 'Schedule',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
+      
         ],
-        iconSize: 20.0,
-      ),
+      )
     );
   }
 }
-

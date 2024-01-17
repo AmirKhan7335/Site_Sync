@@ -15,8 +15,7 @@ class _PageTwoState extends State<PageTwo> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(
-          left: 10.0, top: 10.0, bottom: 10.0, right: 10.0),
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
         color: const Color(0xFF0F2935),
         // Adjusted color here
@@ -42,6 +41,7 @@ class _PageTwoState extends State<PageTwo> {
                   'assets/images/budget_icon.png'),
             ),
           ),
+          const SizedBox(height: 20),
           Row(
             children: [
               Column(
@@ -94,7 +94,7 @@ class _PageTwoState extends State<PageTwo> {
                       height: 126,
                       width: 127,
                       child: CustomPaint(
-                        painter: ArcPainter(),
+                        painter: ArcPainter(progress: 80),
                       ),
                     ),
                     const Positioned(

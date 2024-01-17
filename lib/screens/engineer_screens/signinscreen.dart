@@ -5,10 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
-import '../components/my_button.dart';
-import '../components/mytextfield.dart';
-import '../main.dart';
+import '../../components/my_button.dart';
+import '../../components/mytextfield.dart';
+import '../../main.dart';
 import 'createaccountscreen.dart';
+
 
 // Google sign in
 Future<User?> signInWithGoogle() async {
@@ -90,6 +91,7 @@ class _SigninScreenState extends State<SigninScreen> {
   TextEditingController passwordController = TextEditingController();
 
   signInWithEmailAndPassword() async {
+
     try {
       setState(() {
         isloading = true;
@@ -113,12 +115,14 @@ class _SigninScreenState extends State<SigninScreen> {
       });
 
       // Navigate to home page on successful sign-in
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MyHomePage(title: "HOME PAGE"),
-        ),
-      );
+      if(context.mounted){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EngineerHomePage(),
+          ),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         isloading = false;
@@ -131,15 +135,21 @@ class _SigninScreenState extends State<SigninScreen> {
         if (isUserExists) {
           // User exists, display "Invalid password" error
           showErrorDialog('Invalid password.');
-          print('Wrong password provided for that user.');
+          if (kDebugMode) {
+            print('Wrong password provided for that user.');
+          }
         } else {
           // User not found, display "Invalid email" error
           showErrorDialog('Invalid email.');
-          print('No user found for that email.');
+          if (kDebugMode) {
+            print('No user found for that email.');
+          }
         }
       } else {
         showErrorDialog('Invalid email or password');
-        print('Error: ${e.message}');
+        if (kDebugMode) {
+          print('Error: ${e.message}');
+        }
       }
     }
   }
@@ -307,13 +317,15 @@ class _SigninScreenState extends State<SigninScreen> {
                         if (user != null) {
                           await sendEmailToUser(user.email!);
                           // Navigate to home page after Google sign-in
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const MyHomePage(title: "HOME PAGE"),
-                            ),
-                          );
+                          if(context.mounted){
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                const EngineerHomePage(),
+                              ),
+                            );
+                          }
                         }
                       },
                     ),

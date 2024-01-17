@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../components/my_button.dart';
+import '../../components/my_button.dart';
 
 //Selector Screen
 class Selector extends StatelessWidget {
-  const Selector({Key? key}) : super(key: key);
+  const Selector({super.key});
 
   @override
   Widget build(BuildContext context) {
