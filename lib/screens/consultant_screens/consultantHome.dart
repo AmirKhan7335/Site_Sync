@@ -3,6 +3,9 @@ import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
 import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
 import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
+import 'package:amir_khan1/screens/consultant_screens/addProjectScreen.dart';
+import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
+import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
 import 'package:amir_khan1/screens/engineer_screens/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
@@ -216,7 +219,14 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
                                 width: 10,
                               ),
                               InkWell(
-                                onTap: () {},
+                                
+                                onTap: () {
+                                   Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ProgressPage()));
+                                },
                                 child: Text('Progress',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -225,10 +235,16 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
                               Container(
                                 height: 30,
                                 width: 1.5,
-                                color: Colors.white,
+                                color: Colors.yellow,
                               ),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RequestPage()));
+                                },
                                 child: Text(
                                   'Request',
                                   style: TextStyle(
@@ -287,11 +303,10 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
     return Scaffold(
       drawer: const MyDrawer(),
       backgroundColor: const Color(0xFF212832),
-      body:
-      currentConsultantIndex == 1
+      body: currentConsultantIndex == 1
           ? ChatScreen()
           : currentConsultantIndex == 2
-              ? Placeholder()
+              ? CreateProject()
               : currentConsultantIndex == 0
                   ? ConsultantHomeTab(data)
                   : currentConsultantIndex == 3
@@ -306,7 +321,6 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
           setState(() {
             currentConsultantIndex = index;
           });
-          
         },
         items: [
           const BottomNavigationBarItem(
