@@ -3,6 +3,7 @@ import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
 import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
 import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
+import 'package:amir_khan1/screens/consultant_screens/ConsultantSchedule.dart';
 import 'package:amir_khan1/screens/consultant_screens/addProjectScreen.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
@@ -89,7 +90,7 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
                 'Consultant Page',
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 30,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
             ),
@@ -310,7 +311,7 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
               : currentConsultantIndex == 0
                   ? ConsultantHomeTab(data)
                   : currentConsultantIndex == 3
-                      ? const ScheduleScreen()
+                      ? const ConsultantSchedule()
                       : const NotificationsScreen(),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 38, 50, 56),

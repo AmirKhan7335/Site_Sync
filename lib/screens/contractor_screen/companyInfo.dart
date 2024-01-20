@@ -1,5 +1,6 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
+import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -164,7 +165,7 @@ class _CompanyInfoState extends State<CompanyInfo> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Placeholder()));
+                                builder: (context) => ConsultantHomePage()));
                       },
                     ),
                     const SizedBox(height: 20),
