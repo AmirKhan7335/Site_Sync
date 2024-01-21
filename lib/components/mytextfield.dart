@@ -11,7 +11,9 @@ class MyTextField extends StatefulWidget {
     required this.hintText,
     required this.obscureText,
     required this.controller,
-    required this.icon, required TextInputType keyboardType, // Required icon parameter in constructor
+    required this.icon,
+    required TextInputType
+        keyboardType, // Required icon parameter in constructor
   }) : super(key: key);
 
   @override
@@ -53,7 +55,8 @@ class MyTextFieldState extends State<MyTextField> {
               color: Colors.white,
             ),
             filled: true, // Ensure that the fillColor is applied
-            fillColor: const Color(0xFF6B8D9F), // Set the fillColor to the same background color
+            fillColor: const Color(
+                0xFF6B8D9F), // Set the fillColor to the same background color
             prefixIcon: Icon(
               widget.icon,
               color: Colors.white, // Set icon color to white

@@ -2,7 +2,6 @@ import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 class CreateProject extends StatefulWidget {
   const CreateProject({super.key});
 
@@ -15,8 +14,8 @@ class _CreateProjectState extends State<CreateProject> {
   bool isloading = false;
   TextEditingController titleController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
-  TextEditingController startDateController = TextEditingController();
-  TextEditingController endDateController = TextEditingController();
+TextEditingController startDateController=TextEditingController();
+ TextEditingController endDateController = TextEditingController();
   TextEditingController fundingController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
