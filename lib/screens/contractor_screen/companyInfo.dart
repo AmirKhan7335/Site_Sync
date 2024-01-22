@@ -20,6 +20,15 @@ class _CompanyInfoState extends State<CompanyInfo> {
   TextEditingController emailController = TextEditingController();
   TextEditingController officeController = TextEditingController();
   @override
+  void dispose() {
+    nameController.dispose();
+    ownerController.dispose();
+    typeController.dispose();
+    emailController.dispose();
+    officeController.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF212832),

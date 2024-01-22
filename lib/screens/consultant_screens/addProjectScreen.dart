@@ -1,7 +1,11 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 class CreateProject extends StatefulWidget {
   const CreateProject({super.key});
 
@@ -14,16 +18,54 @@ class _CreateProjectState extends State<CreateProject> {
   bool isloading = false;
   TextEditingController titleController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
-TextEditingController startDateController=TextEditingController();
- TextEditingController endDateController = TextEditingController();
+  TextEditingController startDateController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
   TextEditingController fundingController = TextEditingController();
   TextEditingController locationController = TextEditingController();
+  Future<void> uploadProjectToFirebase() async {
+    try {
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var projectsCollection = firestore.collection('Projects').doc();
+      await projectsCollection.set(
+        {
+          'title': titleController.text,
+          'budget': budgetController.text,
+          'startDate': startDateController.text,
+          'endDate': endDateController.text,
+          'funding': fundingController.text,
+          'location': locationController.text,
+          'email': email,
+        },
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Project Created Successfully')));
+      titleController.clear();
+      budgetController.clear();
+      startDateController.clear();
+      endDateController.clear();
+      fundingController.clear();
+      locationController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  void dispose() {
+    titleController.dispose();
+    budgetController.dispose();
+    startDateController.dispose();
+    endDateController.dispose();
+    fundingController.dispose();
+    locationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF212832),
-      body: Stack(
+    return Container(
+      child: Stack(
         children: [
           SingleChildScrollView(
             child: Padding(
@@ -181,10 +223,24 @@ TextEditingController startDateController=TextEditingController();
                       bgColor: Colors.yellow,
                       textColor: Colors.black,
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Placeholder()));
+                        if (titleController.text.isEmpty ||
+                            budgetController.text.isEmpty ||
+                            startDateController.text.isEmpty ||
+                            endDateController.text.isEmpty ||
+                            fundingController.text.isEmpty ||
+                            locationController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('Please fill all the fields')));
+                        } else {
+                          setState(() {
+                            isloading = true;
+                          });
+                          print('relax');
+                          uploadProjectToFirebase();
+                          setState(() {
+                            isloading = false;
+                          });
+                        }
                       },
                     ),
                     const SizedBox(height: 20),

@@ -52,7 +52,8 @@ class MyTextFieldState extends State<MyTextField> {
             border: InputBorder.none,
             hintText: widget.hintText,
             hintStyle: const TextStyle(
-              color: Colors.white,
+              color: Colors.grey,
+              
             ),
             filled: true, // Ensure that the fillColor is applied
             fillColor: const Color(
