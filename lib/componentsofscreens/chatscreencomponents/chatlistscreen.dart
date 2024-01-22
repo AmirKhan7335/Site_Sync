@@ -9,7 +9,7 @@ import 'individualchatscreen.dart'; // Import your IndividualChatScreen
 class ChatListScreen extends StatefulWidget {
   final ChatUser? user;
 
-  const ChatListScreen({super.key, required this.user});
+  ChatListScreen({super.key, required this.user});
 
   @override
   ChatListScreenState createState() => ChatListScreenState();
@@ -35,11 +35,11 @@ class ChatListScreenState extends State<ChatListScreen> {
       final usersData = await FirebaseFirestore.instance
           .collection('users')
           .where('email',
-          isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+              isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
           .get();
       validUsers = usersData.docs.map((doc) {
         final Map<String, dynamic> data =
-        doc.data(); // Cast to Map<String, dynamic>
+            doc.data(); // Cast to Map<String, dynamic>
         return ChatUser(
           id: doc.id,
           name: data['username'] ?? '',
@@ -55,7 +55,7 @@ class ChatListScreenState extends State<ChatListScreen> {
   }
 
   // Function to set chatRoomId when a user is selected
-  void setUserSelected(ChatUser user) {
+  Future<void> setUserSelected(ChatUser user) async {
     setState(() {
       selectedUser = user;
       userSelected = true;
@@ -67,10 +67,10 @@ class ChatListScreenState extends State<ChatListScreen> {
     });
 
     // Remove the current screen from the navigation stack
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
 
     // Navigate to the individual chat screen
-    Navigator.of(context).push(
+   await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => IndividualChatScreen(
           user: selectedUser!,
@@ -79,6 +79,7 @@ class ChatListScreenState extends State<ChatListScreen> {
         ),
       ),
     );
+    Navigator.pop(context);
   }
 
   @override
@@ -87,31 +88,33 @@ class ChatListScreenState extends State<ChatListScreen> {
       appBar: userSelected
           ? null // Remove the AppBar when a user is selected
           : AppBar(
-        title: const Text('Valid Users'),
-      ),
+              title: const Text('Valid Users'),
+            ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
           : userSelected
-          ? IndividualChatScreen(
-        user: selectedUser!,
-        chatRoomId: chatRoomId, // Pass chatRoomId
-        selectedUser: selectedUser!, // Pass selectedUser
-      )
-          : validUsers.isNotEmpty
-          ? ListView.builder(
-        itemCount: validUsers.length,
-        itemBuilder: (context, index) {
-          final user = validUsers[index];
-          return ChatListItem(
-            user: user,
-            onTap: () {
-              // Call setUserSelected when a user is tapped
-              setUserSelected(user);
-            },
-          );
-        },
-      )
-          : const Center(child: Text('No users available')),
+              ? IndividualChatScreen(
+                  user: selectedUser!,
+                  chatRoomId: chatRoomId, // Pass chatRoomId
+                  selectedUser: selectedUser!, // Pass selectedUser
+                )
+              : validUsers.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: validUsers.length,
+                      itemBuilder: (context, index) {
+                        final user = validUsers[index];
+                        return ChatListItem(
+                          user: user,
+                          onTap: () {
+                            // Call setUserSelected when a user is tapped
+                            setUserSelected(
+                              user,
+                            );
+                          },
+                        );
+                      },
+                    )
+                  : const Center(child: Text('No users available')),
     );
   }
 }

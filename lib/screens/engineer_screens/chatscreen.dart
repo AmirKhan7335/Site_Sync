@@ -238,7 +238,7 @@ class ChatScreenState extends State<ChatScreen> {
                     // Navigate to ChatListScreen
                     final result = await Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return ChatListScreen(user: selectedUser);
+                      return ChatListScreen(user: selectedUser,);
                     }));
                     if (result != null && result is bool && result) {
                       // Message sent or some other action completed, update the chat screen
@@ -346,39 +346,44 @@ class ChatScreenState extends State<ChatScreen> {
                                 ),
                               );
                             } else {
-                              return ListView.builder(
-                                itemCount: allChatRooms.length,
-                                itemBuilder: (context, index) {
-                                  var chatRoomData = allChatRooms[index];
-            
-                                  // Create a ChatUser based on the chat room data
-                                  var chatUser = ChatUser(
-                                    id: chatRoomData['email'],
-                                    name: chatRoomData['username'],
-                                    chatRoomId: '',
-                                  );
-            
-                                  return Align(
-                                    child: Column(
-                                      children: [
-                                        ChatInfoTile(
-                                          key: ValueKey(chatUser.id),
-                                          cUserID: FirebaseAuth
-                                              .instance.currentUser!.email!,
-                                          otherUser: chatUser,
-                                          onTap: () {
-                                            // When the tile is tapped, set the selectedUser
-                                            setState(() {
-                                              selectedUser = chatUser;
-                                            });
-                                          },
-                                        ),
-                                        const Divider(
-                                            color: Colors.white, height: 0)
-                                      ],
-                                    ),
-                                  );
-                                },
+                              return Container(
+                                height:
+                               // 500,
+                                MediaQuery.of(context).size.height * 0.55,
+                                child: ListView.builder(
+                                  itemCount: allChatRooms.length,
+                                  itemBuilder: (context, index) {
+                                    var chatRoomData = allChatRooms[index];
+                                          
+                                    // Create a ChatUser based on the chat room data
+                                    var chatUser = ChatUser(
+                                      id: chatRoomData['email'],
+                                      name: chatRoomData['username'],
+                                      chatRoomId: '',
+                                    );
+                                          
+                                    return Align(
+                                      child: Column(
+                                        children: [
+                                          ChatInfoTile(
+                                            key: ValueKey(chatUser.id),
+                                            cUserID: FirebaseAuth
+                                                .instance.currentUser!.email!,
+                                            otherUser: chatUser,
+                                            onTap: () {
+                                              // When the tile is tapped, set the selectedUser
+                                              setState(() {
+                                                selectedUser = chatUser;
+                                              });
+                                            },
+                                          ),
+                                          const Divider(
+                                              color: Colors.white, height: 0)
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
                               );
                             }
                           },
@@ -395,7 +400,7 @@ class ChatScreenState extends State<ChatScreen> {
   }
 }
 
-class ChatUser {
+class  ChatUser {
   final String id;
   final String name;
   final String chatRoomId; // Add this if you need a chatRoomId for ChatUser

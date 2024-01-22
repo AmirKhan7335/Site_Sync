@@ -97,8 +97,9 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    lastMessageText,
-                    style: const TextStyle(fontSize: 16),
+                    lastMessageText.length<20?lastMessageText:
+                   '${lastMessageText.substring(0, 20)}..',
+                    style: const TextStyle(fontSize: 14),
                   ),
                   if (messageTime != null) // Only display time if not null
                     Text(
