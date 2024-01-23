@@ -11,8 +11,8 @@ class ConsultantSchedule extends StatefulWidget {
 class _ConsultantScheduleState extends State<ConsultantSchedule> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: SafeArea(
+    return Scaffold(
+      body: SafeArea(
         child: Column(
           children: [
             Padding(

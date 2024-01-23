@@ -7,6 +7,7 @@ import 'package:amir_khan1/screens/consultant_screens/ConsultantSchedule.dart';
 import 'package:amir_khan1/screens/consultant_screens/addProjectScreen.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
+import 'package:amir_khan1/screens/consultant_screens/scheduledProjects.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
 import 'package:amir_khan1/screens/engineer_screens/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
@@ -441,7 +442,7 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
               : currentConsultantIndex == 0
                   ? ConsultantHomeTab(data)
                   : currentConsultantIndex == 3
-                      ? const ConsultantSchedule()
+                      ? const ScheduleProjects()
                       : const NotificationsScreen(),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 38, 50, 56),
