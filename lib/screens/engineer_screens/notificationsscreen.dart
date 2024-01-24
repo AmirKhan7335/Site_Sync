@@ -1,4 +1,4 @@
-import 'package:amir_khan1/screens/engineer_screens/schedulescreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';

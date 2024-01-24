@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
 import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
 import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
@@ -8,8 +10,9 @@ import 'package:amir_khan1/screens/engineer_screens/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/createaccountscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/takePicture/takePicture.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/schedulescreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/signinscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/splashscreen.dart';
 import 'package:amir_khan1/widgets/colors.dart';
@@ -18,6 +21,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'auth/auth.dart';
 import 'components/my_drawer.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -696,7 +700,7 @@ class MyHomePageState extends State<EngineerHomePage> {
       ),
     );
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     final data = fetchData();
@@ -706,7 +710,7 @@ class MyHomePageState extends State<EngineerHomePage> {
       body: currentIndex == 1
           ? ChatScreen()
           : currentIndex == 2
-              ? Placeholder()
+              ? TakePicture()
               : currentIndex == 0
                   ? engineerHomeTab(data)
                   : currentIndex == 3

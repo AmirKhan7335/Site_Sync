@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart';
 import 'dart:io' if (dart.library.html) 'dart:typed_data';
-import '../../components/mytextfield.dart';
-import '../../main.dart';
-import 'chatscreen.dart';
-import 'detailsscreen.dart';
-import 'foundationschedulescreen.dart';
-import 'notificationsscreen.dart';
+import '../../../components/mytextfield.dart';
+import '../../../main.dart';
+import '../chatscreen.dart';
+import '../detailsscreen.dart';
+import '../foundationschedulescreen.dart';
+import '../notificationsscreen.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -616,6 +616,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         startDate: data['startDate'],
         finishDate: data['finishDate'],
         order: data['order'],
+        images: data['images']
       ));
     }
 
@@ -638,6 +639,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       'order': updatedActivity.order,
     });
   }
+
 
 
   void updateLocalActivity(Activity updatedActivity) {
@@ -666,6 +668,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       'startDate': activity.startDate,
       'finishDate': activity.finishDate,
       'order': activity.order,
+      'image':activity.images,
     });
   }
 

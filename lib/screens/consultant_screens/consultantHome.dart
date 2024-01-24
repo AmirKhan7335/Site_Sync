@@ -12,7 +12,7 @@ import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.da
 import 'package:amir_khan1/screens/engineer_screens/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/schedulescreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
