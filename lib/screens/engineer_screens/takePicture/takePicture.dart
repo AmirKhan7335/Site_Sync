@@ -16,36 +16,124 @@ class TakePicture extends StatefulWidget {
 }
 
 class _TakePictureState extends State<TakePicture> {
-  List<Activity> loadedActivities = [];
-
-  
   @override
-  void initState()  {
+  void initState() {
     super.initState();
-   fetchActivitiesFromFirebase();
   }
 
-  Future<void> _takePicture() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-    File _image;
+  @override
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
-    if (pickedFile != null) {
-      _image = File(pickedFile.path);
+  
+  Future<void> _takePicture(mode, context) async {
+    final picker = ImagePicker();
+    if (mode == 'camera') {
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
+      if (pickedFile != null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddPic(image: pickedFile.path)));
+      }
+    } else {
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddPic(image: pickedFile.path)));
+      }
     }
   }
 
-  Future<void> addPicture(Activity updatedActivity) async {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Take Picture',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+            Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 1.5,
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.white,
+                )),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.yellow,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        _takePicture('camera', context);
+                      },
+                      child: Center(
+                          child: Icon(Icons.camera_alt_rounded,
+                              color: Colors.black, size: 100.0)),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.yellow,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        _takePicture('gallery', context);
+                      },
+                      child: Center(
+                          child: Icon(Icons.file_upload,
+                              color: Colors.black, size: 100.0)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddPic extends StatefulWidget {
+  AddPic({required this.image, super.key});
+  String image;
+  @override
+  State<AddPic> createState() => _AddPicState();
+}
+
+class _AddPicState extends State<AddPic> {
+  Future<void> addPicture(id, image) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     await FirebaseFirestore.instance
         .collection('schedules')
         .doc(email)
         .collection('activities')
-        .doc(updatedActivity.id)
-        .update({'images': updatedActivity.images});
+        .doc(id)
+        .update({'image': image});
   }
 
-  Future<void> fetchActivitiesFromFirebase() async {
+  Future<List<Activity>> fetchActivitiesFromFirebase() async {
     var email = FirebaseAuth.instance.currentUser!.email;
     var activitiesSnapshot = await FirebaseFirestore.instance
         .collection('schedules')
@@ -55,20 +143,20 @@ class _TakePictureState extends State<TakePicture> {
         .get();
 
     List<Activity> tempActivities = [];
+
     for (var doc in activitiesSnapshot.docs) {
       var data = doc.data();
+
       tempActivities.add(Activity(
-          id: doc.id, // Use the Firestore document ID as the activity ID
+          id: data['id'], // Use the Firestore document ID as the activity ID
           name: data['name'],
           startDate: data['startDate'],
           finishDate: data['finishDate'],
           order: data['order'],
-          images: data['images']));
+          image: data['image']));
     }
 
-    setState(() {
-      loadedActivities = tempActivities;
-    });
+    return tempActivities;
   }
 
   Future<String> uploadImageToStorage(File imageFile) async {
@@ -85,29 +173,94 @@ class _TakePictureState extends State<TakePicture> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // Scaffold(
-        //   appBar: AppBar(
-        //     title: Text('Choose Activity To Add Pic'),
-        //   ),
-        //   body:
-        Container(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: ListView.builder(
-                itemCount: loadedActivities.length,
-                itemBuilder: ((context, index) {
-                  return ListTile(
-                    title: Text('${loadedActivities[index].name}'),
-                  );
-                })),
-          )
-        ],
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Choose Activity To Add Pic',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: FutureBuilder<List<Activity>>(
+                    future: fetchActivitiesFromFirebase(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return Text('No Activities Found');
+                      } else if (snapshot.hasData) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: ((context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[800],
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: ListTile(
+                                      onTap: () async {
+                                        try {
+                                          final url = await uploadImageToStorage(
+                                              File(widget.image!));
+                                          await addPicture(
+                                              snapshot.data?[index].id, url);
+                                          Navigator.pop(context);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content:
+                                                      Text('Image Added')));
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content:
+                                                      Text('${e.toString()}')));
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                      title: Text(
+                                        '${snapshot.data?[index].name}',
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: Text(snapshot.data![index].id),
+                                      trailing: Column(
+                                        children: [
+                                          Text(snapshot.data![index].startDate),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                              snapshot.data![index].finishDate),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              })),
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    }),
+              )
+            ],
+          ),
+        ),
       ),
     );
-    //,
-    // );
   }
 }

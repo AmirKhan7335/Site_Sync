@@ -616,7 +616,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         startDate: data['startDate'],
         finishDate: data['finishDate'],
         order: data['order'],
-        images: data['images']
+        image: data['images']
       ));
     }
 
@@ -668,7 +668,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       'startDate': activity.startDate,
       'finishDate': activity.finishDate,
       'order': activity.order,
-      'image':activity.images,
+      'image':activity.image,
     });
   }
 
