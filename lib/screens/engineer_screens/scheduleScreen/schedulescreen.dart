@@ -1,9 +1,11 @@
+import 'package:amir_khan1/controllers/addActivityController.dart';
 import 'package:amir_khan1/screens/engineer_screens/editactivityscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/activity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart';
+import 'package:get/get.dart';
 import 'dart:io' if (dart.library.html) 'dart:typed_data';
 import '../../../components/mytextfield.dart';
 import '../../../main.dart';
@@ -29,9 +31,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   int? newUserOrder;
   // Define TextEditingController variables
   final TextEditingController _newOrderController = TextEditingController();
-  final TextEditingController _newActivityNameController = TextEditingController();
-  final TextEditingController _newActivityStartDateController = TextEditingController();
-  final TextEditingController _newActivityFinishDateController = TextEditingController();
+  final TextEditingController _newActivityNameController =
+      TextEditingController();
 
   Future<void> showErrorDialog(String message) async {
     await showDialog(
@@ -93,7 +94,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             // debugPrint('Start Date String: $startDate');
             // debugPrint('Finish Date String: $finishDate');
 
-
             if (name.isEmpty || startDate.isEmpty || finishDate.isEmpty) {
               debugPrint('Skipping row with incomplete data');
               continue;
@@ -110,8 +110,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             }
 
             // Convert to 'dd/MM/yy' format for displaying
-            String formattedStartDate = DateFormat('dd/MM/yyyy').format(startDateParsed);
-            String formattedFinishDate = DateFormat('dd/MM/yyyy').format(finishDateParsed);
+            String formattedStartDate =
+                DateFormat('dd/MM/yyyy').format(startDateParsed);
+            String formattedFinishDate =
+                DateFormat('dd/MM/yyyy').format(finishDateParsed);
 
             var activity = Activity(
               id: 'your_unique_identifier', // Update this accordingly
@@ -151,7 +153,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
-
   DateTime parseDate(String dateString) {
     try {
       return DateTime.parse(dateString);
@@ -177,10 +178,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-
-
-
-
   Future<void> clearActivitiesForCurrentUser() async {
     var email = FirebaseAuth.instance.currentUser!.email;
     var querySnapshot = await FirebaseFirestore.instance
@@ -194,7 +191,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-  Widget _buildActivityContainer(Activity activity, String mainHeading, String subHeading) {
+  Widget _buildActivityContainer(
+      Activity activity, String mainHeading, String subHeading) {
     // Use a pattern like "1. Foundation" for displaying the activity name
     String displayText = '${activity.order}. ${capitalize(activity.name)}';
     // Replace "-" with "/" in start and finish dates
@@ -212,11 +210,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         } else {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) =>
-                  DetailsScreen(
-                    mainHeading: mainHeading,
-                    subHeading: subHeading,
-                  ),
+              builder: (context) => DetailsScreen(
+                mainHeading: mainHeading,
+                subHeading: subHeading,
+              ),
             ),
           );
         }
@@ -234,7 +231,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             Container(
               width: 9.0,
               height: 50,
-              color: const Color (0xFFFED36A),
+              color: const Color(0xFFFED36A),
             ),
             const SizedBox(width: 12.0),
             Expanded(
@@ -272,7 +269,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     return text[0].toUpperCase() + text.substring(1);
   }
 
-
   void _showEditOptions() async {
     if (loadedActivities.isNotEmpty) {
       await showDialog(
@@ -307,29 +303,37 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             setState(() => isLoading = true);
 
             bool nameChanged = selectedActivity.name != updatedActivity.name;
-            bool startDateChanged = selectedActivity.startDate != updatedActivity.startDate;
-            bool finishDateChanged = selectedActivity.finishDate != updatedActivity.finishDate;
-            bool orderChanged = newOrder != null && newOrder != selectedActivity.order;
+            bool startDateChanged =
+                selectedActivity.startDate != updatedActivity.startDate;
+            bool finishDateChanged =
+                selectedActivity.finishDate != updatedActivity.finishDate;
+            bool orderChanged =
+                newOrder != null && newOrder != selectedActivity.order;
             bool alreadyUpdated = false; // Flag to track if update already done
 
             if (orderChanged) {
               // If the order is changed, perform reordering first
-              String updatedActivityId = await reorderAndUpdateActivities(updatedActivity, newOrder);
+              String updatedActivityId =
+                  await reorderAndUpdateActivities(updatedActivity, newOrder);
 
               // Find the updated activity by ID
-              Activity updatedActivityAfterReorder = loadedActivities.firstWhere((activity) => activity.id == updatedActivityId);
+              Activity updatedActivityAfterReorder = loadedActivities
+                  .firstWhere((activity) => activity.id == updatedActivityId);
 
               // Update other details if needed
               if (nameChanged || startDateChanged || finishDateChanged) {
-                await updateActivityDetails(updatedActivityAfterReorder, nameChanged, startDateChanged, finishDateChanged);
+                await updateActivityDetails(updatedActivityAfterReorder,
+                    nameChanged, startDateChanged, finishDateChanged);
                 alreadyUpdated = true; // Mark as updated
               }
             }
 
-            if ((nameChanged || startDateChanged || finishDateChanged) && !alreadyUpdated) {
+            if ((nameChanged || startDateChanged || finishDateChanged) &&
+                !alreadyUpdated) {
               // If order hasn't changed, but other properties have, and not updated yet
               await deleteActivityFromFirebase(selectedActivity.id);
-              updatedActivity.id = 'activity_${DateTime.now().millisecondsSinceEpoch}';
+              updatedActivity.id =
+                  'activity_${DateTime.now().millisecondsSinceEpoch}';
               await uploadActivityToFirebase(updatedActivity);
               updateLocalActivity(updatedActivity);
             }
@@ -351,8 +355,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-
-  Future<void> updateActivityDetails(Activity activity, bool nameChanged, bool startDateChanged, bool finishDateChanged) async {
+  Future<void> updateActivityDetails(Activity activity, bool nameChanged,
+      bool startDateChanged, bool finishDateChanged) async {
     if (nameChanged || startDateChanged || finishDateChanged) {
       await deleteActivityFromFirebase(activity.id);
       activity.id = 'activity_${DateTime.now().millisecondsSinceEpoch}';
@@ -361,26 +365,31 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-  Future<String> reorderAndUpdateActivities(Activity updatedActivity, int newOrder) async {
+  Future<String> reorderAndUpdateActivities(
+      Activity updatedActivity, int newOrder) async {
     setState(() => isLoading = true); // Start loading
 
-    String updatedActivityId = updatedActivity.id; // Store the updated activity's ID
+    String updatedActivityId =
+        updatedActivity.id; // Store the updated activity's ID
 
     try {
-      int oldIndex = loadedActivities.indexWhere((activity) => activity.id == updatedActivity.id);
+      int oldIndex = loadedActivities
+          .indexWhere((activity) => activity.id == updatedActivity.id);
 
       if (oldIndex != -1) {
         // Remove the old version of the edited activity
         loadedActivities.removeAt(oldIndex);
 
         // Insert the updated activity at the new position
-        loadedActivities.insert(newOrder - 1, updatedActivity); // Adjust for zero-based indexing
+        loadedActivities.insert(
+            newOrder - 1, updatedActivity); // Adjust for zero-based indexing
 
         // Correct the order values for all activities
         for (int i = 0; i < loadedActivities.length; i++) {
           loadedActivities[i].order = i + 1; // Orders should start from 1
           if (i == newOrder - 1) {
-            updatedActivityId = loadedActivities[i].id; // Update the ID after reordering
+            updatedActivityId =
+                loadedActivities[i].id; // Update the ID after reordering
           }
         }
 
@@ -398,8 +407,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     return updatedActivityId; // Return the updated activity ID
   }
 
-
-
+  final controller = Get.put(AddActivityController());
   void _addActivity() async {
     setState(() => isLoading = true);
     // Show a dialog to get activity details (name, start date, finish date, and order)
@@ -407,38 +415,38 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Add New Activity'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            MyTextField(
-              hintText: 'Activity Name',
-              obscureText: false,
-              controller: _newActivityNameController,
-              icon: Icons.event,
-              keyboardType: TextInputType.text, // Use text input type for name
-            ),
-            MyTextField(
-              hintText: 'Start Date',
-              obscureText: false,
-              controller: _newActivityStartDateController,
-              icon: Icons.date_range,
-              keyboardType: TextInputType.number,
-            ),
-            MyTextField(
-              hintText: 'Finish Date',
-              obscureText: false,
-              controller: _newActivityFinishDateController,
-              icon: Icons.date_range,
-              keyboardType: TextInputType.number,
-            ),
-            MyTextField(
-              hintText: 'Order (e.g., 1)',
-              obscureText: false,
-              controller: _newOrderController,
-              icon: Icons.format_list_numbered,
-              keyboardType: TextInputType.number,
-            ),
-          ],
+        content: 
+        
+        Obx(()=>
+           Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              MyTextField(
+                hintText: 'Activity Name',
+                obscureText: false,
+                controller: _newActivityNameController,
+                icon: Icons.event,
+                keyboardType: TextInputType.text, // Use text input type for name
+              ),
+              MyDateField(
+                  hintText: controller.selectedDate == null
+                      ? 'Start Date'
+                      : '${controller. selectedDate!.value.toLocal()}'.split(' ')[0],
+                  callback: controller. SelectDate),
+              MyDateField(
+                  hintText: controller .endDate == null
+                      ? 'End Date'
+                      : '${controller. endDate!.value.toLocal()}'.split(' ')[0],
+                  callback:controller. EndDate),
+              MyTextField(
+                hintText: 'Order (e.g., 1)',
+                obscureText: false,
+                controller: _newOrderController,
+                icon: Icons.format_list_numbered,
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -450,28 +458,29 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           TextButton(
             onPressed: () {
               final newName = _newActivityNameController.text;
-              final newStartDate = _newActivityStartDateController.text;
-              final newFinishDate = _newActivityFinishDateController.text;
               final newOrderText = _newOrderController.text;
               newUserOrder = int.tryParse(newOrderText); // Parse the new order
 
               if (newName.isNotEmpty &&
-                  newStartDate.isNotEmpty &&
-                  newFinishDate.isNotEmpty &&
+                  controller.selectedDate != null &&
+                  controller.endDate != null &&
                   newUserOrder != null) {
                 // Create the new activity with the specified order
                 final newActivity = Activity(
                   id: 'activity_${DateTime.now().millisecondsSinceEpoch}', // Unique ID
                   name: newName,
-                  startDate: newStartDate,
-                  finishDate: newFinishDate,
+                  startDate: controller.selectedDate.toString(),
+                  finishDate:controller. endDate.toString(),
                   order: newUserOrder!,
                 );
 
-                Navigator.of(context).pop(newActivity); // Return the new activity
+                Navigator.of(context)
+                    .pop(newActivity); // Return the new activity
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please fill all the fields and specify the order')),
+                  const SnackBar(
+                      content: Text(
+                          'Please fill all the fields and specify the order')),
                 );
               }
             },
@@ -526,28 +535,28 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-
-
-
   void _deleteActivity() async {
     final Activity? activityToDelete = await showDialog<Activity?>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF6B8D9F),
-          title: const Text('Confirm Delete', style: TextStyle(color: Colors.white)),
+          title: const Text('Confirm Delete',
+              style: TextStyle(color: Colors.white)),
           content: SingleChildScrollView(
             child: ListBody(
-              children: loadedActivities.map((activity) => Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(activity),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(activity.name),
-                ),
-              )).toList(),
+              children: loadedActivities
+                  .map((activity) => Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(
+                          onPressed: () => Navigator.of(context).pop(activity),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text(activity.name),
+                        ),
+                      ))
+                  .toList(),
             ),
           ),
           actions: [
@@ -572,15 +581,14 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
       // Remove the activity from the local state
       setState(() {
-        loadedActivities.removeWhere((activity) => activity.id == activityToDelete.id);
+        loadedActivities
+            .removeWhere((activity) => activity.id == activityToDelete.id);
       });
 
       // End the loading process
       setState(() => isLoading = false);
     }
   }
-
-
 
   Future<void> deleteActivityFromFirebase(String activityId) async {
     var email = FirebaseAuth.instance.currentUser!.email;
@@ -611,13 +619,12 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     for (var doc in activitiesSnapshot.docs) {
       var data = doc.data();
       tempActivities.add(Activity(
-        id: doc.id, // Use the Firestore document ID as the activity ID
-        name: data['name'],
-        startDate: data['startDate'],
-        finishDate: data['finishDate'],
-        order: data['order'],
-        image: data['images']
-      ));
+          id: doc.id, // Use the Firestore document ID as the activity ID
+          name: data['name'],
+          startDate: data['startDate'],
+          finishDate: data['finishDate'],
+          order: data['order'],
+          image: data['images']));
     }
 
     setState(() {
@@ -640,10 +647,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
-
-
   void updateLocalActivity(Activity updatedActivity) {
-    int index = loadedActivities.indexWhere((activity) => activity.id == updatedActivity.id);
+    int index = loadedActivities
+        .indexWhere((activity) => activity.id == updatedActivity.id);
     if (index != -1) {
       setState(() {
         loadedActivities[index] = updatedActivity;
@@ -651,14 +657,16 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-
   Future<void> uploadActivityToFirebase(Activity activity) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    var activitiesCollection = firestore.collection('schedules').doc(email).collection('activities');
+    var activitiesCollection =
+        firestore.collection('schedules').doc(email).collection('activities');
 
-    String sanitizedActivityName = activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
-    String documentId = '${sanitizedActivityName}_${DateTime.now().millisecondsSinceEpoch}';
+    String sanitizedActivityName =
+        activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
+    String documentId =
+        '${sanitizedActivityName}_${DateTime.now().millisecondsSinceEpoch}';
     activity.id = documentId; // Set the ID for the activity
 
     var activityRef = activitiesCollection.doc(documentId);
@@ -668,106 +676,117 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       'startDate': activity.startDate,
       'finishDate': activity.finishDate,
       'order': activity.order,
-      'image':activity.image,
+      'image': activity.image,
     });
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height,
-     
-          width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 32,right: 32,top: 32,),
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Center(child: Text('Schedule',style: TextStyle(
-                      
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 32,
+                right: 32,
+                top: 32,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Center(
+                      child: Text(
+                    'Schedule',
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
-                    
-                    ),)),IconButton(
-              icon: const Icon(Icons.file_upload),
-              onPressed: isLoading ? null : pickFile,
-              color: const Color(0xFFFED36A),
-            ),],
-                    
-                    
-                  ),
-          ),
-       isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.blue))
-          : Column(
-        children: [
-          const SizedBox(height: 10),
-          if (loadedActivities.isNotEmpty)
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: loadedActivities.map((activity) {
-                  return _buildActivityContainer(
-                    activity,
-                    activity.name,
-                    '${activity.startDate} - ${activity.finishDate}',
-                  );
-                }).toList(),
-              ),
-            ),
-          if (loadedActivities.isEmpty)
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('No activities to display', style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _addActivity,
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.yellow),
                     ),
-                    child: const Text('Add Activity', style: TextStyle(color: Colors.black)),
+                  )),
+                  IconButton(
+                    icon: const Icon(Icons.file_upload),
+                    onPressed: isLoading ? null : pickFile,
+                    color: const Color(0xFFFED36A),
                   ),
                 ],
               ),
             ),
-          if (loadedActivities.isNotEmpty)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      Colors.yellow,
-                      BlendMode.srcIn,
-                    ),
-                    child: ImageIcon(AssetImage("assets/images/edit_icon.png")),
+            isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.blue))
+                : Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      if (loadedActivities.isNotEmpty)
+                        SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: loadedActivities.map((activity) {
+                              return _buildActivityContainer(
+                                activity,
+                                activity.name,
+                                '${activity.startDate} - ${activity.finishDate}',
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      if (loadedActivities.isEmpty)
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('No activities to display',
+                                  style: TextStyle(fontSize: 18)),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: _addActivity,
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.yellow),
+                                ),
+                                child: const Text('Add Activity',
+                                    style: TextStyle(color: Colors.black)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (loadedActivities.isNotEmpty)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const ColorFiltered(
+                                colorFilter: ColorFilter.mode(
+                                  Colors.yellow,
+                                  BlendMode.srcIn,
+                                ),
+                                child: ImageIcon(
+                                    AssetImage("assets/images/edit_icon.png")),
+                              ),
+                              onPressed: _showEditOptions,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              color: Colors.yellow,
+                              onPressed: _deleteActivity,
+                            ),
+                            ElevatedButton(
+                              onPressed: _addActivity,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.yellow),
+                              ),
+                              child: const Text('Add Activity',
+                                  style: TextStyle(color: Colors.black)),
+                            ),
+                          ],
+                        )
+                    ],
                   ),
-                  onPressed: _showEditOptions,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  color: Colors.yellow,
-                  onPressed: _deleteActivity,
-                ),
-                ElevatedButton(
-                  onPressed: _addActivity,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.yellow),
-                  ),
-                  child: const Text('Add Activity', style: TextStyle(color: Colors.black)),
-                ),
-              ],
-            )
-        ],
-      ),
-      
-        ],
-      )
-    );
+          ],
+        ));
   }
 }

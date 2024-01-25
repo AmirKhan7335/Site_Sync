@@ -18,10 +18,42 @@ class _CreateProjectState extends State<CreateProject> {
   bool isloading = false;
   TextEditingController titleController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
-  TextEditingController startDateController = TextEditingController();
-  TextEditingController endDateController = TextEditingController();
+
   TextEditingController fundingController = TextEditingController();
   TextEditingController locationController = TextEditingController();
+  DateTime? selectedDate;
+  DateTime? endDate;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
+  Future<void> _endDate(BuildContext context) async {
+    final DateTime? pick = await showDatePicker(
+      context: context,
+      initialDate: endDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pick != null && pick != endDate) {
+      setState(() {
+        endDate = pick;
+      });
+    }
+  }
+
   Future<void> uploadProjectToFirebase() async {
     try {
       var email = FirebaseAuth.instance.currentUser!.email;
@@ -31,8 +63,8 @@ class _CreateProjectState extends State<CreateProject> {
         {
           'title': titleController.text,
           'budget': budgetController.text,
-          'startDate': startDateController.text,
-          'endDate': endDateController.text,
+          'startDate': selectedDate.toString(),
+          'endDate': endDate.toString(),
           'funding': fundingController.text,
           'location': locationController.text,
           'email': email,
@@ -42,8 +74,7 @@ class _CreateProjectState extends State<CreateProject> {
           SnackBar(content: Text('Project Created Successfully')));
       titleController.clear();
       budgetController.clear();
-      startDateController.clear();
-      endDateController.clear();
+
       fundingController.clear();
       locationController.clear();
     } catch (e) {
@@ -55,8 +86,7 @@ class _CreateProjectState extends State<CreateProject> {
   void dispose() {
     titleController.dispose();
     budgetController.dispose();
-    startDateController.dispose();
-    endDateController.dispose();
+
     fundingController.dispose();
     locationController.dispose();
     super.dispose();
@@ -147,13 +177,12 @@ class _CreateProjectState extends State<CreateProject> {
                         ),
                       ),
                     ),
-                    MyTextField(
-                      hintText: '01/02/2023',
-                      obscureText: false,
-                      controller: startDateController,
-                      icon: Icons.calendar_month,
-                      keyboardType: TextInputType.text,
-                    ),
+                    //---------------
+                    MyDateField(
+                        hintText: selectedDate == null
+                            ? 'Select a date'
+                            : '${selectedDate!.toLocal()}'.split(' ')[0],
+                        callback: _selectDate),
                     const SizedBox(height: 20),
                     const SizedBox(
                       height: 25,
@@ -168,13 +197,13 @@ class _CreateProjectState extends State<CreateProject> {
                         ),
                       ),
                     ),
-                    MyTextField(
-                      hintText: '10/10/2024',
-                      obscureText: false,
-                      controller: endDateController,
-                      icon: Icons.calendar_month,
-                      keyboardType: TextInputType.text,
-                    ),
+                    //----------------
+                    MyDateField(
+                        hintText: endDate == null
+                            ? 'Select a date'
+                            : '${endDate!.toLocal()}'.split(' ')[0],
+                        callback: _endDate),
+
                     const SizedBox(height: 20),
                     const SizedBox(
                       height: 25,
@@ -225,8 +254,8 @@ class _CreateProjectState extends State<CreateProject> {
                       onTap: () {
                         if (titleController.text.isEmpty ||
                             budgetController.text.isEmpty ||
-                            startDateController.text.isEmpty ||
-                            endDateController.text.isEmpty ||
+                            selectedDate == null ||
+                            endDate == null ||
                             fundingController.text.isEmpty ||
                             locationController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
