@@ -701,7 +701,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         File file = File(path.join(downloadsPath!.path, 'sampleFile.xlsx'));
 
         file.writeAsBytesSync(response.bodyBytes);
-        print('File path: ${file.path}');
+        
         Get.snackbar('Sample File Downloaded', '');
       } else {
         // Handle permission denied
