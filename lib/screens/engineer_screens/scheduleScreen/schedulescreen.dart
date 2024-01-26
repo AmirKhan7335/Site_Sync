@@ -7,6 +7,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart';
 import 'package:get/get.dart';
 import 'dart:io' if (dart.library.html) 'dart:typed_data';
+import 'package:path/path.dart' as path;
+
 import '../../../components/mytextfield.dart';
 import '../../../main.dart';
 import '../chatscreen.dart';
@@ -16,6 +18,10 @@ import '../notificationsscreen.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -415,10 +421,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Add New Activity'),
-        content: 
-        
-        Obx(()=>
-           Column(
+        content: Obx(
+          () => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               MyTextField(
@@ -426,18 +430,20 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 obscureText: false,
                 controller: _newActivityNameController,
                 icon: Icons.event,
-                keyboardType: TextInputType.text, // Use text input type for name
+                keyboardType:
+                    TextInputType.text, // Use text input type for name
               ),
               MyDateField(
                   hintText: controller.selectedDate == null
                       ? 'Start Date'
-                      : '${controller. selectedDate!.value.toLocal()}'.split(' ')[0],
-                  callback: controller. SelectDate),
+                      : '${controller.selectedDate!.value.toLocal()}'
+                          .split(' ')[0],
+                  callback: controller.SelectDate),
               MyDateField(
-                  hintText: controller .endDate == null
+                  hintText: controller.endDate == null
                       ? 'End Date'
-                      : '${controller. endDate!.value.toLocal()}'.split(' ')[0],
-                  callback:controller. EndDate),
+                      : '${controller.endDate!.value.toLocal()}'.split(' ')[0],
+                  callback: controller.EndDate),
               MyTextField(
                 hintText: 'Order (e.g., 1)',
                 obscureText: false,
@@ -470,7 +476,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   id: 'activity_${DateTime.now().millisecondsSinceEpoch}', // Unique ID
                   name: newName,
                   startDate: controller.selectedDate.toString(),
-                  finishDate:controller. endDate.toString(),
+                  finishDate: controller.endDate.toString(),
                   order: newUserOrder!,
                 );
 
@@ -680,6 +686,33 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
+  downloadSampleFile() async {
+    try {
+      String url =
+          'https://firebasestorage.googleapis.com/v0/b/amir-e8895.appspot.com/o/sample.xlsx?alt=media&token=068351f0-2bc9-4cfd-b46a-ea609d3e69a0';
+
+      // Get the Excel file download URL from Firebase Storage
+
+      // Check and request storage permission
+      var status = await Permission.storage.request();
+      if (status.isGranted) {
+        var response = await http.get(Uri.parse(url));
+        var downloadsPath = await Directory("/storage/emulated/0/Download");
+        File file = File(path.join(downloadsPath!.path, 'sampleFile.xlsx'));
+
+        file.writeAsBytesSync(response.bodyBytes);
+        print('File path: ${file.path}');
+        Get.snackbar('Sample File Downloaded', '');
+      } else {
+        // Handle permission denied
+        Get.snackbar('Permission Denied', '');
+      }
+    } catch (e) {
+      Get.snackbar('Error', '${e.toString()}');
+    }
+  }
+
+  bool isdownloading = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -739,15 +772,50 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                               const Text('No activities to display',
                                   style: TextStyle(fontSize: 18)),
                               const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: _addActivity,
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.yellow),
-                                ),
-                                child: const Text('Add Activity',
-                                    style: TextStyle(color: Colors.black)),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: _addActivity,
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.yellow),
+                                    ),
+                                    child: const Text('Add Activity',
+                                        style: TextStyle(color: Colors.black)),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      setState(() {
+                                        isdownloading = true;
+                                      });
+                                      await downloadSampleFile();
+
+                                      setState(() {
+                                        isdownloading = false;
+                                      });
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.yellow),
+                                    ),
+                                    child: isdownloading
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: CircularProgressIndicator(
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        : Text('Download File',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

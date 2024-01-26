@@ -57,6 +57,7 @@ dependencies:
   flutter_contacts: ^1.1.7+1
   image_picker: ^1.0.5
   get: ^4.6.6
+  permission_handler: ^11.0.1
   
 
 dev_dependencies:
