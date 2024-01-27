@@ -4,12 +4,63 @@ import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class AccountDetails extends StatelessWidget {
+class AccountDetails extends StatefulWidget {
   AccountDetails({super.key});
-final _formKey = GlobalKey<FormState>();
+
+  @override
+  State<AccountDetails> createState() => _AccountDetailsState();
+}
+
+class _AccountDetailsState extends State<AccountDetails> {
+  final _formKey = GlobalKey<FormState>();
+
   bool isloading = false;
+
   TextEditingController consultantController = TextEditingController();
-  TextEditingController projectController = TextEditingController();
+  String selectedOption = ''; // Store the selected option
+
+  // Options for the dropdown
+  List<String> dropdownOptions = ['Option 1', 'Option 2', 'Option 3'];
+
+// Function to show the dropdown
+  Future<void> showDropdown(BuildContext context) async {
+    String? selected = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text('Select a Project'),
+            content: Container(
+              height: 400,
+              child: ListView.builder(
+                  itemCount: 3,
+                  itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.only(bottom:8.0),
+                        child: Card(
+                          child: Container(
+                            
+                            decoration: BoxDecoration(
+                              color: Colors.black12,
+                              borderRadius: BorderRadius.circular(5.0),
+                              border: Border.all(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            child: ListTile(
+                              onTap: () {
+                                setState(() {
+                                  selectedOption = dropdownOptions[index];
+                                });
+                                Navigator.pop(context);
+                              },
+                              title: Text('${dropdownOptions[index]}'),
+                            ),
+                          ),
+                        ),
+                      )),
+            ));
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +114,8 @@ final _formKey = GlobalKey<FormState>();
                       hintText: 'consultant',
                       obscureText: false,
                       controller: consultantController,
-                      icon: Icons.man, keyboardType: TextInputType.emailAddress,
+                      icon: Icons.man,
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 50),
                     const SizedBox(
@@ -79,24 +131,56 @@ final _formKey = GlobalKey<FormState>();
                         ),
                       ),
                     ),
-                    MyTextField(
-                      hintText: 'project',
-                      obscureText: false,
-                      controller: projectController,
-                      icon: Icons.build, keyboardType: TextInputType.text,
+                    Container(
+                      height: 58,
+                      width: 376,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        border: Border.all(
+                          color:
+                               Colors.transparent,
+                        ),
+                        color: const Color(
+                            0xFF6B8D9F), // Set the background color
+                      ),
+                      child: TextFormField(
+                        readOnly: true,
+                        onTap: () => showDropdown(context),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.0,
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: selectedOption.isEmpty
+                              ? 'Select A Project'
+                              : selectedOption,
+                          hintStyle: TextStyle(
+                            color:selectedOption.isEmpty? Colors.grey:Colors.white,
+                          ),
+                          filled:
+                              true, // Ensure that the fillColor is applied
+                          fillColor: const Color(
+                              0xFF6B8D9F), // Set the fillColor to the same background color
+                          prefixIcon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white, // Set icon color to white
+                          ),
+                        ),
+                      ),
                     ),
-                    
                     const SizedBox(height: 100),
                     MyButton(
                       text: 'Continue',
                       bgColor: Colors.yellow,
                       textColor: Colors.black,
-                      
                       onTap: () {
-Navigator.push(context, MaterialPageRoute(builder: (context) =>  WelcomeEngineer()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WelcomeEngineer()));
                       },
                     ),
-                    
                   ],
                 ),
               ),

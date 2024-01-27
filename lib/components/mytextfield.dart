@@ -25,7 +25,8 @@ class MyTextFieldState extends State<MyTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
+    return 
+    Focus(
       onFocusChange: (hasFocus) {
         setState(() {
           isFocused = hasFocus;
