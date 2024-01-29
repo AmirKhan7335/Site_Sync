@@ -1,6 +1,7 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +20,20 @@ class _AccountDetailsState extends State<AccountDetails> {
   TextEditingController consultantController = TextEditingController();
   String selectedOption = ''; // Store the selected option
 
-  // Options for the dropdown
-  List<String> dropdownOptions = ['Option 1', 'Option 2', 'Option 3'];
+  Future<List> fetchProjects() async {
+//..
+    final collectionData =
+        await FirebaseFirestore.instance.collection('Projects').get();
+    final userData = collectionData.docs.map(
+      (doc) {
+        return [
+          doc['title'],
+        ];
+      },
+    ).toList();
+    return userData;
+//..
+  }
 
 // Function to show the dropdown
   Future<void> showDropdown(BuildContext context) async {
@@ -31,36 +44,58 @@ class _AccountDetailsState extends State<AccountDetails> {
             title: Text('Select a Project'),
             content: Container(
               height: 400,
-              child: ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.only(bottom:8.0),
-                        child: Card(
-                          child: Container(
-                            
-                            decoration: BoxDecoration(
-                              color: Colors.black12,
-                              borderRadius: BorderRadius.circular(5.0),
-                              border: Border.all(
-                                color: Colors.grey,
-                              ),
-                            ),
-                            child: ListTile(
-                              onTap: () {
-                                setState(() {
-                                  selectedOption = dropdownOptions[index];
-                                });
-                                Navigator.pop(context);
-                              },
-                              title: Text('${dropdownOptions[index]}'),
-                            ),
-                          ),
-                        ),
-                      )),
+              child: FutureBuilder(
+                  future: fetchProjects(),
+                  builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      ));
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+                    else if (!snapshot.hasData) {
+                      return Text('No Projects ');
+                    }
+                    
+                     else {
+                      final projectList = snapshot.data;
+                      return ListView.builder(
+                          itemCount: 3,
+                          itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Card(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black12,
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    child: ListTile(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedOption =
+                                              projectList[index][0];
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                      title: Text('${projectList![index][0]}'),
+                                    ),
+                                  ),
+                                ),
+                              ));
+                    }
+                    
+                  }),
             ));
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,11 +172,10 @@ class _AccountDetailsState extends State<AccountDetails> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5.0),
                         border: Border.all(
-                          color:
-                               Colors.transparent,
+                          color: Colors.transparent,
                         ),
-                        color: const Color(
-                            0xFF6B8D9F), // Set the background color
+                        color:
+                            const Color(0xFF6B8D9F), // Set the background color
                       ),
                       child: TextFormField(
                         readOnly: true,
@@ -156,10 +190,11 @@ class _AccountDetailsState extends State<AccountDetails> {
                               ? 'Select A Project'
                               : selectedOption,
                           hintStyle: TextStyle(
-                            color:selectedOption.isEmpty? Colors.grey:Colors.white,
+                            color: selectedOption.isEmpty
+                                ? Colors.grey
+                                : Colors.white,
                           ),
-                          filled:
-                              true, // Ensure that the fillColor is applied
+                          filled: true, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
                           prefixIcon: Icon(
