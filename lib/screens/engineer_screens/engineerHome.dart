@@ -335,7 +335,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           findUpcomingActivity(activities);
                       overAllPercent = calculateOverallPercent(activities);
 
-                      return Column(
+                      return 
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // User information
