@@ -236,17 +236,7 @@ class _AddPicState extends State<AddPic> {
                                             fontSize: 17,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      subtitle: Text(snapshot.data![index].id),
-                                      trailing: Column(
-                                        children: [
-                                          Text(snapshot.data![index].startDate),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(
-                                              snapshot.data![index].finishDate),
-                                        ],
-                                      ),
+                                     
                                     ),
                                   ),
                                 );

@@ -295,7 +295,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
               return Text('Error');
             } else {
               final projectList = snapshot.data;
-    
+
               return ListView.builder(
                   itemCount: projectList!.length,
                   itemBuilder: ((context, index) => Padding(
@@ -306,7 +306,8 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                            padding:
+                                const EdgeInsets.only(top: 8.0, bottom: 8.0),
                             child: ListTile(
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -376,26 +377,24 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
         key: scaffoldKey,
         child: Container(
           height: MediaQuery.of(context).size.height,
-          child: Expanded(
-            child: NestedScrollView(
-              controller: _scrollController,
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return <Widget>[
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return Column(
-                          children: <Widget>[head(data)],
-                        );
-                      },
-                      childCount: 1,
-                    ),
+          child: NestedScrollView(
+            controller: _scrollController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return Column(
+                        children: <Widget>[head(data)],
+                      );
+                    },
+                    childCount: 1,
                   ),
-                ];
-              },
-              body: projects(),
-            ),
+                ),
+              ];
+            },
+            body: projects(),
           ),
         ));
   }

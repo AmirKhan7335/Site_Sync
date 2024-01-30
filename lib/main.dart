@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
 import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
@@ -47,6 +48,9 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetMaterialApp(
+       scrollBehavior: const MaterialScrollBehavior()
+          .copyWith(dragDevices: PointerDeviceKind.values.toSet()),
+      
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: backgroundColor,
@@ -139,18 +143,18 @@ class MyHomePageState extends State<EngineerHomePage> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  width: 56.0,
-                  height: 36.0,
+                  width: 60.0,
+                  height: 38.0,
                   decoration: const BoxDecoration(
                     color: Colors.yellow,
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
                   ),
                   child: const Icon(Icons.camera_alt,
-                      color: Colors.black, size: 30.0),
+                      color: Colors.black, size: 40.0),
                 ),
               ),
             ),
-            label: 'Camera',
+            label: '',
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.schedule),

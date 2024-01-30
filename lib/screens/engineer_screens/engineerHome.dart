@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class EngineerHomeTab extends StatefulWidget {
-  EngineerHomeTab({ super.key});
-  
+  EngineerHomeTab({super.key});
+
   @override
   State<EngineerHomeTab> createState() => _EngineerHomeTabState();
 }
@@ -282,7 +282,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
 
   @override
   Widget build(BuildContext context) {
-    final data = fetchData();
+    var data = fetchData();
     return SafeArea(
       minimum: const EdgeInsets.only(top: 16),
       child: SingleChildScrollView(
@@ -303,6 +303,12 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           color: Colors.white,
                           fontSize: 25,
                           fontWeight: FontWeight.bold)),
+                  Expanded(child: SizedBox()),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.refresh))
                 ],
               ),
             ),
@@ -312,13 +318,14 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                 child: FutureBuilder<UserData>(
                   // Fetch the username asynchronously
                   future: data,
+
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: CircularProgressIndicator(color: Colors.blue));
-                    } else if (snapshot.hasError) {
+                    // if (!snapshot.hasData) {
+                    //   return const Center(child: Text('No Data Found'));
+                    // }
+                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
-                    } else {
+                    } else if (snapshot.hasData) {
                       final userData = snapshot.data!;
                       final snapshotData = userData.activities;
                       List<Activity> activities = snapshotData ?? [];
@@ -479,7 +486,9 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   children: [
                                     Text(
                                       todayActivity?.name ?? 'No Activity',
-                                      style: const TextStyle(fontSize: 28),
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     // const SizedBox(width: 80),
                                     Container(
@@ -602,7 +611,9 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                 Text(
                                   upcomingActivity?.name ??
                                       'No Upcoming Activity',
-                                  style: const TextStyle(fontSize: 28),
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 10),
                                 Row(
@@ -620,6 +631,12 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           ),
                         ],
                       );
+                    } else if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator(color: Colors.blue));
+                    } else {
+                      return Text('Nothing');
                     }
                   },
                 ),
@@ -629,6 +646,5 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
         ),
       ),
     );
-    
   }
 }

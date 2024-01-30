@@ -715,146 +715,149 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   bool isdownloading = false;
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 32,
-                right: 32,
-                top: 32,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Center(
-                      child: Text(
-                    'Schedule',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
+    return SingleChildScrollView(
+      child: Container(
+          //height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 32,
+                  right: 32,
+                  top: 32,
+                ),
+                child: 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Center(
+                        child: Text(
+                      'Schedule',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
+                    )),
+                    IconButton(
+                      icon: const Icon(Icons.file_upload),
+                      onPressed: isLoading ? null : pickFile,
+                      color: const Color(0xFFFED36A),
                     ),
-                  )),
-                  IconButton(
-                    icon: const Icon(Icons.file_upload),
-                    onPressed: isLoading ? null : pickFile,
-                    color: const Color(0xFFFED36A),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(color: Colors.blue))
-                : Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      if (loadedActivities.isNotEmpty)
-                        SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Column(
-                            children: loadedActivities.map((activity) {
-                              return _buildActivityContainer(
-                                activity,
-                                activity.name,
-                                '${activity.startDate} - ${activity.finishDate}',
-                              );
-                            }).toList(),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: Colors.blue))
+                  : Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        if (loadedActivities.isNotEmpty)
+                          SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: loadedActivities.map((activity) {
+                                return _buildActivityContainer(
+                                  activity,
+                                  activity.name,
+                                  '${activity.startDate} - ${activity.finishDate}',
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
-                      if (loadedActivities.isEmpty)
-                        Center(
-                          child: Column(
+                        if (loadedActivities.isEmpty)
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text('No activities to display',
+                                    style: TextStyle(fontSize: 18)),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: _addActivity,
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.yellow),
+                                      ),
+                                      child: const Text('Add Activity',
+                                          style: TextStyle(color: Colors.black)),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        setState(() {
+                                          isdownloading = true;
+                                        });
+                                        await downloadSampleFile();
+                                
+                                        setState(() {
+                                          isdownloading = false;
+                                        });
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.yellow),
+                                      ),
+                                      child: isdownloading
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: CircularProgressIndicator(
+                                                color: Colors.black,
+                                              ),
+                                            )
+                                          : Text('Download File',
+                                              style:
+                                                  TextStyle(color: Colors.black)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (loadedActivities.isNotEmpty)
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text('No activities to display',
-                                  style: TextStyle(fontSize: 18)),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: _addActivity,
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.yellow),
-                                    ),
-                                    child: const Text('Add Activity',
-                                        style: TextStyle(color: Colors.black)),
+                              IconButton(
+                                icon: const ColorFiltered(
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.yellow,
+                                    BlendMode.srcIn,
                                   ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      setState(() {
-                                        isdownloading = true;
-                                      });
-                                      await downloadSampleFile();
-
-                                      setState(() {
-                                        isdownloading = false;
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.yellow),
-                                    ),
-                                    child: isdownloading
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: CircularProgressIndicator(
-                                              color: Colors.black,
-                                            ),
-                                          )
-                                        : Text('Download File',
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                  ),
-                                ],
+                                  child: ImageIcon(
+                                      AssetImage("assets/images/edit_icon.png")),
+                                ),
+                                onPressed: _showEditOptions,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                color: Colors.yellow,
+                                onPressed: _deleteActivity,
+                              ),
+                              ElevatedButton(
+                                onPressed: _addActivity,
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.yellow),
+                                ),
+                                child: const Text('Add Activity',
+                                    style: TextStyle(color: Colors.black)),
                               ),
                             ],
-                          ),
-                        ),
-                      if (loadedActivities.isNotEmpty)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const ColorFiltered(
-                                colorFilter: ColorFilter.mode(
-                                  Colors.yellow,
-                                  BlendMode.srcIn,
-                                ),
-                                child: ImageIcon(
-                                    AssetImage("assets/images/edit_icon.png")),
-                              ),
-                              onPressed: _showEditOptions,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              color: Colors.yellow,
-                              onPressed: _deleteActivity,
-                            ),
-                            ElevatedButton(
-                              onPressed: _addActivity,
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.yellow),
-                              ),
-                              child: const Text('Add Activity',
-                                  style: TextStyle(color: Colors.black)),
-                            ),
-                          ],
-                        )
-                    ],
-                  ),
-          ],
-        ));
+                          )
+                      ],
+                    ),
+            ],
+          )),
+    );
   }
 }
