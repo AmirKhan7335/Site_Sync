@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
@@ -11,13 +12,14 @@ import '../../components/mytextfield.dart';
 import '../../main.dart';
 import 'createaccountscreen.dart';
 
-
 // Google sign in
 Future<User?> signInWithGoogle() async {
   try {
     final GoogleSignInAccount? googleSignInAccount =
         await GoogleSignIn().signIn();
-    if (googleSignInAccount == null) return null;
+    if (googleSignInAccount == null) {
+      return null;
+    }
 
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
@@ -32,9 +34,7 @@ Future<User?> signInWithGoogle() async {
 
     return authResult.user;
   } catch (e) {
-    if (kDebugMode) {
-      print("Error signing in with Google: $e");
-    }
+    Get.snackbar('Error', '${e}');
     return null;
   }
 }
@@ -92,7 +92,6 @@ class _SigninScreenState extends State<SigninScreen> {
   TextEditingController passwordController = TextEditingController();
 
   signInWithEmailAndPassword() async {
-
     try {
       setState(() {
         isloading = true;
@@ -116,7 +115,7 @@ class _SigninScreenState extends State<SigninScreen> {
       });
 
       // Navigate to home page on successful sign-in
-      if(context.mounted){
+      if (context.mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -176,7 +175,6 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 
-
   @override
   Widget build(context) {
     return Scaffold(
@@ -230,7 +228,8 @@ class _SigninScreenState extends State<SigninScreen> {
                       hintText: 'Enter your email',
                       obscureText: false,
                       controller: emailController,
-                      icon: Icons.email, keyboardType: TextInputType.emailAddress,
+                      icon: Icons.email,
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 5),
                     const SizedBox(
@@ -250,7 +249,8 @@ class _SigninScreenState extends State<SigninScreen> {
                       hintText: 'Enter your password',
                       obscureText: true,
                       controller: passwordController,
-                      icon: Icons.lock, keyboardType: TextInputType.text,
+                      icon: Icons.lock,
+                      keyboardType: TextInputType.text,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -314,16 +314,16 @@ class _SigninScreenState extends State<SigninScreen> {
                       textColor: Colors.white,
                       icon: Icons.account_circle,
                       onTap: () async {
+                        
                         User? user = await signInWithGoogle();
                         if (user != null) {
                           await sendEmailToUser(user.email!);
                           // Navigate to home page after Google sign-in
-                          if(context.mounted){
+                          if (context.mounted) {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                const Role(),
+                                builder: (context) => const Role(),
                               ),
                             );
                           }
