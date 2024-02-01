@@ -613,29 +613,34 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   Future<void> fetchActivitiesFromFirebase() async {
-    var email = FirebaseAuth.instance.currentUser!.email;
-    var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('schedules')
-        .doc(email)
-        .collection('activities')
-        .orderBy('order') // Sort by order
-        .get();
+    try {
+      print('salam--------------------');
+      var email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('schedules')
+          .doc(email)
+          .collection('activities')
+          .orderBy('order') // Sort by order
+          .get();
 
-    List<Activity> tempActivities = [];
-    for (var doc in activitiesSnapshot.docs) {
-      var data = doc.data();
-      tempActivities.add(Activity(
-          id: doc.id, // Use the Firestore document ID as the activity ID
-          name: data['name'],
-          startDate: data['startDate'],
-          finishDate: data['finishDate'],
-          order: data['order'],
-          image: data['images']));
+      List<Activity> tempActivities = [];
+      for (var doc in activitiesSnapshot.docs) {
+        var data = doc.data();
+        tempActivities.add(Activity(
+            id: data['id'], // Use the Firestore document ID as the activity ID
+            name: data['name'],
+            startDate: data['startDate'],
+            finishDate: data['finishDate'],
+            order: data['order'],
+            image: data['image']));
+      }
+
+      setState(() {
+        loadedActivities = tempActivities;
+      });
+    } catch (e) {
+      Get.snackbar('Error', '${e}');
     }
-
-    setState(() {
-      loadedActivities = tempActivities;
-    });
   }
 
   Future<void> updateActivityInFirestore(Activity updatedActivity) async {
@@ -701,7 +706,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         File file = File(path.join(downloadsPath!.path, 'sampleFile.xlsx'));
 
         file.writeAsBytesSync(response.bodyBytes);
-        
+
         Get.snackbar('Sample File Downloaded', '');
       } else {
         // Handle permission denied
@@ -727,8 +732,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   right: 32,
                   top: 32,
                 ),
-                child: 
-                Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Center(
@@ -785,7 +789,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                                 Colors.yellow),
                                       ),
                                       child: const Text('Add Activity',
-                                          style: TextStyle(color: Colors.black)),
+                                          style:
+                                              TextStyle(color: Colors.black)),
                                     ),
                                     SizedBox(
                                       width: 10,
@@ -796,7 +801,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                           isdownloading = true;
                                         });
                                         await downloadSampleFile();
-                                
+
                                         setState(() {
                                           isdownloading = false;
                                         });
@@ -808,14 +813,15 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                       ),
                                       child: isdownloading
                                           ? Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: CircularProgressIndicator(
                                                 color: Colors.black,
                                               ),
                                             )
                                           : Text('Download File',
-                                              style:
-                                                  TextStyle(color: Colors.black)),
+                                              style: TextStyle(
+                                                  color: Colors.black)),
                                     ),
                                   ],
                                 ),
@@ -832,8 +838,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                     Colors.yellow,
                                     BlendMode.srcIn,
                                   ),
-                                  child: ImageIcon(
-                                      AssetImage("assets/images/edit_icon.png")),
+                                  child: ImageIcon(AssetImage(
+                                      "assets/images/edit_icon.png")),
                                 ),
                                 onPressed: _showEditOptions,
                               ),
