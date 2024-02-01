@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class CreateProject extends StatefulWidget {
   const CreateProject({super.key});
@@ -63,23 +65,22 @@ class _CreateProjectState extends State<CreateProject> {
         {
           'title': titleController.text,
           'budget': budgetController.text,
-          'startDate': selectedDate.toString(),
-          'endDate': endDate.toString(),
+          'startDate': selectedDate,
+          'endDate': endDate,
           'funding': fundingController.text,
           'location': locationController.text,
           'email': email,
+          'creationDate': DateTime.now(),
         },
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Project Created Successfully')));
+      Get.snackbar('Success', 'Project created Successfully');
       titleController.clear();
       budgetController.clear();
 
       fundingController.clear();
       locationController.clear();
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      Get.snackbar("Error", '${e}');
     }
   }
 
@@ -264,8 +265,12 @@ class _CreateProjectState extends State<CreateProject> {
                           setState(() {
                             isloading = true;
                           });
-                          print('relax');
+
                           uploadProjectToFirebase();
+                          titleController.clear;
+                          budgetController.clear;
+                          fundingController.clear;
+                          locationController.clear;
                           setState(() {
                             isloading = false;
                           });

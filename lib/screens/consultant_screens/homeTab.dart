@@ -1,11 +1,16 @@
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
+import 'package:amir_khan1/screens/consultant_screens/projectStatus/allProjects.dart';
+import 'package:amir_khan1/screens/consultant_screens/projectStatus/completed.dart';
+import 'package:amir_khan1/screens/consultant_screens/projectStatus/ongoing.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ConsultantHomeTab extends StatefulWidget {
   const ConsultantHomeTab({super.key});
@@ -15,6 +20,13 @@ class ConsultantHomeTab extends StatefulWidget {
 }
 
 class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
+  @override
+  @override
+  void initState() {
+    super.initState();
+    fetchOngoingProjects();
+  }
+
   final user = FirebaseAuth.instance.currentUser;
   Future<String> fetchUsername() async {
     try {
@@ -66,10 +78,49 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
     }
   }
 
-  Future<List> fetchProjects() async {
+  Future<List> fetchCompletedProjects() async {
+    try {
+      DateTime currentDate = DateTime.now();
+
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
+          .orderBy('endDate', descending: true)
+          .get();
+
+      final userData = collectionData.docs.map(
+        (doc) {
+          return [
+            doc['title'],
+            doc['budget'],
+            doc['funding'],
+            doc['startDate'],
+            doc['endDate'],
+            doc['location'],
+            doc['creationDate'],
+          ];
+        },
+      ).toList();
+
+      
+      return userData;
+    } catch (e) {
+       Get.snackbar('Error', e.toString());
+      
+      return [];
+    }
+  }
+
+  Future<List> fetchRecentProjects() async {
 //..
-    final collectionData =
-        await FirebaseFirestore.instance.collection('Projects').get();
+    DateTime fifteenDaysAgo = DateTime.now().subtract(Duration(days: 15));
+
+    final collectionData = await FirebaseFirestore.instance
+        .collection('Projects')
+        .where('creationDate',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
+        .orderBy('creationDate', descending: true)
+        .get();
     final userData = collectionData.docs.map(
       (doc) {
         return [
@@ -78,12 +129,43 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
           doc['funding'],
           doc['startDate'],
           doc['endDate'],
-          doc['location']
+          doc['location'],
+          doc['creationDate']
         ];
       },
     ).toList();
+
     return userData;
 //..
+  }
+
+  Future<List> fetchOngoingProjects() async {
+    DateTime currentDate = DateTime.now();
+
+    final collectionData = await FirebaseFirestore.instance
+        .collection('Projects')
+        // .where('startDate',
+        //     isLessThanOrEqualTo: Timestamp.fromDate(currentDate))
+        .where('endDate',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+        
+        .get();
+
+    final userData = collectionData.docs.map(
+      (doc) {
+        return [
+          doc['title'],
+          doc['budget'],
+          doc['funding'],
+          doc['startDate'],
+          doc['endDate'],
+          doc['location'],
+          doc['creationDate']
+        ];
+      },
+    ).toList();
+    print(userData.length);
+    return userData;
   }
 
   Widget head(data) {
@@ -190,15 +272,38 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         StatusContainer(
-                            icon: Icons.calendar_today,
-                            count: 0,
-                            text: 'Projects'),
+                          icon: Icons.calendar_today,
+                          count: 0,
+                          text: 'Projects',
+                          callback: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AllProjects()));
+                          },
+                        ),
                         StatusContainer(
-                            icon: Icons.done_outline,
-                            count: 0,
-                            text: 'Completed'),
+                          icon: Icons.done_outline,
+                          count: 0,
+                          text: 'Completed',
+                          callback: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CompletedProjects()));
+                          },
+                        ),
                         StatusContainer(
-                            icon: Icons.work, count: 0, text: 'Ongoing'),
+                          icon: Icons.work,
+                          count: 0,
+                          text: 'Ongoing',
+                          callback: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => OngoingProjects()));
+                          },
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -282,7 +387,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: FutureBuilder(
-          future: fetchProjects(),
+          future: fetchOngoingProjects(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Text('No Projects Added');
@@ -316,9 +421,15 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                     children: [
                                       Icon(Icons.calendar_month,
                                           size: 15, color: Colors.yellow),
-                                      Text(projectList[index][3]),
-                                      Text(' - '),
-                                      Text(projectList[index][4]),
+                                      Text(DateFormat('dd-MM-yyyy')
+                                          .format(
+                                              projectList[index][3].toDate())
+                                          .toString()),
+                                      Text(' to '),
+                                      Text(DateFormat('dd-MM-yyyy')
+                                          .format(
+                                              projectList[index][4].toDate())
+                                          .toString()),
                                       Expanded(child: SizedBox()),
                                       Row(
                                         children: [
