@@ -1,8 +1,12 @@
 import 'package:amir_khan1/controllers/projectsCountingController.dart';
+import 'package:amir_khan1/screens/centralBarScreens/documentScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/testingScreen.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
+import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -167,7 +171,6 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
   }
 
   Widget head(data) {
-    
     final countController = Get.put(ProjectCountingController());
     return Column(
       children: [
@@ -197,6 +200,16 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                               Scaffold.of(context).openDrawer();
                             },
                             icon: Icon(Icons.menu)),
+                        CircleAvatar(
+                          backgroundImage: snapshot.data?.profilePicUrl != null
+                              ? NetworkImage(snapshot.data!.profilePicUrl!)
+                              : const NetworkImage(
+                                  'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
+                          radius: 25,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -217,13 +230,15 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                           ],
                         ),
                         const Spacer(),
-                        CircleAvatar(
-                          backgroundImage: snapshot.data?.profilePicUrl != null
-                              ? NetworkImage(snapshot.data!.profilePicUrl!)
-                              : const NetworkImage(
-                                  'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
-                          radius: 30,
-                        ),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Scaffold(
+                                          body: NotificationsScreen())));
+                            },
+                            icon: Icon(Icons.notifications)),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -268,8 +283,8 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                     ),
                     const SizedBox(height: 20),
                     // Page view with indicators
-                   Obx(
-                     ()=> Row(
+                    Obx(
+                      () => Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           StatusContainer(
@@ -292,7 +307,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                           ),
                         ],
                       ),
-                   ),
+                    ),
                     const SizedBox(height: 20),
                     // Today's activity
 
@@ -347,8 +362,12 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 15),
                     // Upcoming activity
+                    centralbar(),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -462,6 +481,153 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                       )));
             }
           }),
+    );
+  }
+
+  Widget centralbar() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          InkWell(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => DocumentScreen())),
+            child: Card(
+              elevation: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    children: [
+                      Icon(Icons.file_copy),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 1.5,
+                        width: 45,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Documents',
+                        style: TextStyle(fontSize: 10),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Card(
+            elevation: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  children: [
+                    Icon(Icons.video_call),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 1.5,
+                      width: 45,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Site',
+                      style: TextStyle(fontSize: 10),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProjectScreen())),
+            child: Card(
+              elevation: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    children: [
+                      Icon(Icons.calendar_month),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 1.5,
+                        width: 45,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Projects',
+                        style: TextStyle(fontSize: 10),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => TestingScreen())),
+            child: Card(
+              elevation: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    children: [
+                      Icon(Icons.checklist),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 1.5,
+                        width: 45,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Testing',
+                        style: TextStyle(fontSize: 10),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 

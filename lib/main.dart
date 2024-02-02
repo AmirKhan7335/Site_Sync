@@ -161,8 +161,8 @@ class MyHomePageState extends State<EngineerHomePage> {
             label: 'Schedule',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
+            icon: Icon(Icons.currency_bitcoin),
+            label: 'Finanace',
           ),
         ],
         iconSize: 20.0,

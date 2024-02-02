@@ -2,7 +2,11 @@ import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
 import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
 import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/documentScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/testingScreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/activity.dart';
+import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -288,30 +292,6 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                      icon: Icon(Icons.menu)),
-                  Text('Home Page',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold)),
-                  Expanded(child: SizedBox()),
-                  IconButton(
-                      onPressed: () {
-                        setState(() {});
-                      },
-                      icon: Icon(Icons.refresh))
-                ],
-              ),
-            ),
             Container(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -323,7 +303,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                     // if (!snapshot.hasData) {
                     //   return const Center(child: Text('No Data Found'));
                     // }
-                     if (snapshot.hasError) {
+                    if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (snapshot.hasData) {
                       final userData = snapshot.data!;
@@ -335,14 +315,25 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           findUpcomingActivity(activities);
                       overAllPercent = calculateOverallPercent(activities);
 
-                      return 
-                      Column(
+                      return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // User information
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              CircleAvatar(
+                                backgroundImage: snapshot.data?.profilePicUrl !=
+                                        null
+                                    ? NetworkImage(
+                                        snapshot.data!.profilePicUrl!)
+                                    : const NetworkImage(
+                                        'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
+                                radius: 25,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -362,16 +353,21 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   ),
                                 ],
                               ),
-                              const Spacer(),
-                              CircleAvatar(
-                                backgroundImage: snapshot.data?.profilePicUrl !=
-                                        null
-                                    ? NetworkImage(
-                                        snapshot.data!.profilePicUrl!)
-                                    : const NetworkImage(
-                                        'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
-                                radius: 30,
-                              ),
+                              Spacer(),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {});
+                                  },
+                                  icon: Icon(Icons.refresh)),
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Scaffold(
+                                          body: NotificationsScreen())));
+                                  },
+                                  icon: Icon(Icons.notifications))
                             ],
                           ),
                           const SizedBox(height: 10),
@@ -460,8 +456,142 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                               );
                             },
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
                           // Today's activity
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context)=>DocumentScreen())),
+                                  child: Card(
+                                    elevation:5 ,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Icon(Icons.file_copy),
+                                            
+                                            SizedBox(height: 10,),
+                                            Container(
+                                              height: 1.5,
+                                              width: 45,
+                                              color: Colors.white,
+                                            ),
+                                            
+                                            SizedBox(height: 5,),
+                                            Text('Documents',style: TextStyle(fontSize: 10),)
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                ,
+                                InkWell(
+                              
+                                  child: Card(
+                                    elevation:5 ,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Icon(Icons.video_call),
+                                            
+                                            SizedBox(height: 10,),
+                                            Container(
+                                              height: 1.5,
+                                              width: 45,
+                                              color: Colors.white,
+                                            ),
+                                            
+                                            SizedBox(height: 5,),
+                                            Text('Site',style: TextStyle(fontSize: 10),)
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                             ,   InkWell(
+                                   onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context)=>ProjectScreen())),
+                              
+                               child: Card(
+                                    elevation:5 ,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Icon(Icons.calendar_month),
+                                            
+                                            SizedBox(height: 10,),
+                                            Container(
+                                              height: 1.5,
+                                              width: 45,
+                                              color: Colors.white,
+                                            ),
+                                            
+                                            SizedBox(height: 5,),
+                                            Text('Projects',style: TextStyle(fontSize: 10),)
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                             )
+                             ,   InkWell(
+                                   onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context)=>TestingScreen())),
+                              
+                               child: Card(
+                                
+                                    elevation:5 ,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Icon(Icons.checklist),
+                                            
+                                            SizedBox(height: 10,),
+                                            Container(
+                                              height: 1.5,
+                                              width: 45,
+                                              color: Colors.white,
+                                            ),
+                                            
+                                            SizedBox(height: 5,),
+                                            Text('Testing',style: TextStyle(fontSize: 10),)
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                             )
+                             
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 20,),
                           const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

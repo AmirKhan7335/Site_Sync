@@ -475,8 +475,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 final newActivity = Activity(
                   id: 'activity_${DateTime.now().millisecondsSinceEpoch}', // Unique ID
                   name: newName,
-                  startDate: controller.selectedDate.toString(),
-                  finishDate: controller.endDate.toString(),
+                  startDate:DateFormat('dd-MM-yyyy') .format(controller.selectedDate!.value),
+                  finishDate: DateFormat('dd-MM-yyyy') .format(controller.endDate!.value),
                   order: newUserOrder!,
                 );
 
