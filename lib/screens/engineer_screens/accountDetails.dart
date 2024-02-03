@@ -63,7 +63,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                      else {
                       final projectList = snapshot.data;
                       return ListView.builder(
-                          itemCount: 3,
+                          itemCount: projectList!.length,
                           itemBuilder: (context, index) => Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Card(

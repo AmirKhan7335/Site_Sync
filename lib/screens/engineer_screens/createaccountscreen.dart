@@ -1,3 +1,5 @@
+import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
+import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/signinscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,13 +27,19 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController confirmPasswordController = TextEditingController();
   bool isChecked = false;
 
+  String dropdownValue = 'Choose Your Role';
+  List<String> list = ['Choose Your Role', 'Engineer', 'Consultant'];
   void registerUser() async {
     String email = emailController.text;
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
-
+    String role = dropdownValue;
     if (password != confirmPassword) {
       displayMessageToUser("Passwords don't match!", context);
+      return;
+    }
+    if (role == 'Choose Your Role') {
+      displayMessageToUser("Choose Role", context);
       return;
     }
     try {
@@ -64,6 +72,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
           'username': isGoogleSignIn
               ? userCredential.user!.displayName
               : usernameController.text,
+          'role': dropdownValue,
         });
         Get.snackbar('Success', 'Loged In');
       } else {
@@ -74,26 +83,49 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
     }
   }
 
-  void navigateToRoleScreen() {
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Role()));
-    });
+  Future<void> navigateToRoleScreen() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user?.email)
+          .get();
+
+      String getRole = await userSnapshot['role'];
+
+      if (getRole == 'Engineer') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AccountDetails(),
+          ),
+        );
+      } else if (getRole == 'Consultant') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConsultantSplash(),
+          ),
+        );
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   void registerWithGoogle() async {
     try {
-      
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
-      
+
       if (googleAuth?.accessToken != null && googleAuth?.idToken != null) {
         final OAuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth?.accessToken,
           idToken: googleAuth?.idToken,
         );
-        
+
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
         await createUserDocument(userCredential, true);
@@ -154,6 +186,52 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 controller: usernameController,
                 icon: Icons.contacts,
                 keyboardType: TextInputType.text,
+              ),
+              const SizedBox(height: 10),
+              Container(
+                height: 58,
+                width: 376,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5.0),
+                  border: Border.all(
+                    color: Colors.transparent,
+                  ),
+                  color: const Color(0xFF6B8D9F), // Set the background color
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Icon(Icons.person_add),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    DropdownButton<String>(
+                      value: dropdownValue,
+                      //  icon: const Icon(Icons.arrow_downward),
+                      elevation: 16,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: dropdownValue == 'Choose Your Role'
+                            ? Colors.grey // Lighter color for initial label
+                            : Colors.white, // Darker color for selected value
+                      ),
+                      onChanged: (String? value) {
+                        // This is called when the user selects an item.
+                        setState(() {
+                          dropdownValue = value!;
+                        });
+                      },
+                      items: list.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               MyTextField(

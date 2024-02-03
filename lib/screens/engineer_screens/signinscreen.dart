@@ -1,3 +1,5 @@
+import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
+import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -110,18 +112,45 @@ class _SigninScreenState extends State<SigninScreen> {
         password: passwordController.text,
       );
 
-      setState(() {
-        isloading = false;
-      });
-
       // Navigate to home page on successful sign-in
       if (context.mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Role(),
-          ),
-        );
+        try {
+          final user = FirebaseAuth.instance.currentUser;
+
+          DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user?.email)
+              .get();
+
+          String getRole = await userSnapshot['role'];
+
+          if (getRole == 'Engineer') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AccountDetails(),
+              ),
+            );
+            setState(() {
+              isloading = false;
+            });
+          } else if (getRole == 'Consultant') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ConsultantSplash(),
+              ),
+            );
+            setState(() {
+              isloading = false;
+            });
+          }
+          setState(() {
+            isloading = false;
+          });
+        } catch (e) {
+          Get.snackbar('Error', e.toString());
+        }
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -314,7 +343,6 @@ class _SigninScreenState extends State<SigninScreen> {
                       textColor: Colors.white,
                       icon: Icons.account_circle,
                       onTap: () async {
-                        
                         User? user = await signInWithGoogle();
                         if (user != null) {
                           await sendEmailToUser(user.email!);
@@ -326,8 +354,11 @@ class _SigninScreenState extends State<SigninScreen> {
                                 builder: (context) => const Role(),
                               ),
                             );
+                            //isloading = false;
                           }
+                          //isloading = false;
                         }
+                        //isloading=false;
                       },
                     ),
                     const SizedBox(height: 10),

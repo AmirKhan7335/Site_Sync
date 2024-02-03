@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:amir_khan1/screens/engineer_screens/activity.dart';
+import 'package:amir_khan1/models/activity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';

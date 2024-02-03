@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:amir_khan1/screens/engineer_screens/activity.dart';
+import 'package:amir_khan1/models/activity.dart';
 import '../../components/my_button.dart';
 import '../../components/mytextfield.dart';
 

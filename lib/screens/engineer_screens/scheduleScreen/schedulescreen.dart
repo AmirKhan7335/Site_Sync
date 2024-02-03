@@ -1,6 +1,6 @@
 import 'package:amir_khan1/controllers/addActivityController.dart';
 import 'package:amir_khan1/screens/engineer_screens/editactivityscreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/activity.dart';
+import 'package:amir_khan1/models/activity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';

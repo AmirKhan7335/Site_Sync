@@ -10,7 +10,7 @@ import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/scheduledProjects.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
-import 'package:amir_khan1/screens/engineer_screens/activity.dart';
+import 'package:amir_khan1/models/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
