@@ -337,7 +337,10 @@ class _AccountDetailsState extends State<AccountDetails> {
                       bgColor: Colors.yellow,
                       textColor: Colors.black,
                       onTap: () async {
-                        setState(() {
+                        if (consultantEmail == '' || selectedProject == '') {
+                          Get.snackbar('Sorry', 'Selected All Fields');
+                        } else {
+                           setState(() {
                           isloading = true;
                         });
                         await sendRequestToConsultant(selectedProjectId);
@@ -348,6 +351,8 @@ class _AccountDetailsState extends State<AccountDetails> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => WelcomeEngineer()));
+                
+                        }
                       },
                     ),
                   ],
