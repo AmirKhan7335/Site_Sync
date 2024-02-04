@@ -187,7 +187,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   Future<void> clearActivitiesForCurrentUser() async {
     var email = FirebaseAuth.instance.currentUser!.email;
     var querySnapshot = await FirebaseFirestore.instance
-        .collection('schedules')
+        .collection('engineers')
         .doc(email)
         .collection('activities')
         .get();
@@ -417,7 +417,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   void _addActivity() async {
     setState(() => isLoading = true);
     // Show a dialog to get activity details (name, start date, finish date, and order)
-    final result = await showDialog(
+    final result = await 
+    showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Add New Activity'),
@@ -599,7 +600,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   Future<void> deleteActivityFromFirebase(String activityId) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     await FirebaseFirestore.instance
-        .collection('schedules')
+        .collection('engineers')
         .doc(email)
         .collection('activities')
         .doc(activityId)
@@ -614,10 +615,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   Future<void> fetchActivitiesFromFirebase() async {
     try {
-      print('salam--------------------');
+      
       var email = FirebaseAuth.instance.currentUser!.email;
       var activitiesSnapshot = await FirebaseFirestore.instance
-          .collection('schedules')
+          .collection('engineers')
           .doc(email)
           .collection('activities')
           .orderBy('order') // Sort by order
@@ -646,7 +647,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   Future<void> updateActivityInFirestore(Activity updatedActivity) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     await FirebaseFirestore.instance
-        .collection('schedules')
+        .collection('engineers')
         .doc(email)
         .collection('activities')
         .doc(updatedActivity.id)
@@ -672,7 +673,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     var email = FirebaseAuth.instance.currentUser!.email;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var activitiesCollection =
-        firestore.collection('schedules').doc(email).collection('activities');
+        firestore.collection('engineers').doc(email).collection('activities');
 
     String sanitizedActivityName =
         activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');

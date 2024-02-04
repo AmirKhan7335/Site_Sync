@@ -30,7 +30,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
 
   countProject() async {
     final countController = Get.put(ProjectCountingController());
-    var one = await fetchAllProjects();
+    var one = await fetchMyProjects();
     var two = await fetchOngoingProjects();
     var three = await fetchCompletedProjects();
 
@@ -111,10 +111,13 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
 
   Future<List> fetchRecentProjects() async {
 //..
+    try {
+      
     DateTime fifteenDaysAgo = DateTime.now().subtract(Duration(days: 15));
 
     final collectionData = await FirebaseFirestore.instance
         .collection('Projects')
+        .where('email',isEqualTo:user!.email )
         .where('creationDate',
             isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
         .orderBy('creationDate', descending: true)
@@ -135,6 +138,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
 
     return userData;
 //..
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [];
+    }
   }
 
   Future<int> fetchOngoingProjects() async {
@@ -142,6 +149,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
 
     final collectionData = await FirebaseFirestore.instance
         .collection('Projects')
+        .where('email', isEqualTo: user!.email)
         // .where('startDate',
         //     isLessThanOrEqualTo: Timestamp.fromDate(currentDate))
         .where('endDate',
@@ -153,12 +161,14 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
     return userData;
   }
 
-  Future<int> fetchAllProjects() async {
+  Future<int> fetchMyProjects() async {
     try {
       DateTime currentDate = DateTime.now();
 
-      final collectionData =
-          await FirebaseFirestore.instance.collection('Projects').get();
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('email', isEqualTo: user!.email)
+          .get();
 
       final userData = collectionData.docs.length;
 

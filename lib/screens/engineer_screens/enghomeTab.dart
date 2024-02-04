@@ -51,7 +51,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
   Future<List<Activity>> fetchActivities() async {
     var email = user?.email;
     var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('schedules')
+        .collection('engineers')
         .doc(email)
         .collection('activities')
         .get();

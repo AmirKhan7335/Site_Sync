@@ -2,8 +2,10 @@ import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AccountDetails extends StatefulWidget {
   AccountDetails({super.key});
@@ -16,19 +18,48 @@ class _AccountDetailsState extends State<AccountDetails> {
   final _formKey = GlobalKey<FormState>();
 
   bool isloading = false;
-
+  String consultantEmail = '';
+  String consultantUserName = '';
+  String selectedProjectId = '';
   TextEditingController consultantController = TextEditingController();
-  String selectedOption = ''; // Store the selected option
+  String selectedProject = ''; // Store the selected option
+  Future<void> sendRequestToConsultant(projectId) async {
+    final email = FirebaseAuth.instance.currentUser!.email;
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc(email)
+        .set({
+      'consultantEmail': consultantEmail,
+      'projectId': projectId,
+      'reqAccepted': false
+    });
+  }
 
-  Future<List> fetchProjects() async {
+  Future<List> fetchConsultant() async {
 //..
-    final collectionData =
-        await FirebaseFirestore.instance.collection('Projects').get();
+    final collectionData = await FirebaseFirestore.instance
+        .collection('users')
+        .where('role', isEqualTo: 'Consultant')
+        .get();
     final userData = collectionData.docs.map(
       (doc) {
-        return [
-          doc['title'],
-        ];
+        return [doc['username'], doc['email']];
+      },
+    ).toList();
+    return userData;
+//..
+  }
+
+  Future<List> fetchProjects(email) async {
+//..
+    final collectionData = await FirebaseFirestore.instance
+        .collection('Projects')
+        .where('email', isEqualTo: email)
+        .get();
+
+    final userData = collectionData.docs.map(
+      (doc) {
+        return [doc['title'], doc.id];
       },
     ).toList();
     return userData;
@@ -36,8 +67,8 @@ class _AccountDetailsState extends State<AccountDetails> {
   }
 
 // Function to show the dropdown
-  Future<void> showDropdown(BuildContext context) async {
-    String? selected = await showDialog<String>(
+  Future<void> showProjects(BuildContext context) async {
+    String? selected2 = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -45,22 +76,18 @@ class _AccountDetailsState extends State<AccountDetails> {
             content: Container(
               height: 400,
               child: FutureBuilder(
-                  future: fetchProjects(),
+                  future: fetchProjects(consultantEmail),
                   builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                           child: CircularProgressIndicator(
                         color: Colors.blue,
                       ));
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
-                    }
-                    else if (!snapshot.hasData) {
+                    } else if (!snapshot.hasData) {
                       return Text('No Projects ');
-                    }
-                    
-                     else {
+                    } else {
                       final projectList = snapshot.data;
                       return ListView.builder(
                           itemCount: projectList!.length,
@@ -78,8 +105,10 @@ class _AccountDetailsState extends State<AccountDetails> {
                                     child: ListTile(
                                       onTap: () {
                                         setState(() {
-                                          selectedOption =
+                                          selectedProject =
                                               projectList[index][0];
+                                          selectedProjectId =
+                                              projectList[index][1];
                                         });
                                         Navigator.pop(context);
                                       },
@@ -89,7 +118,65 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 ),
                               ));
                     }
-                    
+                  }),
+            ));
+      },
+    );
+  }
+
+  Future<void> showConsultant(BuildContext context) async {
+    String? selected1 = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text('Select Consultant'),
+            content: Container(
+              height: 400,
+              child: FutureBuilder(
+                  future: fetchConsultant(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      ));
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    } else if (!snapshot.hasData) {
+                      return Text('No Consultant');
+                    } else {
+                      final consultantList = snapshot.data;
+                      return ListView.builder(
+                          itemCount: consultantList!.length,
+                          itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Card(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black12,
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    child: ListTile(
+                                      onTap: () {
+                                        setState(() {
+                                          consultantUserName =
+                                              consultantList[index][0];
+                                          consultantEmail =
+                                              consultantList[index][1];
+                                        });
+
+                                        Navigator.pop(context);
+                                      },
+                                      title:
+                                          Text('${consultantList![index][0]}'),
+                                    ),
+                                  ),
+                                ),
+                              ));
+                    }
                   }),
             ));
       },
@@ -145,12 +232,46 @@ class _AccountDetailsState extends State<AccountDetails> {
                         ),
                       ),
                     ),
-                    MyTextField(
-                      hintText: 'consultant',
-                      obscureText: false,
-                      controller: consultantController,
-                      icon: Icons.man,
-                      keyboardType: TextInputType.emailAddress,
+                    Container(
+                      height: 58,
+                      width: 376,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        border: Border.all(
+                          color: Colors.transparent,
+                        ),
+                        color:
+                            const Color(0xFF6B8D9F), // Set the background color
+                      ),
+                      child: TextFormField(
+                        readOnly: true,
+                        onTap: () {
+                          showConsultant(context);
+                          setState(() {});
+                        },
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.0,
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: selectedProject.isEmpty
+                              ? 'Select Consultant'
+                              : consultantUserName,
+                          hintStyle: TextStyle(
+                            color: selectedProject.isEmpty
+                                ? Colors.grey
+                                : Colors.white,
+                          ),
+                          filled: true, // Ensure that the fillColor is applied
+                          fillColor: const Color(
+                              0xFF6B8D9F), // Set the fillColor to the same background color
+                          prefixIcon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white, // Set icon color to white
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 50),
                     const SizedBox(
@@ -179,18 +300,24 @@ class _AccountDetailsState extends State<AccountDetails> {
                       ),
                       child: TextFormField(
                         readOnly: true,
-                        onTap: () => showDropdown(context),
+                        onTap: () {
+                          if (consultantEmail != '') {
+                            showProjects(context);
+                          } else {
+                            Get.snackbar("Sorry", 'Select Consultant First');
+                          }
+                        },
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
                         ),
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: selectedOption.isEmpty
+                          hintText: selectedProject.isEmpty
                               ? 'Select A Project'
-                              : selectedOption,
+                              : selectedProject,
                           hintStyle: TextStyle(
-                            color: selectedOption.isEmpty
+                            color: selectedProject.isEmpty
                                 ? Colors.grey
                                 : Colors.white,
                           ),
@@ -209,7 +336,14 @@ class _AccountDetailsState extends State<AccountDetails> {
                       text: 'Continue',
                       bgColor: Colors.yellow,
                       textColor: Colors.black,
-                      onTap: () {
+                      onTap: () async {
+                        setState(() {
+                          isloading = true;
+                        });
+                        await sendRequestToConsultant(selectedProjectId);
+                        setState(() {
+                          isloading = false;
+                        });
                         Navigator.push(
                             context,
                             MaterialPageRoute(
