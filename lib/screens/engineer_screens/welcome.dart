@@ -2,15 +2,38 @@ import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class WelcomeEngineer extends StatelessWidget {
+class WelcomeEngineer extends StatefulWidget {
   WelcomeEngineer({super.key});
+
+  @override
+  State<WelcomeEngineer> createState() => _WelcomeEngineerState();
+}
+
+class _WelcomeEngineerState extends State<WelcomeEngineer> {
+  Future<bool> checkRequestStatus() async {
+    final email = FirebaseAuth.instance.currentUser!.email;
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc(email)
+        .get();
+    bool requestStatus = await activitiesSnapshot['reqAccepted'];
+    return requestStatus;
+  }
+
   final _formKey = GlobalKey<FormState>();
+
   bool isloading = false;
+
   TextEditingController consultantController = TextEditingController();
+
   TextEditingController projectController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,11 +94,16 @@ class WelcomeEngineer extends StatelessWidget {
                       text: 'Continue',
                       bgColor: Colors.yellow,
                       textColor: Colors.black,
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const EngineerHomePage();
-                        }));
+                      onTap: () async {
+                        bool status = await checkRequestStatus();
+                        if (status == true) {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const EngineerHomePage();
+                          }));
+                        } else {
+                          Get.snackbar('Sorry', 'Request is not Accepted by Consultant Yet!!');
+                        }
                       },
                     ),
                   ],

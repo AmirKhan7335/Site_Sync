@@ -2,6 +2,7 @@ import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
+import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +17,28 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+  var status = null;
+  @override
+  void initState() {
+    super.initState();
+    getStatus();
+    setState(() {});
+  }
+
+  getStatus() async {
+    status = await checkRequestStatus();
+  }
+
   final user = FirebaseAuth.instance.currentUser;
+  Future checkRequestStatus() async {
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc(user!.email)
+        .get();
+    final requestStatus = await activitiesSnapshot['reqAccepted'];
+    return requestStatus;
+  }
+
   getRole() async {
     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -41,7 +63,13 @@ class _AuthPageState extends State<AuthPage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data == 'Engineer') {
-                      return AccountDetails();
+                      if (status == true) {
+                        return EngineerHomePage();
+                      } else if (status == false) {
+                        return WelcomeEngineer();
+                      } else {
+                        return AccountDetails();
+                      }
                     } else if (snapshot.data == 'Consultant') {
                       return ConsultantSplash();
                     } else {
