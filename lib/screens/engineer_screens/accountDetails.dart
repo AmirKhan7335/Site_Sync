@@ -338,7 +338,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                       textColor: Colors.black,
                       onTap: () async {
                         if (consultantEmail == '' || selectedProject == '') {
-                          Get.snackbar('Sorry', 'Selected All Fields');
+                          Get.snackbar('Sorry', 'Please Select All Fields');
                         } else {
                            setState(() {
                           isloading = true;
@@ -347,7 +347,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                         setState(() {
                           isloading = false;
                         });
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => WelcomeEngineer()));
