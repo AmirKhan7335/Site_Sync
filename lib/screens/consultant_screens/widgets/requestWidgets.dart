@@ -1,10 +1,22 @@
 import 'package:amir_khan1/components/my_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class PendingRequest extends StatelessWidget {
-  const PendingRequest({super.key});
+class PendingRequest extends StatefulWidget {
+  PendingRequest(
+      {required this.name,
+      required this.projectDataList,
+      required this.engEmail,
+      super.key});
+  String name;
+  List projectDataList;
+  String engEmail;
+  @override
+  State<PendingRequest> createState() => _PendingRequestState();
+}
 
+class _PendingRequestState extends State<PendingRequest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +26,10 @@ class PendingRequest extends StatelessWidget {
         ),
         body: Column(
           children: [
-            RequestBody(),
+            RequestBody(
+                name: widget.name,
+                projectDataList: widget.projectDataList,
+                engEmail: widget.engEmail),
             SizedBox(
               height: 10,
             ),
@@ -25,7 +40,13 @@ class PendingRequest extends StatelessWidget {
                 bgColor: Colors.yellow,
                 textColor: Colors.black,
                 icon: Icons.cloud_done_rounded,
-                onTap: () {
+                onTap: () async {
+                  var activitiesSnapshot = await FirebaseFirestore.instance
+                      .collection('engineers')
+                      .doc('${widget.engEmail}')
+                      .update({
+                        'reqAccepted':true
+                      });
                   Navigator.pop(context);
                 },
               ),
@@ -35,9 +56,20 @@ class PendingRequest extends StatelessWidget {
   }
 }
 
-class ApprovedRequest extends StatelessWidget {
-  const ApprovedRequest({super.key});
+class ApprovedRequest extends StatefulWidget {
+  ApprovedRequest(
+      {required this.name,
+      required this.projectDataList,
+      required this.engEmail,
+      super.key});
+  String name;
+  List projectDataList;
+  String engEmail;
+  @override
+  State<ApprovedRequest> createState() => _ApprovedRequestState();
+}
 
+class _ApprovedRequestState extends State<ApprovedRequest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,13 +77,29 @@ class ApprovedRequest extends StatelessWidget {
           title: Text('Approved Requests'),
           centerTitle: true,
         ),
-        body: RequestBody());
+        body: RequestBody(
+          name: widget.name,
+          projectDataList: widget.projectDataList,
+          engEmail: widget.engEmail,
+        ));
   }
 }
 
-class RequestBody extends StatelessWidget {
-  const RequestBody({super.key});
+class RequestBody extends StatefulWidget {
+  RequestBody(
+      {required this.name,
+      required this.projectDataList,
+      required this.engEmail,
+      super.key});
+  String name;
+  List projectDataList;
+  String engEmail;
 
+  @override
+  State<RequestBody> createState() => _RequestBodyState();
+}
+
+class _RequestBodyState extends State<RequestBody> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -74,7 +122,7 @@ class RequestBody extends StatelessWidget {
                   width: 10,
                 ),
                 Text(
-                  'Kamran Khan',
+                  '${widget.name}',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -114,7 +162,7 @@ class RequestBody extends StatelessWidget {
                           'Email:  ',
                         ),
                         Text(
-                          'example@123',
+                          '${widget.engEmail}',
                         ),
                       ],
                     ),
@@ -148,7 +196,7 @@ class RequestBody extends StatelessWidget {
                           'Project :  ',
                         ),
                         Text(
-                          'Construction of NSTP',
+                          '${widget.projectDataList[0]}',
                         ),
                       ],
                     ),
@@ -165,7 +213,7 @@ class RequestBody extends StatelessWidget {
                           'Start Date:  ',
                         ),
                         Text(
-                          '20/02/2023',
+                          '${widget.projectDataList[1]}',
                         ),
                       ],
                     ),
@@ -182,7 +230,7 @@ class RequestBody extends StatelessWidget {
                           'End Date:  ',
                         ),
                         Text(
-                          '30/06/2023',
+                          '${widget.projectDataList[2]}',
                         ),
                       ],
                     ),

@@ -13,7 +13,7 @@ class RequestPage extends StatefulWidget {
 }
 
 class _RequestPageState extends State<RequestPage> {
-  getPendingRequests() async {
+  Future<List<List>> getPendingRequests() async {
     try {
       final email = FirebaseAuth.instance.currentUser!.email;
       var activitiesSnapshot = await FirebaseFirestore.instance
@@ -26,13 +26,22 @@ class _RequestPageState extends State<RequestPage> {
           return [doc.id, doc['projectId']];
         },
       ).toList();
-      return engineerEmail;
+      final nameEmail = [];
+      final project = [];
+      for (var i in engineerEmail) {
+        nameEmail.add(i[0]);
+        project.add(i[1]);
+      }
+      final getProject = getProjectDetail(project);
+      final getNames = getEngineerUserName(nameEmail);
+      return [getProject, getNames,nameEmail];
     } catch (e) {
       Get.snackbar('Error', e.toString());
+      return [[]];
     }
   }
 
-  getApprovedRequests() async {
+  Future<List<List>> getApprovedRequests() async {
     try {
       final email = FirebaseAuth.instance.currentUser!.email;
       var activitiesSnapshot = await FirebaseFirestore.instance
@@ -45,9 +54,12 @@ class _RequestPageState extends State<RequestPage> {
           return [doc.id, doc['projectId']];
         },
       ).toList();
-      return engineerEmail;
+      final getProject = getProjectDetail(engineerEmail[1]);
+      final getNames = getEngineerUserName(engineerEmail[0]);
+      return [getProject, getNames, engineerEmail[0]];
     } catch (e) {
       Get.snackbar('Error', e.toString());
+      return [[]];
     }
   }
 
@@ -85,18 +97,24 @@ class _RequestPageState extends State<RequestPage> {
     return FutureBuilder(
         future: getPendingRequests(),
         builder: (context, snapshot) {
+          final data = snapshot.data;
+
           return ListView.builder(
-              itemCount: 5,
+              itemCount: data![0].length,
               itemBuilder: (context, index) => ListTile(
                     onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PendingRequest())),
+                            builder: (context) => PendingRequest(
+                                  name: data[1][index],
+                                  projectDataList: data[0],
+                                  engEmail: data[2][index],
+                                ))),
                     leading: CircleAvatar(
                       radius: 30,
                       child: Icon(Icons.person),
                     ),
-                    title: Text('Engineer Name'),
+                    title: Text('${data[1][index]}'),
                     subtitle: Text('Hi, please approve my role'),
                     trailing: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -114,24 +132,35 @@ class _RequestPageState extends State<RequestPage> {
   }
 
   Widget approvedRequests() {
-    return ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, index) => ListTile(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ApprovedRequest())),
-              leading: CircleAvatar(
-                radius: 30,
-                child: Icon(Icons.person),
-              ),
-              title: Text('Name (Engineer)'),
-              subtitle: Text('Construction of NSTP'),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('08/01/2023'),
-                ],
-              ),
-            ));
+    return FutureBuilder(
+        future: getApprovedRequests(),
+        builder: (context, snapshot) {
+          final data = snapshot.data;
+          return ListView.builder(
+              itemCount: data![0].length,
+              itemBuilder: (context, index) => ListTile(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ApprovedRequest(
+                                  name: data[1][index],
+                                  projectDataList: data[0],
+                                  engEmail: data[2][index],
+                                ))),
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Icon(Icons.person),
+                    ),
+                    title: Text('$data[1][index]'),
+                    subtitle: Text('Construction of NSTP'),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text('08/01/2023'),
+                      ],
+                    ),
+                  ));
+        });
   }
 
   @override
