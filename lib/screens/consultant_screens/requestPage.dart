@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class RequestPage extends StatefulWidget {
   const RequestPage({super.key});
@@ -13,38 +14,70 @@ class RequestPage extends StatefulWidget {
 
 class _RequestPageState extends State<RequestPage> {
   getPendingRequests() async {
-    final email = FirebaseAuth.instance.currentUser!.email;
-    var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('engineers')
-        .where('consultantEmail', isEqualTo: email)
-        .where('reqAccepted',isEqualTo: false)
-        .get();
-    final engineerEmail = activitiesSnapshot.docs.map(
-      (doc) {
-        return [doc.id,doc['projectId']];
-      },
-    ).toList();
-    return engineerEmail;
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .where('consultantEmail', isEqualTo: email)
+          .where('reqAccepted', isEqualTo: false)
+          .get();
+      final engineerEmail = activitiesSnapshot.docs.map(
+        (doc) {
+          return [doc.id, doc['projectId']];
+        },
+      ).toList();
+      return engineerEmail;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
-   getApprovedRequests() async {
-    final email = FirebaseAuth.instance.currentUser!.email;
-    var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('engineers')
-        .where('consultantEmail', isEqualTo: email)
-        .where('reqAccepted',isEqualTo: true)
-        .get();
-    final engineerEmail = activitiesSnapshot.docs.map(
-      (doc) {
-        return [doc.id,doc['projectId']];
-      },
-    ).toList();
-    return engineerEmail;
-  }
-  getEngineerUserName(email){
 
+  getApprovedRequests() async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .where('consultantEmail', isEqualTo: email)
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+      final engineerEmail = activitiesSnapshot.docs.map(
+        (doc) {
+          return [doc.id, doc['projectId']];
+        },
+      ).toList();
+      return engineerEmail;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
-  getProjectDetail(projectId){
-    
+
+  getEngineerUserName(List emails) async {
+    try {
+      var activitiesSnapshot =
+          await FirebaseFirestore.instance.collection('users');
+      final namesList = emails.map((mail) async {
+        final name = await activitiesSnapshot.doc(mail).get();
+        return name['username'];
+      }).toList();
+      return namesList;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
+
+  getProjectDetail(List projectIds) {
+    try {
+      final projects = FirebaseFirestore.instance.collection('Projects');
+      final projectDataList = projectIds.map(
+        (Ids) async {
+          final doc = await projects.doc(Ids).get();
+          return [doc['title'], doc['startDate'], doc['endDate']];
+        },
+      ).toList();
+      return projectDataList;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   bool isPending = true;
