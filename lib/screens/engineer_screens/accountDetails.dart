@@ -31,7 +31,8 @@ class _AccountDetailsState extends State<AccountDetails> {
         .set({
       'consultantEmail': consultantEmail,
       'projectId': projectId,
-      'reqAccepted': false
+      'reqAccepted': false,
+      'date':DateTime.now()
     });
   }
 

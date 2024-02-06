@@ -1,4 +1,6 @@
 import 'package:amir_khan1/screens/consultant_screens/widgets/requestWidgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -10,31 +12,66 @@ class RequestPage extends StatefulWidget {
 }
 
 class _RequestPageState extends State<RequestPage> {
+  getPendingRequests() async {
+    final email = FirebaseAuth.instance.currentUser!.email;
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .where('consultantEmail', isEqualTo: email)
+        .where('reqAccepted',isEqualTo: false)
+        .get();
+    final engineerEmail = activitiesSnapshot.docs.map(
+      (doc) {
+        return [doc.id,doc['projectId']];
+      },
+    ).toList();
+    return engineerEmail;
+  }
+   getApprovedRequests() async {
+    final email = FirebaseAuth.instance.currentUser!.email;
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .where('consultantEmail', isEqualTo: email)
+        .where('reqAccepted',isEqualTo: true)
+        .get();
+    final engineerEmail = activitiesSnapshot.docs.map(
+      (doc) {
+        return [doc.id,doc['projectId']];
+      },
+    ).toList();
+    return engineerEmail;
+  }
+
   bool isPending = true;
   Widget pendingRequests() {
-    return ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, index) => ListTile(
-          onTap: ()=> Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => PendingRequest())),
-              leading: CircleAvatar(
-                radius: 30,
-                child: Icon(Icons.person),
-              ),
-              title: Text('Engineer Name'),
-              subtitle: Text('Hi, please approve my role'),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('8 Nov'),
-                  Icon(
-                    Icons.star,
-                    color: Colors.yellow,
-                    size: 10,
-                  ),
-                ],
-              ),
-            ));
+    return FutureBuilder(
+        future: getPendingRequests(),
+        builder: (context, snapshot) {
+          return ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) => ListTile(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PendingRequest())),
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Icon(Icons.person),
+                    ),
+                    title: Text('Engineer Name'),
+                    subtitle: Text('Hi, please approve my role'),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text('8 Nov'),
+                        Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                          size: 10,
+                        ),
+                      ],
+                    ),
+                  ));
+        });
   }
 
   Widget approvedRequests() {
