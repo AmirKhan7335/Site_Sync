@@ -21,20 +21,27 @@ class _RequestPageState extends State<RequestPage> {
           .where('consultantEmail', isEqualTo: email)
           .where('reqAccepted', isEqualTo: false)
           .get();
+
       final engineerEmail = activitiesSnapshot.docs.map(
         (doc) {
           return [doc.id, doc['projectId']];
         },
       ).toList();
+
       final nameEmail = [];
       final project = [];
+
       for (var i in engineerEmail) {
         nameEmail.add(i[0]);
         project.add(i[1]);
       }
-      final getProject = getProjectDetail(project);
-      final getNames = getEngineerUserName(nameEmail);
-      return [getProject, getNames,nameEmail];
+      print(nameEmail);
+      print(project);
+      final getProject = await getProjectDetail(project);
+      final getNames = await getEngineerUserName(nameEmail);
+      print(getProject[0]);
+      print(getNames);
+      return [getProject, getNames, nameEmail];
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [[]];
@@ -67,10 +74,12 @@ class _RequestPageState extends State<RequestPage> {
     try {
       var activitiesSnapshot =
           await FirebaseFirestore.instance.collection('users');
-      final namesList = emails.map((mail) async {
+      final namesList = await Future.wait(emails.map((mail) async {
         final name = await activitiesSnapshot.doc(mail).get();
+
         return name['username'];
-      }).toList();
+      }).toList());
+      
       return namesList;
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -83,6 +92,7 @@ class _RequestPageState extends State<RequestPage> {
       final projectDataList = projectIds.map(
         (Ids) async {
           final doc = await projects.doc(Ids).get();
+
           return [doc['title'], doc['startDate'], doc['endDate']];
         },
       ).toList();
@@ -97,37 +107,50 @@ class _RequestPageState extends State<RequestPage> {
     return FutureBuilder(
         future: getPendingRequests(),
         builder: (context, snapshot) {
-          final data = snapshot.data;
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          } else if (snapshot.hasData) {
+            final data = snapshot.data;
 
-          return ListView.builder(
-              itemCount: data![0].length,
-              itemBuilder: (context, index) => ListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PendingRequest(
-                                  name: data[1][index],
-                                  projectDataList: data[0],
-                                  engEmail: data[2][index],
-                                ))),
-                    leading: CircleAvatar(
-                      radius: 30,
-                      child: Icon(Icons.person),
-                    ),
-                    title: Text('${data[1][index]}'),
-                    subtitle: Text('Hi, please approve my role'),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text('8 Nov'),
-                        Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                          size: 10,
-                        ),
-                      ],
-                    ),
-                  ));
+            return ListView.builder(
+                itemCount: data![0].length,
+                itemBuilder: (context, index) => ListTile(
+                      onTap: () async {
+                        final name = await data[1][index];
+                        final project = await data[0];
+                        final email = await data[2][index];
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PendingRequest(
+                                      name: name,
+                                      projectDataList: project,
+                                      engEmail: email,
+                                    )));
+                      },
+                      leading: CircleAvatar(
+                        radius: 30,
+                        child: Icon(Icons.person),
+                      ),
+                      title: Text('${data[1][index]}'),
+                      subtitle: Text('Hi, please approve my role'),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text('8 Nov'),
+                          Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                            size: 10,
+                          ),
+                        ],
+                      ),
+                    ));
+          } else {
+            return Text('No Data');
+          }
         });
   }
 
