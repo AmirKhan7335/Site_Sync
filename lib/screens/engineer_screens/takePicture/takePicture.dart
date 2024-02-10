@@ -126,7 +126,7 @@ class _AddPicState extends State<AddPic> {
   Future<void> addPicture(id, image) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     await FirebaseFirestore.instance
-        .collection('schedules')
+        .collection('engineers')
         .doc(email)
         .collection('activities')
         .doc(id)
@@ -136,7 +136,7 @@ class _AddPicState extends State<AddPic> {
   Future<List<Activity>> fetchActivitiesFromFirebase() async {
     var email = FirebaseAuth.instance.currentUser!.email;
     var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('schedules')
+        .collection('engineers')
         .doc(email)
         .collection('activities')
         .orderBy('order') // Sort by order
