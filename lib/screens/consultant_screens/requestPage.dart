@@ -35,12 +35,10 @@ class _RequestPageState extends State<RequestPage> {
         nameEmail.add(i[0]);
         project.add(i[1]);
       }
-      print(nameEmail);
-      print(project);
+
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
-      print(getProject[0]);
-      print(getNames);
+
       return [getProject, getNames, nameEmail];
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -61,9 +59,17 @@ class _RequestPageState extends State<RequestPage> {
           return [doc.id, doc['projectId']];
         },
       ).toList();
-      final getProject = getProjectDetail(engineerEmail[1]);
-      final getNames = getEngineerUserName(engineerEmail[0]);
-      return [getProject, getNames, engineerEmail[0]];
+      final nameEmail = [];
+      final project = [];
+
+      for (var i in engineerEmail) {
+        nameEmail.add(i[0]);
+        project.add(i[1]);
+      }
+      final getProject = await getProjectDetail(project);
+      final getNames = await getEngineerUserName(nameEmail);
+
+      return [getProject, getNames, nameEmail];
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [[]];
@@ -79,23 +85,24 @@ class _RequestPageState extends State<RequestPage> {
 
         return name['username'];
       }).toList());
-      
+
       return namesList;
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  getProjectDetail(List projectIds) {
+  getProjectDetail(List projectIds) async {
     try {
       final projects = FirebaseFirestore.instance.collection('Projects');
-      final projectDataList = projectIds.map(
+      final projectDataList = await Future.wait(projectIds.map(
         (Ids) async {
           final doc = await projects.doc(Ids).get();
 
           return [doc['title'], doc['startDate'], doc['endDate']];
         },
-      ).toList();
+      ).toList());
+
       return projectDataList;
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -119,7 +126,7 @@ class _RequestPageState extends State<RequestPage> {
                 itemBuilder: (context, index) => ListTile(
                       onTap: () async {
                         final name = await data[1][index];
-                        final project = await data[0];
+                        final project = await data[0][index];
                         final email = await data[2][index];
                         Navigator.push(
                             context,
@@ -158,31 +165,39 @@ class _RequestPageState extends State<RequestPage> {
     return FutureBuilder(
         future: getApprovedRequests(),
         builder: (context, snapshot) {
-          final data = snapshot.data;
-          return ListView.builder(
-              itemCount: data![0].length,
-              itemBuilder: (context, index) => ListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ApprovedRequest(
-                                  name: data[1][index],
-                                  projectDataList: data[0],
-                                  engEmail: data[2][index],
-                                ))),
-                    leading: CircleAvatar(
-                      radius: 30,
-                      child: Icon(Icons.person),
-                    ),
-                    title: Text('$data[1][index]'),
-                    subtitle: Text('Construction of NSTP'),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text('08/01/2023'),
-                      ],
-                    ),
-                  ));
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          } else if (snapshot.hasData) {
+            final data = snapshot.data;
+            return ListView.builder(
+                itemCount: data![0].length,
+                itemBuilder: (context, index) => ListTile(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ApprovedRequest(
+                                    name: data[1][index],
+                                    projectDataList: data[0][index],
+                                    engEmail: data[2][index],
+                                  ))),
+                      leading: CircleAvatar(
+                        radius: 30,
+                        child: Icon(Icons.person),
+                      ),
+                      title: Text('${data[1][index]}'),
+                      subtitle: Text('Construction of NSTP'),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text('08/01/2023'),
+                        ],
+                      ),
+                    ));
+          } else {
+            return Text('No Data');
+          }
         });
   }
 

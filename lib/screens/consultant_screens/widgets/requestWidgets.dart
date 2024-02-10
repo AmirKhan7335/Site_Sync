@@ -2,6 +2,8 @@ import 'package:amir_khan1/components/my_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class PendingRequest extends StatefulWidget {
   PendingRequest(
@@ -44,10 +46,11 @@ class _PendingRequestState extends State<PendingRequest> {
                   var activitiesSnapshot = await FirebaseFirestore.instance
                       .collection('engineers')
                       .doc('${widget.engEmail}')
-                      .update({
-                        'reqAccepted':true
-                      });
+                      .update({'reqAccepted': true});
                   Navigator.pop(context);
+                  setState(() {});
+                  Get.snackbar('Request Accepted',
+                      'Engineer has been added to the project');
                 },
               ),
             ),
@@ -213,7 +216,7 @@ class _RequestBodyState extends State<RequestBody> {
                           'Start Date:  ',
                         ),
                         Text(
-                          '${widget.projectDataList[1]}',
+                          '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate())}',
                         ),
                       ],
                     ),
@@ -230,7 +233,7 @@ class _RequestBodyState extends State<RequestBody> {
                           'End Date:  ',
                         ),
                         Text(
-                          '${widget.projectDataList[2]}',
+                          '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate())}',
                         ),
                       ],
                     ),

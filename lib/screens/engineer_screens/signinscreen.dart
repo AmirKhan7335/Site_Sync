@@ -1,5 +1,7 @@
 import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
+import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
+import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -125,12 +127,37 @@ class _SigninScreenState extends State<SigninScreen> {
           String getRole = await userSnapshot['role'];
 
           if (getRole == 'Engineer') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AccountDetails(),
-              ),
-            );
+            final user = FirebaseAuth.instance.currentUser;
+
+            var activitiesSnapshot = await FirebaseFirestore.instance
+                .collection('engineers')
+                .doc(user!.email)
+                .get();
+            final requestStatus = await activitiesSnapshot['reqAccepted'];
+
+            if (requestStatus == true) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EngineerHomePage(),
+                ),
+              );
+            } else if (requestStatus == false) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WelcomeEngineer(),
+                ),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AccountDetails(),
+                ),
+              );
+            }
+
             setState(() {
               isloading = false;
             });

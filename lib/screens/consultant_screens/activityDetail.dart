@@ -48,7 +48,7 @@ class _ActivityDetailState extends State<ActivityDetail> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Foundation',
+                      'Activities',
                       style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                     ),
                   ],

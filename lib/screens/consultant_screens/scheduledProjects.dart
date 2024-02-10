@@ -1,7 +1,11 @@
 import 'package:amir_khan1/screens/consultant_screens/ConsultantSchedule.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/progressWidgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ScheduleProjects extends StatefulWidget {
   const ScheduleProjects({super.key});
@@ -11,103 +15,210 @@ class ScheduleProjects extends StatefulWidget {
 }
 
 class _ScheduleProjectsState extends State<ScheduleProjects> {
+  final user = FirebaseAuth.instance.currentUser;
+
+  Future<List> fetchOngoingProjects() async {
+//..
+    try {
+      DateTime currentDate = DateTime.now();
+
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('email', isEqualTo: user!.email)
+          .where('endDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          .get();
+      final userData = collectionData.docs.map(
+        (doc) {
+          return [
+            doc['title'],
+            doc['budget'],
+            doc['funding'],
+            doc['startDate'],
+            doc['endDate'],
+            doc['location'],
+            doc['creationDate']
+          ];
+        },
+      ).toList();
+
+      return userData;
+//..
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [];
+    }
+  }
+  Future<List> fetchCompletedProjects() async {
+//..
+    try {
+      DateTime currentDate = DateTime.now();
+
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('email', isEqualTo: user!.email)
+          .where('endDate',
+              isLessThan: Timestamp.fromDate(currentDate))
+          .get();
+      final userData = collectionData.docs.map(
+        (doc) {
+          return [
+            doc['title'],
+            doc['budget'],
+            doc['funding'],
+            doc['startDate'],
+            doc['endDate'],
+            doc['location'],
+            doc['creationDate']
+          ];
+        },
+      ).toList();
+
+      return userData;
+//..
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [];
+    }
+  }
+
   Widget Ongoing() {
-    return ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, index) => ListTile(
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ConsultantSchedule())),
-        leading: CircleAvatar(
-          backgroundColor: Colors.grey[400],
-          radius: 30,
-          child: Text(
-            '${index + 1}',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-        title: Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[600],
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Construction of NISH'),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Container(
-                        width: 160,
-                        child: LinearProgressIndicator(
-                          minHeight: 7,
-                          borderRadius: BorderRadius.circular(5),
-                          value: 0.75,
-                          backgroundColor: Colors.white,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.yellow),
-                        ),
+    return FutureBuilder(
+        future: fetchOngoingProjects(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          } else if (snapshot.hasData) {
+            final data = snapshot.data;
+
+            return ListView.builder(
+              itemCount: data!.length,
+              itemBuilder: (context, index) => ListTile(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ConsultantSchedule())),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.grey[400],
+                  radius: 30,
+                  child: Text(
+                    '${index + 1}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                title: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Construction of ${data[index][0]}'),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Container(
+                                width: 160,
+                                child: LinearProgressIndicator(
+                                  minHeight: 7,
+                                  borderRadius: BorderRadius.circular(5),
+                                  value: 0.75,
+                                  backgroundColor: Colors.white,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.yellow),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Text('75%'),
+                            ],
+                          )
+                        ],
                       ),
-                      SizedBox(width: 10),
-                      Text('75%'),
-                    ],
-                  )
-                ],
+                    )),
               ),
-            )),
-      ),
-    );
+            );
+          } else {
+            return Center(
+              child: Text('No Ongoing Projects'),
+            );
+          }
+        });
   }
 
   Widget Completed() {
-    return ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, index) => ListTile(
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ConsultantSchedule())),
-        leading: CircleAvatar(
-          backgroundColor: Colors.grey[400],
-          radius: 30,
-          child: Text(
-            '${index + 1}',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-        title: Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[600],
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Construction of NICE'),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Container(
-                        width: 160,
-                        child: LinearProgressIndicator(
-                          minHeight: 7,
-                          borderRadius: BorderRadius.circular(5),
-                          value: 1,
-                          backgroundColor: Colors.white,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.yellow),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Text('100%'),
-                    ],
-                  )
-                ],
+    return FutureBuilder(
+      future: fetchCompletedProjects(),
+      builder: (context, snapshot) {
+         if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
+      else if(snapshot.hasData){
+        final data = snapshot.data;
+          return 
+        ListView.builder(
+          itemCount: data!.length,
+          itemBuilder: (context, index) => ListTile(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ConsultantSchedule())),
+            leading: CircleAvatar(
+              backgroundColor: Colors.grey[400],
+              radius: 30,
+              child: Text(
+                '${index + 1}',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            )),
-      ),
+            ),
+            title: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Construction of ${data[index][0]}'),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Container(
+                            width: 160,
+                            child: LinearProgressIndicator(
+                              minHeight: 7,
+                              borderRadius: BorderRadius.circular(5),
+                              value: 1,
+                              backgroundColor: Colors.white,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.yellow),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text('100%'),
+                        ],
+                      )
+                    ],
+                  ),
+                )),
+          ),
+        );
+      
+      }
+      else{
+        return Center(child: Text('No Completed Projects'),);
+      }
+      }
     );
   }
 
@@ -122,11 +233,13 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('Schedule',style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                          
-                ),),
+                child: Text(
+                  'Schedule',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
