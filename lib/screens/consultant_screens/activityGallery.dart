@@ -21,7 +21,7 @@ class _ActivityGalleryState extends State<ActivityGallery> {
   Future fetchActivities() async {
     var email = FirebaseAuth.instance.currentUser!.email;
     var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('schedules')
+        .collection('engineers')
         .doc(email)
         .collection('activities')
         .orderBy('order') // Sort by order
