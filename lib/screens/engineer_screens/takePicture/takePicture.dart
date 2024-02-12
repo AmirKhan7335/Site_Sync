@@ -27,7 +27,6 @@ class _TakePictureState extends State<TakePicture> {
     super.dispose();
   }
 
-  
   Future<void> _takePicture(mode, context) async {
     final picker = ImagePicker();
     if (mode == 'camera') {
@@ -130,7 +129,7 @@ class _AddPicState extends State<AddPic> {
         .doc(email)
         .collection('activities')
         .doc(id)
-        .update({'image': image});
+        .update({'image': image, 'imgApproved': false});
   }
 
   Future<List<Activity>> fetchActivitiesFromFirebase() async {
@@ -213,8 +212,9 @@ class _AddPicState extends State<AddPic> {
                                     child: ListTile(
                                       onTap: () async {
                                         try {
-                                          final url = await uploadImageToStorage(
-                                              File(widget.image!));
+                                          final url =
+                                              await uploadImageToStorage(
+                                                  File(widget.image!));
                                           await addPicture(
                                               snapshot.data?[index].id, url);
                                           Navigator.pop(context);
@@ -236,7 +236,6 @@ class _AddPicState extends State<AddPic> {
                                             fontSize: 17,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                     
                                     ),
                                   ),
                                 );

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ActivityGallery extends StatefulWidget {
   const ActivityGallery({super.key});
@@ -15,21 +16,55 @@ class _ActivityGalleryState extends State<ActivityGallery> {
   @override
   void initState() {
     super.initState();
-    fetchActivities();
   }
 
-  Future fetchActivities() async {
-    var email = FirebaseAuth.instance.currentUser!.email;
-    var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('engineers')
-        .doc(email)
-        .collection('activities')
-        .orderBy('order') // Sort by order
-        .get();
-    final tempActivities =
-        activitiesSnapshot.docs.map((doc) => doc.data()).toList();
+  var email = FirebaseAuth.instance.currentUser!.email;
+  Future fetchPendingActivities() async {
+    try {
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc('mhabib.bese21seecs@seecs.edu.pk')
+          .collection('activities')
+          .where('imgApproved', isEqualTo: false) // Sort by order
+          .get();
+      final tempActivities =
+          activitiesSnapshot.docs.map((doc) => doc.data()).toList();
 
-    return tempActivities;
+      return tempActivities;
+    } catch (e) {
+      Get.snackbar('Error', '${e}');
+    }
+  }
+
+  Future fetchApprovedActivities() async {
+    try {
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc('mhabib.bese21seecs@seecs.edu.pk')
+          .collection('activities')
+          .where('imgApproved', isEqualTo: true) // Sort by order
+          .get();
+      final tempActivities =
+          activitiesSnapshot.docs.map((doc) => doc.data()).toList();
+
+      return tempActivities;
+    } catch (e) {
+      Get.snackbar('Error', '${e}');
+    }
+  }
+
+  Future<void> approvePicture(
+    id,
+  ) async {
+    var email = FirebaseAuth.instance.currentUser!.email;
+    await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc('mhabib.bese21seecs@seecs.edu.pk')
+        .collection('activities')
+        .doc(id)
+        .update({'imgApproved': true});
+    Get.snackbar('Approved', 'Image Approved');
+    Navigator.pop(context);
   }
 
   bool isPending = true;
@@ -127,78 +162,93 @@ class _ActivityGalleryState extends State<ActivityGallery> {
           SizedBox(
             height: 30,
           ),
-          FutureBuilder(
-              future: fetchActivities(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasData) {
-                  return isPending
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            height: 310,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  height: 300,
-                                  width: 300,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.brown),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Image.network(
-                                      snapshot.data![index]['image']),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(right: 32.0, left: 32),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.65,
-                            child: GridView.builder(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount:
-                                      2, // Number of columns in the grid
-                                  crossAxisSpacing:
-                                      16.0, // Spacing between columns
-                                  mainAxisSpacing: 16.0, // Spacing between rows
-                                ),
-                                itemCount: snapshot.data!.length,
-                                itemBuilder: (context, index) {
-                                  return Container(
+          isPending
+              ? FutureBuilder(
+                  future: fetchPendingActivities(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasData) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: 500,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 300,
+                                    width: 300,
                                     decoration: BoxDecoration(
                                       border: Border.all(color: Colors.brown),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Image.network(
                                         snapshot.data![index]['image']),
-                                  );
-                                }),
+                                  ),
+                                  Expanded(child: SizedBox()),
+                                  Padding(
+                                    padding: const EdgeInsets.all(32.0),
+                                    child: MyButton(
+                                        text: 'Approve',
+                                        bgColor: Colors.yellow,
+                                        textColor: Colors.black,
+                                        icon: Icons.cloud_done_outlined,
+                                        onTap: () {
+                                          approvePicture(
+                                              snapshot.data[index]['id']);
+                                        }),
+                                  )
+                                ],
+                              ),
+                            ),
                           ),
-                        );
-                } else {
-                  return Center(child: Text('No Images Found'));
-                }
-              }),
-          Expanded(child: SizedBox()),
-          isPending
-              ? Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: MyButton(
-                      text: 'Approve',
-                      bgColor: Colors.yellow,
-                      textColor: Colors.black,
-                      icon: Icons.cloud_done_outlined,
-                      onTap: () {}),
-                )
-              : SizedBox(),
+                        ),
+                      );
+                    } else {
+                      return Center(child: Text('No Images Found'));
+                    }
+                  })
+              : FutureBuilder(
+                  future: fetchApprovedActivities(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasData) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 32.0, left: 32),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.65,
+                          child: GridView.builder(
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    2, // Number of columns in the grid
+                                crossAxisSpacing:
+                                    16.0, // Spacing between columns
+                                mainAxisSpacing: 16.0, // Spacing between rows
+                              ),
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.brown),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Image.network(
+                                      snapshot.data![index]['image']),
+                                );
+                              }),
+                        ),
+                      );
+                    } else {
+                      return Center(child: Text('No Images Found'));
+                    }
+                  }),
         ],
       )),
     );
