@@ -317,12 +317,6 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              MyButton(
-                  text: 'Sign up with Google',
-                  bgColor: Colors.blue,
-                  textColor: Colors.white,
-                  icon: Icons.account_circle_rounded,
-                  onTap: registerWithGoogle),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

@@ -96,6 +96,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
 
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
+          .where('email', isEqualTo: user!.email)
           .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
           .get();
 
