@@ -1,5 +1,6 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
+import 'package:amir_khan1/controllers/navigationController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -95,6 +96,7 @@ class _CreateProjectState extends State<CreateProject> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(NavigationController());
     return Container(
       child: Stack(
         children: [
@@ -274,6 +276,7 @@ class _CreateProjectState extends State<CreateProject> {
                           setState(() {
                             isloading = false;
                           });
+                          controller.cnsltCurrentIndex.value = 0;
                         }
                       },
                     ),
