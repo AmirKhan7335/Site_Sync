@@ -1,15 +1,55 @@
 import 'package:amir_khan1/screens/consultant_screens/activityDetail.dart';
+import 'package:amir_khan1/screens/consultant_screens/activityGallery.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ConsultantSchedule extends StatefulWidget {
-  const ConsultantSchedule({super.key});
-
+  ConsultantSchedule({required this.projId, required this.title, super.key});
+  String projId;
+  String title;
   @override
   State<ConsultantSchedule> createState() => _ConsultantScheduleState();
 }
 
 class _ConsultantScheduleState extends State<ConsultantSchedule> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  Future<dynamic> getActivities() async {
+    try {
+      final activitiesQuery = await FirebaseFirestore.instance
+          .collection('engineers')
+          .where('projectId', isEqualTo: widget.projId)
+          .get();
+      final engEmail = await activitiesQuery.docs.first.id;
+      // data.add(engEmail);
+      final activitiesData = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(engEmail)
+          .collection('activities')
+          .get();
+
+      List dataList = await activitiesData.docs.map((doc) {
+        return [
+          doc['order'],
+          doc['name'],
+          doc['image'],
+          doc['startDate'],
+          doc['finishDate']
+        ];
+      }).toList();
+      return [engEmail, dataList];
+    } catch (e) {
+      print(e);
+      Get.snackbar('Error', '${e}');
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -26,15 +66,11 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                       },
                       icon: Icon(Icons.arrow_back_ios_outlined)),
                   Text(
-                    'Schedule',
+                    'Activities',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                      onPressed: () {
-
-                      },
-                      icon: Icon(Icons.add_box_outlined)),
-                  
+                      onPressed: () {}, icon: Icon(Icons.add_box_outlined)),
                 ],
               ),
             ),
@@ -47,7 +83,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Construction of NISH',
+                    'Construction of ${widget.title}',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -63,65 +99,85 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                 color: Colors.white,
               ),
             ),
-         Padding(
-           padding: const EdgeInsets.all(24.0),
-           child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blue[200],
-              borderRadius: BorderRadius.circular(10),
-            ),
-             child: ListTile(title: Text('Excavation',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-             subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
-             ,
-             trailing: Image.asset('assets/images/excavation.jpeg'),),
-           ),
-         ),
-         Padding(
-           padding: const EdgeInsets.only(left: 24,right: 24,top: 0,bottom: 16),
-           child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blue[200],
-              borderRadius: BorderRadius.circular(10),
-            ),
-             child: ListTile(
-              onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ActivityDetail())),
-              title: Text('Foundation',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-             subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
-             ,
-             trailing: Image.asset('assets/images/foundation.jpeg'),),
-           ),
-         ),
-         
-         Padding(
-           padding: const EdgeInsets.only(left: 24,right: 24,top: 8,bottom: 16),
-           child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blue[200],
-              borderRadius: BorderRadius.circular(10),
-            ),
-             child: ListTile(title: Text('Framing',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-             subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
-             ,
-             trailing: Image.asset('assets/images/framing.jpeg'),),
-           ),
-         ),
-           Padding(
-           padding: const EdgeInsets.only(left: 24,right: 24,top: 8,bottom: 16),
-           child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blue[200],
-              borderRadius: BorderRadius.circular(10),
-            ),
-             child: ListTile(title: Text('Roofing',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-             subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12),)
-             ,
-             trailing: Image.asset('assets/images/roofing.jpeg'),),
-           ),
-         ),
-          
+            FutureBuilder(
+                future: getActivities(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: 100,
+                        ),
+                        CircularProgressIndicator(),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 100,
+                          ),
+                          Text(snapshot.error.toString()),
+                        ],
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
+                    final engEmail = snapshot.data[0];
 
-          ]
-          ,
+                    final data = snapshot.data[1];
+
+                    return Container(
+                      height: 500,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top:8.0),
+                        child: ListView.builder(
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 24, right: 24, top: 0, bottom: 16),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue[200],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ListTile(
+                                      onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ActivityGallery(
+                                                      engEmail: engEmail))),
+                                      title: Text(
+                                        '${data[index][1]}',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: Text('${data[index][3]} - ${data[index][4]}',
+                                          style: TextStyle(fontSize: 12)),
+                                      trailing: data[index][2] == ''
+                                          ? Icon(Icons.image)
+                                          : Image.network('${data[index][2]}')),
+                                ),
+                              );
+                            }),
+                      ),
+                    );
+                  } else {
+                    return Center(
+                        child: Column(
+                      children: [
+                        SizedBox(
+                          height: 100,
+                        ),
+                        Text('No Activities Scheduled'),
+                      ],
+                    ));
+                  }
+                }),
+          ],
         ),
       ),
     );

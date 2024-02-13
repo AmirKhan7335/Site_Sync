@@ -69,7 +69,8 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
             doc['startDate'],
             doc['endDate'],
             doc['location'],
-            doc['creationDate']
+            doc['creationDate'],
+            doc.id
           ];
         },
       ).toList();
@@ -101,7 +102,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                 onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ConsultantSchedule())),
+                        builder: (context) => ConsultantSchedule(projId:data[index][7],title:data[index][0]))),
                 leading: CircleAvatar(
                   backgroundColor: Colors.grey[400],
                   radius: 30,
@@ -170,7 +171,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
           itemCount: data!.length,
           itemBuilder: (context, index) => ListTile(
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ConsultantSchedule())),
+                MaterialPageRoute(builder: (context) => ConsultantSchedule(projId:data[index][7],title: data[index][0],))),
             leading: CircleAvatar(
               backgroundColor: Colors.grey[400],
               radius: 30,

@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ActivityGallery extends StatefulWidget {
-  const ActivityGallery({super.key});
-
+  ActivityGallery({required this.engEmail, super.key});
+  String engEmail;
   @override
   State<ActivityGallery> createState() => _ActivityGalleryState();
 }
@@ -18,12 +18,12 @@ class _ActivityGalleryState extends State<ActivityGallery> {
     super.initState();
   }
 
-  var email = FirebaseAuth.instance.currentUser!.email;
-  Future fetchPendingActivities() async {
+  var consultantEmail = FirebaseAuth.instance.currentUser!.email;
+  Future fetchPendingActivities(engEmail) async {
     try {
       var activitiesSnapshot = await FirebaseFirestore.instance
           .collection('engineers')
-          .doc('mhabib.bese21seecs@seecs.edu.pk')
+          .doc(engEmail)
           .collection('activities')
           .where('imgApproved', isEqualTo: false) // Sort by order
           .get();
@@ -36,11 +36,11 @@ class _ActivityGalleryState extends State<ActivityGallery> {
     }
   }
 
-  Future fetchApprovedActivities() async {
+  Future fetchApprovedActivities(engEmail) async {
     try {
       var activitiesSnapshot = await FirebaseFirestore.instance
           .collection('engineers')
-          .doc('mhabib.bese21seecs@seecs.edu.pk')
+          .doc(engEmail)
           .collection('activities')
           .where('imgApproved', isEqualTo: true) // Sort by order
           .get();
@@ -53,13 +53,11 @@ class _ActivityGalleryState extends State<ActivityGallery> {
     }
   }
 
-  Future<void> approvePicture(
-    id,
-  ) async {
+  Future<void> approvePicture(id, engEmail) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     await FirebaseFirestore.instance
         .collection('engineers')
-        .doc('mhabib.bese21seecs@seecs.edu.pk')
+        .doc(engEmail)
         .collection('activities')
         .doc(id)
         .update({'imgApproved': true});
@@ -164,7 +162,7 @@ class _ActivityGalleryState extends State<ActivityGallery> {
           ),
           isPending
               ? FutureBuilder(
-                  future: fetchPendingActivities(),
+                  future: fetchPendingActivities(widget.engEmail),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -200,7 +198,8 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                                         icon: Icons.cloud_done_outlined,
                                         onTap: () {
                                           approvePicture(
-                                              snapshot.data[index]['id']);
+                                              snapshot.data[index]['id'],
+                                             widget. engEmail);
                                         }),
                                   )
                                 ],
@@ -214,7 +213,7 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                     }
                   })
               : FutureBuilder(
-                  future: fetchApprovedActivities(),
+                  future: fetchApprovedActivities(widget.engEmail),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());

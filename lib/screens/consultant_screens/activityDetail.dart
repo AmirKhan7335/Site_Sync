@@ -98,7 +98,7 @@ class _ActivityDetailState extends State<ActivityDetail> {
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(10),
               ),
-               child: ListTile(title: Text('Concreting',),onTap:()=> Navigator.push(context, MaterialPageRoute(builder: (context) => ActivityGallery()))
+               child: ListTile(title: Text('Concreting',),onTap:(){}
                ,subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
                ,
                trailing:  Text('Tap to view'),),
