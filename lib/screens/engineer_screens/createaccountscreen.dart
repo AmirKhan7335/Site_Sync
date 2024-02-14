@@ -26,7 +26,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool isChecked = false;
-
+  bool isloading = false;
   String dropdownValue = 'Choose Your Role';
   List<String> list = ['Choose Your Role', 'Engineer', 'Consultant'];
   void registerUser() async {
@@ -48,14 +48,22 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
       await createUserDocument(userCredential, false);
       // displayMessageToUser("Account created successfully!", context.mounted as BuildContext);
       navigateToRoleScreen();
+
+      isloading = false;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showErrorDialog('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         showErrorDialog('The account already exists for that email.');
       }
+      setState(() {
+        isloading = false;
+      });
     } catch (e) {
       showErrorDialog('An error occurred. ${e}');
+      setState(() {
+        isloading = false;
+      });
     }
   }
 
@@ -288,16 +296,23 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 const Text("Please check the box to proceed.",
                     style: TextStyle(color: Colors.red)),
               const SizedBox(height: 10),
-              MyButton(
-                text: 'Sign Up',
-                bgColor: Colors.yellow,
-                textColor: Colors.black,
-                onTap: () {
-                  if (isChecked) {
-                    registerUser();
-                  }
-                },
-              ),
+              isloading
+                  ? Center(
+                      child: CircularProgressIndicator(color: Colors.yellow),
+                    )
+                  : MyButton(
+                      text: 'Sign Up',
+                      bgColor: Colors.yellow,
+                      textColor: Colors.black,
+                      onTap: () {
+                        if (isChecked) {
+                          setState(() {
+                            isloading = true;
+                          });
+                          registerUser();
+                        }
+                      },
+                    ),
               const SizedBox(height: 10),
               SizedBox(
                 width: 376.0,

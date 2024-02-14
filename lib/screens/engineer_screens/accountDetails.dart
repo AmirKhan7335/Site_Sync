@@ -256,11 +256,11 @@ class _AccountDetailsState extends State<AccountDetails> {
                         ),
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: selectedProject.isEmpty
+                          hintText: consultantUserName.isEmpty
                               ? 'Select Consultant'
                               : consultantUserName,
                           hintStyle: TextStyle(
-                            color: selectedProject.isEmpty
+                            color: consultantUserName.isEmpty
                                 ? Colors.grey
                                 : Colors.white,
                           ),
