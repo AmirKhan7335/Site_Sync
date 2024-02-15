@@ -32,8 +32,12 @@ class _AccountDetailsState extends State<AccountDetails> {
       'consultantEmail': consultantEmail,
       'projectId': projectId,
       'reqAccepted': false,
-      'date':DateTime.now()
+      'date': DateTime.now()
     });
+    var projectSelected = await FirebaseFirestore.instance
+        .collection('Projects')
+        .doc(projectId)
+        .update({'isSelected': true});
   }
 
   Future<List> fetchConsultant() async {
@@ -53,9 +57,14 @@ class _AccountDetailsState extends State<AccountDetails> {
 
   Future<List> fetchProjects(email) async {
 //..
+    final alreaySelectedProjects =
+        await FirebaseFirestore.instance.collection('engineers').get();
+    final selectedProject =
+        await alreaySelectedProjects.docs.map((e) => e['projectId']).toList();
     final collectionData = await FirebaseFirestore.instance
         .collection('Projects')
         .where('email', isEqualTo: email)
+        .where('isSelected', isEqualTo: false)
         .get();
 
     final userData = collectionData.docs.map(
@@ -341,18 +350,17 @@ class _AccountDetailsState extends State<AccountDetails> {
                         if (consultantEmail == '' || selectedProject == '') {
                           Get.snackbar('Sorry', 'Please Select All Fields');
                         } else {
-                           setState(() {
-                          isloading = true;
-                        });
-                        await sendRequestToConsultant(selectedProjectId);
-                        setState(() {
-                          isloading = false;
-                        });
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => WelcomeEngineer()));
-                
+                          setState(() {
+                            isloading = true;
+                          });
+                          await sendRequestToConsultant(selectedProjectId);
+                          setState(() {
+                            isloading = false;
+                          });
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => WelcomeEngineer()));
                         }
                       },
                     ),

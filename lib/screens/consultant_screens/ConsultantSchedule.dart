@@ -130,7 +130,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                     return Container(
                       height: 500,
                       child: Padding(
-                        padding: const EdgeInsets.only(top:8.0),
+                        padding: const EdgeInsets.only(top: 8.0),
                         child: ListView.builder(
                             itemCount: data.length,
                             itemBuilder: (context, index) {
@@ -155,7 +155,8 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      subtitle: Text('${data[index][3]} - ${data[index][4]}',
+                                      subtitle: Text(
+                                          '${data[index][3]} - ${data[index][4]}',
                                           style: TextStyle(fontSize: 12)),
                                       trailing: data[index][2] == ''
                                           ? Icon(Icons.image)

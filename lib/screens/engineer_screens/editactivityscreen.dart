@@ -1,15 +1,21 @@
+import 'package:amir_khan1/controllers/editActivityController.dart';
 import 'package:flutter/material.dart';
 import 'package:amir_khan1/models/activity.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../components/my_button.dart';
 import '../../components/mytextfield.dart';
-
 
 class EditActivityScreen extends StatefulWidget {
   final Activity activity;
   final int index;
   final Function(Activity, int?) onSave;
 
-  const EditActivityScreen({super.key, required this.activity, required this.index, required this.onSave});
+  const EditActivityScreen(
+      {super.key,
+      required this.activity,
+      required this.index,
+      required this.onSave});
 
   @override
   EditActivityScreenState createState() => EditActivityScreenState();
@@ -17,30 +23,32 @@ class EditActivityScreen extends StatefulWidget {
 
 class EditActivityScreenState extends State<EditActivityScreen> {
   late TextEditingController _nameController;
-  late TextEditingController _startDateController;
-  late TextEditingController _finishDateController;
   late TextEditingController _orderController;
 
   @override
   void initState() {
     super.initState();
+    final controller = Get.put(EditActivityController());
     _nameController = TextEditingController(text: widget.activity.name);
-    _startDateController = TextEditingController(text: widget.activity.startDate);
-    _finishDateController = TextEditingController(text: widget.activity.finishDate);
-    _orderController = TextEditingController(text: (widget.activity.order).toString());
+    controller.selectedDate!.value =
+        DateFormat('dd-MM-yyyy').parse(widget.activity.startDate);
+    controller.endDate!.value =
+        DateFormat('dd-MM-yyyy').parse(widget.activity.finishDate);
+    _orderController =
+        TextEditingController(text: (widget.activity.order).toString());
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _startDateController.dispose();
-    _finishDateController.dispose();
+
     _orderController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(EditActivityController());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editing Activity'),
@@ -64,7 +72,9 @@ class EditActivityScreenState extends State<EditActivityScreen> {
                 hintText: 'Activity Name',
                 obscureText: false,
                 controller: _nameController,
-                icon: Icons.event, keyboardType: TextInputType.text, // Use text input type for name
+                icon: Icons.event,
+                keyboardType:
+                    TextInputType.text, // Use text input type for name
               ),
               const SizedBox(height: 16.0),
               const Text(
@@ -75,12 +85,12 @@ class EditActivityScreenState extends State<EditActivityScreen> {
                   fontSize: 16.0,
                 ),
               ),
-              MyTextField(
-                hintText: 'Start Date',
-                obscureText: false,
-                controller: _startDateController,
-                icon: Icons.date_range, keyboardType: TextInputType.number,
-              ),
+              MyDateField(
+                  hintText: controller.selectedDate == null
+                      ? 'Start Date'
+                      : '${controller.selectedDate!.value.toLocal()}'
+                          .split(' ')[0],
+                  callback: controller.SelectDate),
               const SizedBox(height: 16.0),
               const Text(
                 'Finish Date',
@@ -90,13 +100,11 @@ class EditActivityScreenState extends State<EditActivityScreen> {
                   fontSize: 16.0,
                 ),
               ),
-              MyTextField(
-                hintText: 'Finish Date',
-                obscureText: false,
-                controller: _finishDateController,
-                icon: Icons.date_range,
-                keyboardType: TextInputType.number,
-              ),
+              MyDateField(
+                  hintText: controller.endDate == null
+                      ? 'End Date'
+                      : '${controller.endDate!.value.toLocal()}'.split(' ')[0],
+                  callback: controller.EndDate),
               const SizedBox(height: 16.0),
               const Text(
                 'Order',
@@ -111,7 +119,8 @@ class EditActivityScreenState extends State<EditActivityScreen> {
                 obscureText: false,
                 controller: _orderController,
                 icon: Icons.format_list_numbered,
-                keyboardType: TextInputType.number, // Use number input type for order
+                keyboardType:
+                    TextInputType.number, // Use number input type for order
               ),
               const SizedBox(height: 16.0),
               MyButton(
@@ -129,12 +138,18 @@ class EditActivityScreenState extends State<EditActivityScreen> {
   }
 
   void _saveActivity() async {
+    final controller = Get.put(EditActivityController());
     String newName = _nameController.text;
-    String newStartDate = _startDateController.text;
-    String newFinishDate = _finishDateController.text;
+    String newStartDate =
+        DateFormat('dd-MM-yyyy').format(controller.selectedDate!.value);
+    String newFinishDate =
+        DateFormat('dd-MM-yyyy').format(controller.endDate!.value);
     int? newOrder = int.tryParse(_orderController.text);
 
-    if (newName.isNotEmpty && newStartDate.isNotEmpty && newFinishDate.isNotEmpty && newOrder != null) {
+    if (newName.isNotEmpty &&
+        newStartDate.isNotEmpty &&
+        newFinishDate.isNotEmpty &&
+        newOrder != null) {
       Activity updatedActivity = Activity(
         id: widget.activity.id, // Use the ID from the existing activity
         name: newName,
@@ -143,9 +158,11 @@ class EditActivityScreenState extends State<EditActivityScreen> {
         order: newOrder,
       );
 
-      widget.onSave(updatedActivity, newOrder); // Use the onSave callback to update the activity
+      widget.onSave(updatedActivity,
+          newOrder); // Use the onSave callback to update the activity
 
-      Navigator.pop(context, updatedActivity); // Pass updated activity back to previous screen
+      Navigator.pop(context,
+          updatedActivity); // Pass updated activity back to previous screen
     } else {
       String errorMessage = 'Please fill all the fields';
       if (newOrder == null) errorMessage += ' and provide a valid order number';

@@ -37,7 +37,8 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
             doc['startDate'],
             doc['endDate'],
             doc['location'],
-            doc['creationDate']
+            doc['creationDate'],
+            doc.id
           ];
         },
       ).toList();
@@ -49,6 +50,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
       return [];
     }
   }
+
   Future<List> fetchCompletedProjects() async {
 //..
     try {
@@ -57,8 +59,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
-          .where('endDate',
-              isLessThan: Timestamp.fromDate(currentDate))
+          .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
           .get();
       final userData = collectionData.docs.map(
         (doc) {
@@ -102,7 +103,8 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                 onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ConsultantSchedule(projId:data[index][7],title:data[index][0]))),
+                        builder: (context) => ConsultantSchedule(
+                            projId: data[index][7], title: data[index][0]))),
                 leading: CircleAvatar(
                   backgroundColor: Colors.grey[400],
                   radius: 30,
@@ -121,7 +123,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Construction of ${data[index][0]}'),
+                          Text('${data[index][0]}'),
                           SizedBox(height: 10),
                           Row(
                             children: [
@@ -155,72 +157,74 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
 
   Widget Completed() {
     return FutureBuilder(
-      future: fetchCompletedProjects(),
-      builder: (context, snapshot) {
-         if (snapshot.connectionState == ConnectionState.waiting) {
+        future: fetchCompletedProjects(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));
-          }
-      else if(snapshot.hasData){
-        final data = snapshot.data;
-          return 
-        ListView.builder(
-          itemCount: data!.length,
-          itemBuilder: (context, index) => ListTile(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ConsultantSchedule(projId:data[index][7],title: data[index][0],))),
-            leading: CircleAvatar(
-              backgroundColor: Colors.grey[400],
-              radius: 30,
-              child: Text(
-                '${index + 1}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-            title: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[600],
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Construction of ${data[index][0]}'),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Container(
-                            width: 160,
-                            child: LinearProgressIndicator(
-                              minHeight: 7,
-                              borderRadius: BorderRadius.circular(5),
-                              value: 1,
-                              backgroundColor: Colors.white,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.yellow),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Text('100%'),
-                        ],
-                      )
-                    ],
+          } else if (snapshot.hasData) {
+            final data = snapshot.data;
+            return ListView.builder(
+              itemCount: data!.length,
+              itemBuilder: (context, index) => ListTile(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ConsultantSchedule(
+                              projId: data[index][7],
+                              title: data[index][0],
+                            ))),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.grey[400],
+                  radius: 30,
+                  child: Text(
+                    '${index + 1}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                )),
-          ),
-        );
-      
-      }
-      else{
-        return Center(child: Text('No Completed Projects'),);
-      }
-      }
-    );
+                ),
+                title: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${data[index][0]}'),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Container(
+                                width: 160,
+                                child: LinearProgressIndicator(
+                                  minHeight: 7,
+                                  borderRadius: BorderRadius.circular(5),
+                                  value: 1,
+                                  backgroundColor: Colors.white,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.yellow),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Text('100%'),
+                            ],
+                          )
+                        ],
+                      ),
+                    )),
+              ),
+            );
+          } else {
+            return Center(
+              child: Text('No Completed Projects'),
+            );
+          }
+        });
   }
 
   bool isOngoing = true;

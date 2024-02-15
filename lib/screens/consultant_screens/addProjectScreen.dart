@@ -72,6 +72,7 @@ class _CreateProjectState extends State<CreateProject> {
           'location': locationController.text,
           'email': email,
           'creationDate': DateTime.now(),
+          'isSelected':false
         },
       );
       Get.snackbar('Success', 'Project created Successfully');
