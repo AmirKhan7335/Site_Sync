@@ -52,7 +52,7 @@ class ConsultantSplash extends StatelessWidget {
                       bgColor: Colors.yellow,
                       textColor: Colors.black,
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ConsultantHomePage()));

@@ -1,4 +1,5 @@
 import 'package:amir_khan1/main.dart';
+import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
@@ -71,9 +72,9 @@ class _AuthPageState extends State<AuthPage> {
                         return AccountDetails();
                       }
                     } else if (snapshot.data == 'Consultant') {
-                      return ConsultantSplash();
+                      return ConsultantHomePage();
                     } else {
-                      return Center(child: Text('Unknown Error'));
+                      return Center(child: Text('Nothing To Show'));
                     }
                   } else if (snapshot.connectionState ==
                       ConnectionState.waiting) {

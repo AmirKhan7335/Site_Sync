@@ -1,49 +1,42 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:get/get.dart';
 
 // Details screen
 class DetailsScreen extends StatelessWidget {
   final String mainHeading;
   final String subHeading;
+  final List image;
 
   const DetailsScreen({
     super.key,
     required this.mainHeading,
     required this.subHeading,
+    required this.image,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Details'),
+        title: Text(mainHeading),
         backgroundColor: const Color(0xFF212832),
       ),
       backgroundColor: const Color(0xFF212832),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              mainHeading,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              subHeading,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 18.0,
-              ),
-            ),
-          ],
-        ),
+      body: ListView.builder(
+        itemCount: image.length,
+        itemBuilder: (context,index) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              
+              
+              Container(
+                width: Get.width*1,
+                height: 350,
+                child: Image.network(image[index]))
+            ],
+          );
+        }
       ),
     );
   }

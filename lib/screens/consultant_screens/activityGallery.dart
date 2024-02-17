@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ActivityGallery extends StatefulWidget {
-  ActivityGallery({required this.engEmail, super.key});
+  ActivityGallery(
+      {required this.engEmail, required this.activityId, super.key});
   String engEmail;
+  String activityId;
   @override
   State<ActivityGallery> createState() => _ActivityGalleryState();
 }
@@ -19,50 +21,60 @@ class _ActivityGalleryState extends State<ActivityGallery> {
   }
 
   var consultantEmail = FirebaseAuth.instance.currentUser!.email;
-  Future fetchPendingActivities(engEmail) async {
+  Future fetchPendingActivities(engEmail, activityId) async {
     try {
       var activitiesSnapshot = await FirebaseFirestore.instance
           .collection('engineers')
           .doc(engEmail)
           .collection('activities')
-          .where('imgApproved', isEqualTo: false) // Sort by order
+          .doc(activityId) // Sort by order
           .get();
-      final tempActivities =
-          activitiesSnapshot.docs.map((doc) => doc.data()).toList();
-
+      List tempActivities = activitiesSnapshot.data()!['image'];
       return tempActivities;
     } catch (e) {
       Get.snackbar('Error', '${e}');
     }
   }
 
-  Future fetchApprovedActivities(engEmail) async {
+  Future fetchApprovedActivities(engEmail, activityId) async {
     try {
       var activitiesSnapshot = await FirebaseFirestore.instance
           .collection('engineers')
           .doc(engEmail)
           .collection('activities')
-          .where('imgApproved', isEqualTo: true) // Sort by order
+          .doc(activityId) // Sort by order
           .get();
-      final tempActivities =
-          activitiesSnapshot.docs.map((doc) => doc.data()).toList();
-
+      List tempActivities = activitiesSnapshot.data()!['approvedImage'];
       return tempActivities;
     } catch (e) {
       Get.snackbar('Error', '${e}');
     }
   }
 
-  Future<void> approvePicture(id, engEmail) async {
-    var email = FirebaseAuth.instance.currentUser!.email;
-    await FirebaseFirestore.instance
-        .collection('engineers')
-        .doc(engEmail)
-        .collection('activities')
-        .doc(id)
-        .update({'imgApproved': true});
-    Get.snackbar('Approved', 'Image Approved');
-    Navigator.pop(context);
+  Future<void> approvePicture(id, engEmail, imgList) async {
+    try {
+      var email = FirebaseAuth.instance.currentUser!.email;
+      var instance = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(engEmail)
+          .collection('activities')
+          .doc(id);
+      for (String i in imgList) {
+        await instance.update({
+          'approvedImage': FieldValue.arrayUnion([i])
+        });
+      }
+      await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(engEmail)
+          .collection('activities')
+          .doc(id)
+          .update({'image': []});
+      Get.snackbar('Approved', 'Images Approved');
+      Navigator.pop(context);
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   bool isPending = true;
@@ -161,87 +173,100 @@ class _ActivityGalleryState extends State<ActivityGallery> {
             height: 30,
           ),
           isPending
-              ? FutureBuilder(
-                  future: fetchPendingActivities(widget.engEmail),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasData) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: 500,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Container(
+              ? Column(
+                  children: [
+                    FutureBuilder(
+                        future: fetchPendingActivities(
+                            widget.engEmail, widget.activityId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasData) {
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
                                     height: 300,
-                                    width: 300,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.brown),
-                                      borderRadius: BorderRadius.circular(10),
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: snapshot.data!.length,
+                                      itemBuilder: (context, index) => Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              height: 300,
+                                              width: 300,
+                                              decoration: BoxDecoration(
+                                                border:
+                                                    Border.all(color: Colors.brown),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Image.network(
+                                                  snapshot.data![index]),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
-                                    child: Image.network(
-                                        snapshot.data![index]['image']),
                                   ),
-                                  Expanded(child: SizedBox()),
-                                  Padding(
-                                    padding: const EdgeInsets.all(32.0),
-                                    child: MyButton(
-                                        text: 'Approve',
-                                        bgColor: Colors.yellow,
-                                        textColor: Colors.black,
-                                        icon: Icons.cloud_done_outlined,
-                                        onTap: () {
-                                          approvePicture(
-                                              snapshot.data[index]['id'],
-                                             widget. engEmail);
-                                        }),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      return Center(child: Text('No Images Found'));
-                    }
-                  })
+                                ),
+                                 Padding(
+                      padding: const EdgeInsets.only(
+                          right: 32.0, left: 32.0, top: 32),
+                      child: MyButton(
+                          text: 'Approve',
+                          bgColor: Colors.yellow,
+                          textColor: Colors.black,
+                          icon: Icons.cloud_done_outlined,
+                          onTap: () {
+                            approvePicture(widget.activityId, widget.engEmail,snapshot.data);
+                          }),
+                    )
+                              ],
+                            );
+                          } else {
+                            return Center(child: Text('No Images Found'));
+                          }
+                        }),
+                   
+                  ],
+                )
               : FutureBuilder(
-                  future: fetchApprovedActivities(widget.engEmail),
+                  future: fetchApprovedActivities(
+                      widget.engEmail, widget.activityId),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasData) {
                       return Padding(
                         padding: const EdgeInsets.only(right: 32.0, left: 32),
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.65,
-                          child: GridView.builder(
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount:
-                                    2, // Number of columns in the grid
-                                crossAxisSpacing:
-                                    16.0, // Spacing between columns
-                                mainAxisSpacing: 16.0, // Spacing between rows
-                              ),
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.brown),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Image.network(
-                                      snapshot.data![index]['image']),
-                                );
-                              }),
+                        child: SingleChildScrollView(
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.65,
+                            child: GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount:
+                                      2, // Number of columns in the grid
+                                  crossAxisSpacing:
+                                      16.0, // Spacing between columns
+                                  mainAxisSpacing: 16.0, // Spacing between rows
+                                ),
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.brown),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Image.network(snapshot.data![index]),
+                                  );
+                                }),
+                          ),
                         ),
                       );
                     } else {

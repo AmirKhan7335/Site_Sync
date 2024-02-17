@@ -32,6 +32,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
           .collection('engineers')
           .doc(engEmail)
           .collection('activities')
+          .orderBy('order')
           .get();
 
       List dataList = await activitiesData.docs.map((doc) {
@@ -40,7 +41,8 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
           doc['name'],
           doc['image'],
           doc['startDate'],
-          doc['finishDate']
+          doc['finishDate'],
+          doc.id
         ];
       }).toList();
       return [engEmail, dataList];
@@ -83,7 +85,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Construction of ${widget.title}',
+                    '${widget.title}',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -148,7 +150,9 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ActivityGallery(
-                                                      engEmail: engEmail))),
+                                                      engEmail: engEmail,
+                                                      activityId:data[index][5]
+                                                      ))),
                                       title: Text(
                                         '${data[index][1]}',
                                         style: TextStyle(
@@ -158,9 +162,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                                       subtitle: Text(
                                           '${data[index][3]} - ${data[index][4]}',
                                           style: TextStyle(fontSize: 12)),
-                                      trailing: data[index][2] == ''
-                                          ? Icon(Icons.image)
-                                          : Image.network('${data[index][2]}')),
+                                     ),
                                 ),
                               );
                             }),

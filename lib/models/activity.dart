@@ -4,7 +4,7 @@ class Activity {
   String startDate; // Change the type to String
   String finishDate; // Change the type to String
   int order;
-  String image;
+  List image;
 
   Activity({
     required this.id,
@@ -12,6 +12,6 @@ class Activity {
     required this.startDate,
     required this.finishDate,
     required this.order,
-    this.image='',
+    this.image=const [],
   });
 }

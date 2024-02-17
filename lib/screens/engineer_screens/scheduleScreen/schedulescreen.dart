@@ -219,6 +219,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               builder: (context) => DetailsScreen(
                 mainHeading: mainHeading,
                 subHeading: subHeading,
+                image:activity.image
               ),
             ),
           );
