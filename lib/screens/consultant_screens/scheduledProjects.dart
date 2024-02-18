@@ -51,38 +51,6 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
     }
   }
 
-  Future<List> fetchCompletedProjects() async {
-//..
-    try {
-      DateTime currentDate = DateTime.now();
-
-      final collectionData = await FirebaseFirestore.instance
-          .collection('Projects')
-          .where('email', isEqualTo: user!.email)
-          .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
-          .get();
-      final userData = collectionData.docs.map(
-        (doc) {
-          return [
-            doc['title'],
-            doc['budget'],
-            doc['funding'],
-            doc['startDate'],
-            doc['endDate'],
-            doc['location'],
-            doc['creationDate'],
-            doc.id
-          ];
-        },
-      ).toList();
-
-      return userData;
-//..
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-      return [];
-    }
-  }
 
      calculateProgress(DateTime startDate, DateTime endDate) {
   try{if (endDate.isBefore(startDate)) {
@@ -177,79 +145,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
         });
   }
 
-  Widget Completed() {
-    return FutureBuilder(
-        future: fetchCompletedProjects(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()));
-          } else if (snapshot.hasData) {
-            final data = snapshot.data;
-            return ListView.builder(
-              itemCount: data!.length,
-              itemBuilder: (context, index) => ListTile(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ConsultantSchedule(
-                              projId: data[index][7],
-                              title: data[index][0],
-                            ))),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey[400],
-                  radius: 30,
-                  child: Text(
-                    '${index + 1}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                title: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${data[index][0]}'),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Container(
-                                width: 160,
-                                child: LinearProgressIndicator(
-                                  minHeight: 7,
-                                  borderRadius: BorderRadius.circular(5),
-                                  value: 1,
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.yellow),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text('100%'),
-                            ],
-                          )
-                        ],
-                      ),
-                    )),
-              ),
-            );
-          } else {
-            return Center(
-              child: Text('No Completed Projects'),
-            );
-          }
-        });
-  }
 
-  bool isOngoing = true;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -276,26 +172,22 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 150,
+                  width: Get.width*0.9,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: isOngoing ? Colors.yellow : Colors.grey,
+                    color: Colors.yellow ,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(
                     onTap: () {
-                      if (isOngoing == false) {
-                        setState(() {
-                          isOngoing = true;
-                        });
-                      }
+                      
                     },
                     child: Center(
                       child: Text(
                         'Ongoing',
                         style: TextStyle(
                           fontSize: 20,
-                          color: isOngoing ? Colors.black : Colors.white,
+                          color:  Colors.black ,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -303,33 +195,6 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                   ),
                 ),
                 SizedBox(width: 10),
-                Container(
-                  width: 150,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: !isOngoing ? Colors.yellow : Colors.grey,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      if (isOngoing == true) {
-                        setState(() {
-                          isOngoing = false;
-                        });
-                      }
-                    },
-                    child: Center(
-                      child: Text(
-                        'Completed',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: !isOngoing ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -342,7 +207,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.68,
-                child: isOngoing ? Ongoing() : Completed(),
+                child: Ongoing() ,
               ),
             ),
           )

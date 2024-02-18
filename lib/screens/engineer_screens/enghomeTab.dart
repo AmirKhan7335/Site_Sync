@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class EngineerHomeTab extends StatefulWidget {
@@ -24,10 +25,42 @@ class EngineerHomeTab extends StatefulWidget {
 class _EngineerHomeTabState extends State<EngineerHomeTab> {
   int currentPage = 0;
   int overAllPercent = 0;
-
+   late List projectData;
   final PageController pageController = PageController();
   final user = FirebaseAuth.instance.currentUser;
   List<Activity> activities = []; // Store activities here
+
+  Future<List> fetchProject() async {
+//..
+    try {
+      final collectionData = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(user!.email)
+          .get();
+
+      final projectId = await collectionData.data()!['projectId'];
+      final projectCollection = await FirebaseFirestore.instance
+          .collection('Projects')
+          .doc(projectId)
+          .get();
+      final data = await projectCollection.data();
+      final projectData = [
+        data!['title'],
+        data['budget'],
+        data['funding'],
+        data['startDate'],
+        data['endDate'],
+        data['location'],
+        data['creationDate'],
+        data['retMoney']
+      ];
+      return projectData;
+//..
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [];
+    }
+  }
 
   Future<String> fetchUsername() async {
     try {
@@ -257,7 +290,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
     final username = await fetchUsername();
     final profilePicUrl = await fetchProfilePicUrl();
     final activities = await fetchActivities();
-
+final projectData=await fetchProject();
     return UserData(
       username: username,
       profilePicUrl: profilePicUrl,
@@ -323,19 +356,20 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              IconButton(
-                                  onPressed: () {
-                                    Scaffold.of(context).openDrawer();
-                                  },
-                                  icon: Icon(Icons.menu)),
-                              CircleAvatar(
-                                backgroundImage: snapshot.data?.profilePicUrl !=
-                                        null
-                                    ? NetworkImage(
-                                        snapshot.data!.profilePicUrl!)
-                                    : const NetworkImage(
-                                        'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
-                                radius: 25,
+                              InkWell(
+                                onTap: () {
+                                  Scaffold.of(context).openDrawer();
+                                },
+                                child: CircleAvatar(
+                                  backgroundImage: snapshot
+                                              .data?.profilePicUrl !=
+                                          null
+                                      ? NetworkImage(
+                                          snapshot.data!.profilePicUrl!)
+                                      : const NetworkImage(
+                                          'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
+                                  radius: 25,
+                                ),
                               ),
                               SizedBox(
                                 width: 10,
@@ -378,45 +412,6 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           ),
                           const SizedBox(height: 10),
                           // Search bar
-                          const SizedBox(
-                            height: 48.0,
-                            child: Center(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 10.0),
-                                        hintText: "Search",
-                                        hintStyle:
-                                            TextStyle(color: Colors.white),
-                                        prefixIcon: Icon(Icons.search,
-                                            color: Colors.white),
-                                        filled: true,
-                                        fillColor: Color(0xFF6B8D9F),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(14)),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(14)),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(14)),
-                                          borderSide: BorderSide(
-                                              width: 1, color: Colors.blue),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                           const SizedBox(height: 10),
                           // Page view with indicators
                           StatefulBuilder(

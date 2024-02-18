@@ -24,6 +24,8 @@ class _CreateProjectState extends State<CreateProject> {
 
   TextEditingController fundingController = TextEditingController();
   TextEditingController locationController = TextEditingController();
+  TextEditingController retMoneyController = TextEditingController();
+
   DateTime? selectedDate;
   DateTime? endDate;
 
@@ -72,13 +74,14 @@ class _CreateProjectState extends State<CreateProject> {
           'location': locationController.text,
           'email': email,
           'creationDate': DateTime.now(),
-          'isSelected':false
+          'isSelected': false,
+          'retMoney': retMoneyController.text
         },
       );
       Get.snackbar('Success', 'Project created Successfully');
       titleController.clear();
       budgetController.clear();
-
+      retMoneyController.clear();
       fundingController.clear();
       locationController.clear();
     } catch (e) {
@@ -89,7 +92,7 @@ class _CreateProjectState extends State<CreateProject> {
   void dispose() {
     titleController.dispose();
     budgetController.dispose();
-
+    retMoneyController.dispose();
     fundingController.dispose();
     locationController.dispose();
     super.dispose();
@@ -153,7 +156,7 @@ class _CreateProjectState extends State<CreateProject> {
                       child: Padding(
                         padding: EdgeInsets.only(left: 6.0),
                         child: Text(
-                          'Budget',
+                          'Total Cost',
                           style:
                               TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
@@ -167,6 +170,30 @@ class _CreateProjectState extends State<CreateProject> {
                       icon: Icons.money,
                       keyboardType: TextInputType.text,
                     ),
+                   
+ const SizedBox(height: 20),
+                    const SizedBox(
+                      height: 25,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 6.0),
+                        child: Text(
+                          'Retention Money',
+                          style:
+                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    MyTextField(
+                      hintText: 'Rs 100,000,000',
+                      obscureText: false,
+                      controller: budgetController,
+                      icon: Icons.money,
+                      keyboardType: TextInputType.text,
+                    ),
+                   
+
                     const SizedBox(height: 20),
                     const SizedBox(
                       height: 25,
@@ -258,6 +285,7 @@ class _CreateProjectState extends State<CreateProject> {
                       onTap: () {
                         if (titleController.text.isEmpty ||
                             budgetController.text.isEmpty ||
+                            retMoneyController.text.isEmpty||
                             selectedDate == null ||
                             endDate == null ||
                             fundingController.text.isEmpty ||

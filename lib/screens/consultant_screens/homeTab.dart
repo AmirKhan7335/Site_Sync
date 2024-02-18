@@ -206,17 +206,17 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        IconButton(
-                            onPressed: () {
+                        InkWell(
+                          onTap: () {
                               Scaffold.of(context).openDrawer();
-                            },
-                            icon: Icon(Icons.menu)),
-                        CircleAvatar(
-                          backgroundImage: snapshot.data?.profilePicUrl != null
-                              ? NetworkImage(snapshot.data!.profilePicUrl!)
-                              : const NetworkImage(
-                                  'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
-                          radius: 25,
+                          },
+                          child: CircleAvatar(
+                            backgroundImage: snapshot.data?.profilePicUrl != null
+                                ? NetworkImage(snapshot.data!.profilePicUrl!)
+                                : const NetworkImage(
+                                    'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
+                            radius: 25,
+                          ),
                         ),
                         SizedBox(
                           width: 5,
@@ -254,44 +254,6 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                     ),
                     const SizedBox(height: 10),
                     // Search bar
-                    const SizedBox(
-                      height: 48.0,
-                      child: Center(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  contentPadding:
-                                      EdgeInsets.symmetric(vertical: 10.0),
-                                  hintText: "Search",
-                                  hintStyle: TextStyle(color: Colors.white),
-                                  prefixIcon:
-                                      Icon(Icons.search, color: Colors.white),
-                                  filled: true,
-                                  fillColor: Color(0xFF6B8D9F),
-                                  border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(14)),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(14)),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(14)),
-                                    borderSide: BorderSide(
-                                        width: 1, color: Colors.blue),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 20),
                     // Page view with indicators
                     Obx(
