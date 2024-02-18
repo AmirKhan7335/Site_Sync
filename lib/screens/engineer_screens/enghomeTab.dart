@@ -25,10 +25,28 @@ class EngineerHomeTab extends StatefulWidget {
 class _EngineerHomeTabState extends State<EngineerHomeTab> {
   int currentPage = 0;
   int overAllPercent = 0;
-  // late List projectData;
+
   final PageController pageController = PageController();
   final user = FirebaseAuth.instance.currentUser;
   List<Activity> activities = []; // Store activities here
+     calculateProgress(DateTime startDate, DateTime endDate) {
+  try{if (endDate.isBefore(startDate)) {
+    throw ArgumentError('End date cannot be before start date.');
+  }
+  final now = DateTime.now();
+  final totalDuration = endDate.difference(startDate).inSeconds;
+  final elapsedDuration = now.difference(startDate).inSeconds;
+
+  if (elapsedDuration < 0) {
+    return 0.0;
+  } else if (elapsedDuration >= totalDuration) {
+    return 100.0;
+  }
+
+  // Calculate progress as a percentage
+  final progress = elapsedDuration / totalDuration * 100.0;
+  return progress.roundToDouble();}catch(e){Get.snackbar('Error', e.toString());}
+}
 
   Future<List> fetchProject() async {
 //..
@@ -286,16 +304,19 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
     }
   }
 
-  Future<UserData> fetchData() async {
+  Future fetchData() async {
     final username = await fetchUsername();
     final profilePicUrl = await fetchProfilePicUrl();
     final activities = await fetchActivities();
-//final projectData=await fetchProject();
-    return UserData(
-      username: username,
-      profilePicUrl: profilePicUrl,
-      activities: activities,
-    );
+    final projectData = await fetchProject();
+    return [
+      UserData(
+        username: username,
+        profilePicUrl: profilePicUrl,
+        activities: activities,
+      ),
+      projectData
+    ];
   }
 
   Future<String?> fetchProfilePicUrl() async {
@@ -329,7 +350,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
             Container(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: FutureBuilder<UserData>(
+                child: FutureBuilder(
                   // Fetch the username asynchronously
                   future: data,
 
@@ -340,7 +361,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (snapshot.hasData) {
-                      final userData = snapshot.data!;
+                      final userData = snapshot.data![0];
                       final snapshotData = userData.activities;
                       List<Activity> activities = snapshotData ?? [];
                       // Find today's and upcoming activities
@@ -348,7 +369,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                       Activity? upcomingActivity =
                           findUpcomingActivity(activities);
                       overAllPercent = calculateOverallPercent(activities);
-
+                      final projectData = snapshot.data[1];
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -362,10 +383,10 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                 },
                                 child: CircleAvatar(
                                   backgroundImage: snapshot
-                                              .data?.profilePicUrl !=
+                                              .data?[0].profilePicUrl !=
                                           null
                                       ? NetworkImage(
-                                          snapshot.data!.profilePicUrl!)
+                                          snapshot.data![0].profilePicUrl!)
                                       : const NetworkImage(
                                           'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
                                   radius: 25,
@@ -384,7 +405,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   ),
                                   const SizedBox(height: 0),
                                   Text(
-                                    snapshot.data?.username ?? 'Guest',
+                                    snapshot.data?[0].username ?? 'Guest',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 22,
@@ -432,10 +453,12 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       },
                                       children: [
                                         PageOne(
-                                            startDate: todayActivity?.startDate,
-                                            endDate: todayActivity?.finishDate,
-                                            activityProgress: overAllPercent),
-                                        const PageTwo(),
+                                            startDate:DateFormat('dd-MM-yyyy')
+                                          .format (projectData[3].toDate()).toString(),
+                                            endDate:DateFormat('dd-MM-yyyy')
+                                          .format (projectData[4].toDate()).toString(),
+                                            activityProgress: calculateProgress(projectData[3].toDate(), projectData[4].toDate())),
+                                         PageTwo(total:projectData[1],retMoney:projectData[7]),
                                         const PageThree(),
                                       ],
                                     ),

@@ -188,7 +188,7 @@ class _CreateProjectState extends State<CreateProject> {
                     MyTextField(
                       hintText: 'Rs 100,000,000',
                       obscureText: false,
-                      controller: budgetController,
+                      controller: retMoneyController,
                       icon: Icons.money,
                       keyboardType: TextInputType.text,
                     ),

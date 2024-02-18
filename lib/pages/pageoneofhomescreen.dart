@@ -4,7 +4,7 @@ import '../components/arcpainter.dart';
 class PageOne extends StatelessWidget {
   final String? startDate;
   final String? endDate;
-  final int activityProgress;
+  final double activityProgress;
 
   const PageOne({
     super.key,

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../components/arcpainter.dart';
 
 class PageTwo extends StatefulWidget {
-  const PageTwo({super.key});
+  String total;
+  String retMoney;
+   PageTwo({super.key,required this.total,required this.retMoney});
 
   @override
   State<PageTwo> createState() => _PageTwoState();
@@ -42,11 +44,17 @@ class _PageTwoState extends State<PageTwo> {
           Transform.translate(
             offset: const Offset(2, 0),
             // Adjust the vertical offset as needed
-            child: const Text("Total Coast\n105,649,534",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
+            child: Column(
+
+              children: [
+                Text("Total Coast",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                        Text('${widget.total}')
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -61,7 +69,6 @@ class _PageTwoState extends State<PageTwo> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  
                   Container(
                     height: 55,
                     width: 90,
@@ -70,8 +77,9 @@ class _PageTwoState extends State<PageTwo> {
                         borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       children: [
-                        
-                        SizedBox(width: 5,),
+                        SizedBox(
+                          width: 5,
+                        ),
                         Container(
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle, color: Colors.green),
@@ -93,14 +101,22 @@ class _PageTwoState extends State<PageTwo> {
                         borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       children: [
-                        SizedBox(width: 5,),
+                        SizedBox(
+                          width: 5,
+                        ),
                         Container(
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle, color: Colors.red),
                             child: Icon(Icons.arrow_downward)),
-                        Text("  Retention\n105,649,534",
-                            style:
-                                TextStyle(fontSize: 10, color: Colors.white)),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("  Retention",
+                                style:
+                                    TextStyle(fontSize: 10, color: Colors.white)),
+                                    Text(widget.retMoney,style:  TextStyle(fontSize: 10, color: Colors.white),)
+                          ],
+                        ),
                       ],
                     ),
                   )

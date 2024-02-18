@@ -21,11 +21,11 @@ class MyHomePageState extends State<EngineerHomePage> {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
-    return Obx(
-      () => Scaffold(
+    return 
+       Scaffold(
         drawer: const MyDrawer(),
         backgroundColor: const Color(0xFF212832),
-        body: controller.engCurrentIndex.value == 1
+        body: Obx(() => controller.engCurrentIndex.value == 1
             ? ChatScreen()
             : controller.engCurrentIndex.value== 2
                 ? TakePicture()
@@ -33,57 +33,59 @@ class MyHomePageState extends State<EngineerHomePage> {
                     ? EngineerHomeTab()
                     : controller.engCurrentIndex.value == 3
                         ? const ScheduleScreen()
-                        : const NotificationsScreen(),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color.fromARGB(255, 38, 50, 56),
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.yellow,
-          currentIndex: controller.engCurrentIndex.value,
-          onTap: (int index) {
-            
-              controller.engCurrentIndex.value = index;
-
-          },
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
-              label: 'Chat',
-            ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 60.0,
-                    height: 38.0,
-                    decoration: const BoxDecoration(
-                      color: Colors.yellow,
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        : const NotificationsScreen(),),
+        bottomNavigationBar: Obx(()
+          => BottomNavigationBar(
+            backgroundColor: const Color.fromARGB(255, 38, 50, 56),
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Colors.yellow,
+            currentIndex: controller.engCurrentIndex.value,
+            onTap: (int index) {
+              
+                controller.engCurrentIndex.value = index;
+        
+            },
+            items: [
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.chat),
+                label: 'Chat',
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: 60.0,
+                      height: 38.0,
+                      decoration: const BoxDecoration(
+                        color: Colors.yellow,
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                      ),
+                      child: const Icon(Icons.camera_alt,
+                          color: Colors.black, size: 40.0),
                     ),
-                    child: const Icon(Icons.camera_alt,
-                        color: Colors.black, size: 40.0),
                   ),
                 ),
+                label: '',
               ),
-              label: '',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.schedule),
-              label: 'Schedule',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.currency_bitcoin),
-              label: 'Finanace',
-            ),
-          ],
-          iconSize: 20.0,
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.schedule),
+                label: 'Schedule',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.currency_bitcoin),
+                label: 'Finanace',
+              ),
+            ],
+            iconSize: 20.0,
+          ),
         ),
-      ),
-    );
+      );
+    
   }
 }
