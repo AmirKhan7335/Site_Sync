@@ -25,7 +25,7 @@ class EngineerHomeTab extends StatefulWidget {
 class _EngineerHomeTabState extends State<EngineerHomeTab> {
   int currentPage = 0;
   int overAllPercent = 0;
-   late List projectData;
+  // late List projectData;
   final PageController pageController = PageController();
   final user = FirebaseAuth.instance.currentUser;
   List<Activity> activities = []; // Store activities here
@@ -290,7 +290,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
     final username = await fetchUsername();
     final profilePicUrl = await fetchProfilePicUrl();
     final activities = await fetchActivities();
-final projectData=await fetchProject();
+//final projectData=await fetchProject();
     return UserData(
       username: username,
       profilePicUrl: profilePicUrl,
