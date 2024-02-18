@@ -16,6 +16,24 @@ class ProgressPage extends StatefulWidget {
 
 class _ScheduleProjectsState extends State<ProgressPage> {
   final user = FirebaseAuth.instance.currentUser;
+     calculateProgress(DateTime startDate, DateTime endDate) {
+  try{if (endDate.isBefore(startDate)) {
+    throw ArgumentError('End date cannot be before start date.');
+  }
+  final now = DateTime.now();
+  final totalDuration = endDate.difference(startDate).inSeconds;
+  final elapsedDuration = now.difference(startDate).inSeconds;
+
+  if (elapsedDuration < 0) {
+    return 0.0;
+  } else if (elapsedDuration >= totalDuration) {
+    return 100.0;
+  }
+
+  // Calculate progress as a percentage
+  final progress = elapsedDuration / totalDuration * 100.0;
+  return progress.roundToDouble();}catch(e){Get.snackbar('Error', e.toString());}
+}
 
   Future<List> fetchOngoingProjects() async {
 //..
@@ -118,7 +136,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Construction of ${data[index][0]}'),
+                          Text('${data[index][0]}'),
                           SizedBox(height: 10),
                           Row(
                             children: [
@@ -127,14 +145,17 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                                 child: LinearProgressIndicator(
                                   minHeight: 7,
                                   borderRadius: BorderRadius.circular(5),
-                                  value: 0.75,
+                                  value: calculateProgress(
+                                          data[index][3].toDate(),
+                                          data[index][4].toDate()) /
+                                      100,
                                   backgroundColor: Colors.white,
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                       Colors.yellow),
                                 ),
                               ),
                               SizedBox(width: 10),
-                              Text('75%'),
+                              Text('${ calculateProgress(data[index][3].toDate(), data[index][4].toDate())}%'),
                             ],
                           )
                         ],
@@ -184,7 +205,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Construction of ${data[index][0]}'),
+                          Text('${data[index][0]}'),
                           SizedBox(height: 10),
                           Row(
                             children: [
