@@ -28,23 +28,64 @@ class ChatListScreenState extends State<ChatListScreen> {
     loadValidUsers();
   }
 
+  checkRole() async {
+    final user = FirebaseAuth.instance.currentUser;
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.email)
+        .get();
+    String getRole = await userSnapshot['role'];
+    return getRole;
+  }
+
   Future<void> loadValidUsers() async {
     setState(() => isLoading = true);
 
     try {
-      final usersData = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email',
-              isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
-          .get();
-      validUsers = usersData.docs.map((doc) {
-        final Map<String, dynamic> data =
-            doc.data(); // Cast to Map<String, dynamic>
-        return ChatUser(
-          id: doc.id,
-          name: data['username'] ?? '',
-        );
-      }).toList();
+      final userEmail = await FirebaseAuth.instance.currentUser!.email;
+
+      final role = await checkRole();
+      if (role == 'Consultant') {
+        //For Consultant Valid Users:
+        final consltData = await FirebaseFirestore.instance
+            .collection('engineers')
+            .where('consultantEmail', isEqualTo: userEmail)
+            .get();
+        final docIds = await consltData.docs.map((doc) {
+          
+          return doc.id;
+        }).toList();
+//-----------------------------------------------
+        final usersData = await FirebaseFirestore.instance
+            .collection('users')
+            // .where('email',
+            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+            .where(FieldPath.documentId, whereIn: docIds)
+            .get();
+
+        validUsers = usersData.docs.map((doc) {
+          final Map<String, dynamic> data =
+              doc.data(); // Cast to Map<String, dynamic>
+          return ChatUser(
+            id: doc.id,
+            name: data['username'] ?? '',
+          );
+        }).toList();
+      } else {
+        final query = await FirebaseFirestore.instance
+            .collection('engineers')
+            .doc(userEmail)
+            .get();
+
+        final consltEmail = query.data()!['consultantEmail'];
+        final usersData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(consltEmail)
+            .get();
+        validUsers = [
+          ChatUser(id: consltEmail, name: usersData.data()!['username'])
+        ];
+      }
     } catch (e) {
       if (kDebugMode) {
         print('Error loading users: $e');
@@ -70,7 +111,7 @@ class ChatListScreenState extends State<ChatListScreen> {
     // Navigator.of(context).pop();
 
     // Navigate to the individual chat screen
-   await Navigator.of(context).push(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => IndividualChatScreen(
           user: selectedUser!,

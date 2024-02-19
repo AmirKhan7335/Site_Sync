@@ -48,7 +48,7 @@ class _AccountDetailsState extends State<AccountDetails> {
         .get();
     final userData = collectionData.docs.map(
       (doc) {
-        return [doc['username'], doc['email']];
+        return [doc['companyName'], doc['email']];
       },
     ).toList();
     return userData;

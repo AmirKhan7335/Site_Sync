@@ -114,24 +114,6 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                         children: [
                           Text('${data[index][0]}'),
                           SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Container(
-                                width: 160,
-                                child: LinearProgressIndicator(
-                                  minHeight: 7,
-                                  borderRadius: BorderRadius.circular(5),
-                                  value: 
-                                calculateProgress(data[index][3].toDate(), data[index][4].toDate())/100,
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.yellow),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text('${calculateProgress(data[index][3].toDate(), data[index][4].toDate())}%'),
-                            ],
-                          )
                         ],
                       ),
                     )),

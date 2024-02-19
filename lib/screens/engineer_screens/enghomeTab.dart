@@ -29,24 +29,6 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
   final PageController pageController = PageController();
   final user = FirebaseAuth.instance.currentUser;
   List<Activity> activities = []; // Store activities here
-     calculateProgress(DateTime startDate, DateTime endDate) {
-  try{if (endDate.isBefore(startDate)) {
-    throw ArgumentError('End date cannot be before start date.');
-  }
-  final now = DateTime.now();
-  final totalDuration = endDate.difference(startDate).inSeconds;
-  final elapsedDuration = now.difference(startDate).inSeconds;
-
-  if (elapsedDuration < 0) {
-    return 0.0;
-  } else if (elapsedDuration >= totalDuration) {
-    return 100.0;
-  }
-
-  // Calculate progress as a percentage
-  final progress = elapsedDuration / totalDuration * 100.0;
-  return progress.roundToDouble();}catch(e){Get.snackbar('Error', e.toString());}
-}
 
   Future<List> fetchProject() async {
 //..
@@ -457,7 +439,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                           .format (projectData[3].toDate()).toString(),
                                             endDate:DateFormat('dd-MM-yyyy')
                                           .format (projectData[4].toDate()).toString(),
-                                            activityProgress: calculateProgress(projectData[3].toDate(), projectData[4].toDate())),
+                                            activityProgress: overAllPercent),
                                          PageTwo(total:projectData[1],retMoney:projectData[7]),
                                         const PageThree(),
                                       ],

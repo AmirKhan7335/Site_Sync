@@ -30,78 +30,72 @@ class ConsultantHomePage extends StatefulWidget {
 }
 
 class ConsultantHomePageState extends State<ConsultantHomePage> {
-  
-  
-  
- 
   @override
   Widget build(BuildContext context) {
-   
     final controller = Get.put(NavigationController());
-    return Obx(()
-      => Scaffold(
+    return Scaffold(
         drawer: const MyDrawer(),
         backgroundColor: const Color(0xFF212832),
-        body: controller.cnsltCurrentIndex.value == 1
-            ? ChatScreen()
-            :  controller.cnsltCurrentIndex.value== 2
-                ? CreateProject()
-                : controller.cnsltCurrentIndex.value == 0
-                    ? ConsultantHomeTab()
-                    : controller.cnsltCurrentIndex.value == 3
-                        ? const ScheduleProjects()
-                        : const NotificationsScreen(),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color.fromARGB(255, 38, 50, 56),
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.yellow,
-          currentIndex: controller.cnsltCurrentIndex.value,
-          onTap: (int index) {
-            
-              controller.cnsltCurrentIndex.value= index;
-
-          },
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
-              label: 'Chat',
-            ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 56.0,
-                    height: 36.0,
-                    decoration: const BoxDecoration(
-                      color: Colors.yellow,
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+        body: Obx(
+          () => controller.cnsltCurrentIndex.value == 1
+              ? ChatScreen()
+              : controller.cnsltCurrentIndex.value == 2
+                  ? CreateProject()
+                  : controller.cnsltCurrentIndex.value == 0
+                      ? ConsultantHomeTab()
+                      : controller.cnsltCurrentIndex.value == 3
+                          ? const ScheduleProjects()
+                          : const NotificationsScreen(),
+        ),
+        bottomNavigationBar: Obx(
+          () => BottomNavigationBar(
+            backgroundColor: const Color.fromARGB(255, 38, 50, 56),
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Colors.yellow,
+            currentIndex: controller.cnsltCurrentIndex.value,
+            onTap: (int index) {
+              controller.cnsltCurrentIndex.value = index;
+            },
+            items: [
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.chat),
+                label: 'Chat',
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: 56.0,
+                      height: 36.0,
+                      decoration: const BoxDecoration(
+                        color: Colors.yellow,
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                      ),
+                      child: const Icon(Icons.add_box_outlined,
+                          color: Colors.black, size: 30.0),
                     ),
-                    child: const Icon(Icons.add_box_outlined,
-                        color: Colors.black, size: 30.0),
                   ),
                 ),
+                label: '',
               ),
-              label: '',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.schedule),
-              label: 'Schedule',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              label: 'Notifications',
-            ),
-          ],
-          iconSize: 20.0,
-        ),
-      ),
-    );
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.schedule),
+                label: 'Schedule',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.notifications),
+                label: 'Notifications',
+              ),
+            ],
+            iconSize: 20.0,
+          ),
+        ));
   }
 }
 

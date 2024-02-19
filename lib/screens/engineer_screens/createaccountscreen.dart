@@ -1,3 +1,4 @@
+import 'package:amir_khan1/screens/consultant_screens/cnsltCompanyInfo.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
@@ -113,7 +114,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => ConsultantSplash(),
+            builder: (context) => CnsltCompanyInfo(),
           ),
         );
       }
