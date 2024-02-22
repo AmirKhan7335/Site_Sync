@@ -94,9 +94,9 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       return Activity(
         id: doc['id'],
         name: doc['name'],
-        startDate: DateFormat('dd/MM/yyyy').format(parseDate(doc['startDate'])),
+        startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
         finishDate:
-            DateFormat('dd/MM/yyyy').format(parseDate(doc['finishDate'])),
+            DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
         order: doc['order'],
       );
     }).toList();

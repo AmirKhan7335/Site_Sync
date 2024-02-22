@@ -187,7 +187,7 @@ class _RequestPageState extends State<RequestPage> {
                         child: Icon(Icons.person),
                       ),
                       title: Text('${data[1][index]}'),
-                      subtitle: Text('Construction of NSTP'),
+                      subtitle: Text('Construction of ${data[0][index][0]}'),
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [

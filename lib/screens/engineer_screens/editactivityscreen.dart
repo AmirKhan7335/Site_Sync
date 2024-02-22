@@ -31,9 +31,9 @@ class EditActivityScreenState extends State<EditActivityScreen> {
     final controller = Get.put(EditActivityController());
     _nameController = TextEditingController(text: widget.activity.name);
     controller.selectedDate!.value =
-        DateFormat('dd-MM-yyyy').parse(widget.activity.startDate);
+        DateFormat('dd/MM/yyyy').parse(widget.activity.startDate);
     controller.endDate!.value =
-        DateFormat('dd-MM-yyyy').parse(widget.activity.finishDate);
+        DateFormat('dd/MM/yyyy').parse(widget.activity.finishDate);
     _orderController =
         TextEditingController(text: (widget.activity.order).toString());
   }
@@ -141,9 +141,9 @@ class EditActivityScreenState extends State<EditActivityScreen> {
     final controller = Get.put(EditActivityController());
     String newName = _nameController.text;
     String newStartDate =
-        DateFormat('dd-MM-yyyy').format(controller.selectedDate!.value);
+        DateFormat('dd/MM/yyyy').format(controller.selectedDate!.value);
     String newFinishDate =
-        DateFormat('dd-MM-yyyy').format(controller.endDate!.value);
+        DateFormat('dd/MM/yyyy').format(controller.endDate!.value);
     int? newOrder = int.tryParse(_orderController.text);
 
     if (newName.isNotEmpty &&

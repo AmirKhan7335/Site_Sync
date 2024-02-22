@@ -217,10 +217,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => DetailsScreen(
-                mainHeading: mainHeading,
-                subHeading: subHeading,
-                image:activity.image
-              ),
+                  mainHeading: mainHeading,
+                  subHeading: subHeading,
+                  image: activity.image),
             ),
           );
         }
@@ -418,8 +417,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   void _addActivity() async {
     setState(() => isLoading = true);
     // Show a dialog to get activity details (name, start date, finish date, and order)
-    final result = await 
-    showDialog(
+    final result = await showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Add New Activity'),
@@ -477,8 +475,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 final newActivity = Activity(
                   id: 'activity_${DateTime.now().millisecondsSinceEpoch}', // Unique ID
                   name: newName,
-                  startDate:DateFormat('dd-MM-yyyy') .format(controller.selectedDate!.value),
-                  finishDate: DateFormat('dd-MM-yyyy') .format(controller.endDate!.value),
+                  startDate: DateFormat('dd/MM/yyyy')
+                      .format(controller.selectedDate!.value),
+                  finishDate: DateFormat('dd/MM/yyyy')
+                      .format(controller.endDate!.value),
                   order: newUserOrder!,
                 );
 
@@ -616,7 +616,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   Future<void> fetchActivitiesFromFirebase() async {
     try {
-      
       var email = FirebaseAuth.instance.currentUser!.email;
       var activitiesSnapshot = await FirebaseFirestore.instance
           .collection('engineers')
@@ -631,8 +630,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         tempActivities.add(Activity(
             id: data['id'], // Use the Firestore document ID as the activity ID
             name: data['name'],
-            startDate: data['startDate'],
-            finishDate: data['finishDate'],
+            startDate:
+                DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
+            finishDate:
+                DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
             order: data['order'],
             image: data['image']));
       }
@@ -671,26 +672,32 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   Future<void> uploadActivityToFirebase(Activity activity) async {
-    var email = FirebaseAuth.instance.currentUser!.email;
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    var activitiesCollection =
-        firestore.collection('engineers').doc(email).collection('activities');
-
-    String sanitizedActivityName =
-        activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
-    String documentId =
-        '${sanitizedActivityName}_${DateTime.now().millisecondsSinceEpoch}';
-    activity.id = documentId; // Set the ID for the activity
-
-    var activityRef = activitiesCollection.doc(documentId);
-    await activityRef.set({
-      'id': documentId,
-      'name': activity.name,
-      'startDate': activity.startDate,
-      'finishDate': activity.finishDate,
-      'order': activity.order,
-      'image': activity.image,
-    });
+    try {
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var activitiesCollection =
+          firestore.collection('engineers').doc(email).collection('activities');
+      
+      String sanitizedActivityName =
+          activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
+      String documentId =
+          '${sanitizedActivityName}_${DateTime.now().millisecondsSinceEpoch}';
+      activity.id = documentId; // Set the ID for the activity
+      
+      var activityRef = activitiesCollection.doc(documentId);
+      await activityRef.set({
+        'id': documentId,
+        'name': activity.name,
+        'startDate': DateFormat('dd/MM/yyyy').parse(activity.startDate),
+        'finishDate': DateFormat('dd/MM/yyyy').parse(activity.finishDate),
+        'order': activity.order,
+        'image': activity.image,
+      });
+      
+    } catch (e) {
+      print(e.toString());
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   downloadSampleFile() async {
