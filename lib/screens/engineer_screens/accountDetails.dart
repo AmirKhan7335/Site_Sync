@@ -42,16 +42,27 @@ class _AccountDetailsState extends State<AccountDetails> {
 
   Future<List> fetchConsultant() async {
 //..
-    final collectionData = await FirebaseFirestore.instance
-        .collection('users')
-        .where('role', isEqualTo: 'Consultant')
-        .get();
-    final userData = collectionData.docs.map(
-      (doc) {
-        return [doc['companyName'], doc['email']];
-      },
-    ).toList();
-    return userData;
+    try {
+      final collectionData = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'Consultant')
+          .get();
+
+      final userData = collectionData.docs
+          .map((doc) {
+            if (doc.data().containsKey('companyName')) {
+              return [doc['companyName'], doc['email']];
+            } else {
+              return null; // Return null for documents without the 'companyName' field
+            }
+          })
+          .where((data) => data != null) // Filter out null values
+          .toList();
+      return userData;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [];
+    }
 //..
   }
 

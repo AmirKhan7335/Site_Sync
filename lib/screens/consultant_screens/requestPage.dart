@@ -99,7 +99,7 @@ class _RequestPageState extends State<RequestPage> {
         (Ids) async {
           final doc = await projects.doc(Ids).get();
 
-          return [doc['title'], doc['startDate'], doc['endDate']];
+          return [doc['title'], doc['startDate'], doc['endDate'],doc.id];
         },
       ).toList());
 

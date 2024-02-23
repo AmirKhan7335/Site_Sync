@@ -133,22 +133,24 @@ class _SigninScreenState extends State<SigninScreen> {
                 .collection('engineers')
                 .doc(user!.email)
                 .get();
-            final requestStatus = await activitiesSnapshot['reqAccepted'];
+            if (activitiesSnapshot.data()!.containsKey('reqAccepted')) {
+              final requestStatus = await activitiesSnapshot['reqAccepted'];
 
-            if (requestStatus == true) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EngineerHomePage(),
-                ),
-              );
-            } else if (requestStatus == false) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WelcomeEngineer(),
-                ),
-              );
+              if (requestStatus == true) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EngineerHomePage(),
+                  ),
+                );
+              } else if (requestStatus == false) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WelcomeEngineer(),
+                  ),
+                );
+              }
             } else {
               Navigator.pushReplacement(
                 context,
@@ -176,6 +178,9 @@ class _SigninScreenState extends State<SigninScreen> {
             isloading = false;
           });
         } catch (e) {
+          setState(() {
+            isloading = false;
+          });
           Get.snackbar('Error', e.toString());
         }
       }

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 class MyTextField extends StatefulWidget {
   final String hintText;
   final bool obscureText;
   final TextEditingController controller;
   final IconData icon; // Add icon property
-
+  final TextInputType keyboardType;
   MyTextField({
     Key? key,
     required this.hintText,
     required this.obscureText,
     required this.controller,
     required this.icon,
-    required TextInputType
+    required this.
         keyboardType, // Required icon parameter in constructor
   }) : super(key: key);
 
@@ -25,8 +25,7 @@ class MyTextFieldState extends State<MyTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    Focus(
+    return Focus(
       onFocusChange: (hasFocus) {
         setState(() {
           isFocused = hasFocus;
@@ -49,6 +48,8 @@ class MyTextFieldState extends State<MyTextField> {
           ),
           controller: widget.controller,
           obscureText: widget.obscureText,
+          keyboardType: widget.keyboardType,
+         // inputFormatters: [ThousandsSeparatorInputFormatter()],
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: widget.hintText,
@@ -93,7 +94,7 @@ class MyDateField extends StatefulWidget {
     Key? key,
     required this.hintText,
     required this.callback,
-     // Required icon parameter in constructor
+    // Required icon parameter in constructor
   }) : super(key: key);
 
   @override
@@ -131,8 +132,14 @@ class MyDateFieldState extends State<MyDateField> {
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: widget.hintText,
-            hintStyle:  TextStyle(
-              color:widget.hintText=='Select a date'?Colors.grey: widget.hintText=='End Date'?Colors.grey:widget.hintText=='Start Date'? Colors.grey:Colors.white,
+            hintStyle: TextStyle(
+              color: widget.hintText == 'Select a date'
+                  ? Colors.grey
+                  : widget.hintText == 'End Date'
+                      ? Colors.grey
+                      : widget.hintText == 'Start Date'
+                          ? Colors.grey
+                          : Colors.white,
             ),
             filled: true, // Ensure that the fillColor is applied
             fillColor: const Color(

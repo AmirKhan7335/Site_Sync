@@ -147,7 +147,7 @@ class _CreateProjectState extends State<CreateProject> {
                       obscureText: false,
                       controller: titleController,
                       icon: Icons.title,
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 20),
                     const SizedBox(
@@ -168,7 +168,7 @@ class _CreateProjectState extends State<CreateProject> {
                       obscureText: false,
                       controller: budgetController,
                       icon: Icons.money,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.number,
                     ),
                    
  const SizedBox(height: 20),
@@ -189,8 +189,9 @@ class _CreateProjectState extends State<CreateProject> {
                       hintText: 'Rs 100,000,000',
                       obscureText: false,
                       controller: retMoneyController,
+                      
                       icon: Icons.money,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.number,
                     ),
                    
 
