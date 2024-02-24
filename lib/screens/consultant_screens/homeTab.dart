@@ -534,7 +534,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
           ),
           InkWell(
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProjectScreen())),
+                MaterialPageRoute(builder: (context) => ProjectScreen(isCnslt: true,))),
             child: Card(
               elevation: 5,
               child: Container(

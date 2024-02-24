@@ -1,10 +1,11 @@
+import 'package:amir_khan1/screens/consultant_screens/widgets/projDetail.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProjectScreen extends StatefulWidget {
-  const ProjectScreen({super.key});
-
+  ProjectScreen({super.key, required bool this.isCnslt});
+  bool isCnslt;
   @override
   State<ProjectScreen> createState() => _ProjectScreenState();
 }
@@ -13,9 +14,17 @@ class _ProjectScreenState extends State<ProjectScreen> {
   Future<List> fetchProjects() async {
     final query = await FirebaseFirestore.instance.collection('Projects').get();
     final result = query.docs.map((doc) {
-      return [doc['title'], doc['endDate']];
+      return [
+        doc['title'],
+        doc['startDate'],
+        doc['endDate'],
+        doc['budget'],
+        doc['retMoney'],
+        doc['funding'],
+        doc['location']
+      ];
     }).toList();
-    print(result.length);
+    
     return result;
   }
 
@@ -39,6 +48,17 @@ class _ProjectScreenState extends State<ProjectScreen> {
             return ListView.builder(
                 itemCount: data!.length,
                 itemBuilder: ((context, index) => ListTile(
+                      onTap: () {
+                        if (widget.isCnslt) {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return ProjectDetail(
+                                projectDataList:data[index] ,
+                              );
+                            },
+                          ));
+                        }
+                      },
                       leading: ClipOval(
                         child: Text(
                           index.toString(),
@@ -47,9 +67,10 @@ class _ProjectScreenState extends State<ProjectScreen> {
                         ),
                       ),
                       title: Text(data[index][0].toString()),
-                      subtitle: Text(DateTime.now().isAfter(data[index][1].toDate())
-                          ? 'Completed'
-                          : 'Ongoing'),
+                      subtitle: Text(
+                          DateTime.now().isAfter(data[index][2].toDate())
+                              ? 'Completed'
+                              : 'Ongoing'),
                     )));
           }),
     );
