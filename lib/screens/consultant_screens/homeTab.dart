@@ -1,9 +1,10 @@
 import 'package:amir_khan1/controllers/projectsCountingController.dart';
 import 'package:amir_khan1/screens/centralBarScreens/documentScreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
-import 'package:amir_khan1/screens/centralBarScreens/testingScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/TestingTab/testingScreen.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/chooseProject.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/consltDocuments.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltTest/chooseProj.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
@@ -568,7 +569,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
           ),
           InkWell(
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => TestingScreen())),
+                MaterialPageRoute(builder: (context) => ChooseProjectForTest())),
             child: Card(
               elevation: 5,
               child: Container(

@@ -5,7 +5,7 @@ import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
 import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/documentScreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
-import 'package:amir_khan1/screens/centralBarScreens/testingScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/TestingTab/testingScreen.dart';
 import 'package:amir_khan1/models/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,7 +52,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
         data['endDate'],
         data['location'],
         data['creationDate'],
-        data['retMoney']
+        data['retMoney'],
+        projectId
       ];
       return projectData;
 //..
@@ -351,7 +352,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                       Activity? upcomingActivity =
                           findUpcomingActivity(activities);
                       overAllPercent = calculateOverallPercent(activities);
-                      final projectData = snapshot.data[1];
+                      final projData = snapshot.data[1];
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -436,11 +437,11 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       children: [
                                         PageOne(
                                             startDate:DateFormat('dd-MM-yyyy')
-                                          .format (projectData[3].toDate()).toString(),
+                                          .format (projData[3].toDate()).toString(),
                                             endDate:DateFormat('dd-MM-yyyy')
-                                          .format (projectData[4].toDate()).toString(),
+                                          .format (projData[4].toDate()).toString(),
                                             activityProgress: overAllPercent),
-                                         PageTwo(total:projectData[1],retMoney:projectData[7]),
+                                         PageTwo(total:projData[1],retMoney:projData[7]),
                                         const PageThree(),
                                       ],
                                     ),
@@ -583,7 +584,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              TestingScreen())),
+                                              TestingScreen(projId:projData[8],isCnslt: false,))),
                                   child: Card(
                                     elevation: 5,
                                     child: Container(

@@ -78,6 +78,15 @@ class _CreateProjectState extends State<CreateProject> {
           'retMoney': retMoneyController.text
         },
       );
+
+      final testing = await projectsCollection.collection('testing');
+      await testing.doc('Bearing Capacity Test').set({});
+      await testing.doc('Standard Penetration Test').set({});
+      await testing.doc('Soil Investigation Report').set({});
+      await testing.doc('Tensile Strength Test').set({});
+      await testing.doc('Brick Strength Test').set({});
+      await testing.doc('Compressive Strength Test').set({});
+
       Get.snackbar('Success', 'Project created Successfully');
       titleController.clear();
       budgetController.clear();
@@ -170,8 +179,8 @@ class _CreateProjectState extends State<CreateProject> {
                       icon: Icons.money,
                       keyboardType: TextInputType.number,
                     ),
-                   
- const SizedBox(height: 20),
+
+                    const SizedBox(height: 20),
                     const SizedBox(
                       height: 25,
                       width: double.infinity,
@@ -189,11 +198,9 @@ class _CreateProjectState extends State<CreateProject> {
                       hintText: 'Rs 100,000,000',
                       obscureText: false,
                       controller: retMoneyController,
-                      
                       icon: Icons.money,
                       keyboardType: TextInputType.number,
                     ),
-                   
 
                     const SizedBox(height: 20),
                     const SizedBox(
@@ -286,7 +293,7 @@ class _CreateProjectState extends State<CreateProject> {
                       onTap: () {
                         if (titleController.text.isEmpty ||
                             budgetController.text.isEmpty ||
-                            retMoneyController.text.isEmpty||
+                            retMoneyController.text.isEmpty ||
                             selectedDate == null ||
                             endDate == null ||
                             fundingController.text.isEmpty ||

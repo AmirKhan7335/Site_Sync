@@ -1,10 +1,14 @@
+import 'package:amir_khan1/screens/centralBarScreens/TestingTab/compressiveStrengthTest.dart/foundation.dart';
+import 'package:amir_khan1/screens/centralBarScreens/TestingTab/testDocs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class TestingScreen extends StatefulWidget {
-  const TestingScreen({super.key});
-
+  TestingScreen(
+      {super.key, required String this.projId, required bool this.isCnslt});
+  String projId;
+  bool isCnslt;
   @override
   State<TestingScreen> createState() => _TestingScreenState();
 }
@@ -30,7 +34,17 @@ class _TestingScreenState extends State<TestingScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, _text),
+              onPressed: () {
+                if (_text != '') {
+                  FirebaseFirestore.instance
+                      .collection('Projects')
+                      .doc(widget.projId)
+                      .collection('testing')
+                      .doc(_text)
+                      .set({});
+                }
+                Navigator.pop(context, _text);
+              },
               child: const Text('Save'),
             ),
           ],
@@ -45,27 +59,35 @@ class _TestingScreenState extends State<TestingScreen> {
         appBar: AppBar(
           title: Text('Testing'),
         ),
-        body: NamesList(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showTextInputDialog(context, 'Write Test').then((value) {
-              FirebaseFirestore.instance.collection('testing').doc().set({
-                'name': value,
-              });
-            });
-          },
-          child: const Icon(Icons.add),
-          backgroundColor: Colors.green,
-        ));
+        body: NamesList(projId: widget.projId),
+        floatingActionButton: widget.isCnslt
+            ? Center()
+            : FloatingActionButton(
+                onPressed: () {
+                  showTextInputDialog(context, 'Write Test');
+                },
+                child: const Icon(Icons.add),
+                backgroundColor: Colors.green,
+              ));
   }
 }
 
-class NamesList extends StatelessWidget {
+class NamesList extends StatefulWidget {
+  NamesList({super.key, required String this.projId});
+  String projId;
+  @override
+  State<NamesList> createState() => _NamesListState();
+}
+
+class _NamesListState extends State<NamesList> {
   @override
   Widget build(BuildContext context) {
-    return 
-    StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('testing').snapshots(),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('Projects')
+          .doc(widget.projId)
+          .collection('testing')
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center();
@@ -79,9 +101,7 @@ class NamesList extends StatelessWidget {
           );
         } else {
           final data = snapshot.data!.docs;
-          return
-        
-          ListView.builder(
+          return ListView.builder(
               itemCount: data.length,
               itemBuilder: ((context, index) => Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -89,12 +109,23 @@ class NamesList extends StatelessWidget {
                       children: [
                         ListTile(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DetailScreen(
-                                          title: 'Detail',
-                                        )));
+                            if (data[index].id == 'Compressive Strength Test') {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DetailScreen(
+                                            title: 'Compressive Strength Test',
+                                            projId: widget.projId,
+                                          )));
+                            } else {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TestDocumentScreen(
+                                            docName: data[index].id,
+                                            projId: widget.projId,
+                                          )));
+                            }
                           },
                           leading: ClipOval(
                               child: Text(
@@ -102,7 +133,7 @@ class NamesList extends StatelessWidget {
                             style: TextStyle(fontSize: 20),
                           )),
                           title: Text(
-                            '${data[index]['name']}',
+                            '${data[index].id}',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -124,8 +155,10 @@ class NamesList extends StatelessWidget {
 }
 
 class DetailScreen extends StatefulWidget {
-  DetailScreen({super.key, required String this.title});
+  DetailScreen(
+      {super.key, required String this.title, required String this.projId});
   String title;
+  String projId;
   @override
   State<DetailScreen> createState() => DetailScreenState();
 }
@@ -151,6 +184,15 @@ class DetailScreenState extends State<DetailScreen> {
                 child: Column(
                   children: [
                     ListTile(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FoundationDocumentScreen(
+                                      docName: names[index],
+                                      projId: widget.projId,
+                                    )));
+                      },
                       leading: ClipOval(child: Icon(icons[index])),
                       title: Text(
                         '${names[index]}',

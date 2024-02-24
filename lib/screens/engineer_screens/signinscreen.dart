@@ -133,21 +133,30 @@ class _SigninScreenState extends State<SigninScreen> {
                 .collection('engineers')
                 .doc(user!.email)
                 .get();
-            if (activitiesSnapshot.data()!.containsKey('reqAccepted')) {
-              final requestStatus = await activitiesSnapshot['reqAccepted'];
+            if (activitiesSnapshot.exists) {
+              if (activitiesSnapshot.data()!.containsKey('reqAccepted')) {
+                final requestStatus = await activitiesSnapshot['reqAccepted'];
 
-              if (requestStatus == true) {
+                if (requestStatus == true) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EngineerHomePage(),
+                    ),
+                  );
+                } else if (requestStatus == false) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WelcomeEngineer(),
+                    ),
+                  );
+                }
+              } else {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EngineerHomePage(),
-                  ),
-                );
-              } else if (requestStatus == false) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WelcomeEngineer(),
+                    builder: (context) => AccountDetails(),
                   ),
                 );
               }
@@ -159,7 +168,6 @@ class _SigninScreenState extends State<SigninScreen> {
                 ),
               );
             }
-
             setState(() {
               isloading = false;
             });
