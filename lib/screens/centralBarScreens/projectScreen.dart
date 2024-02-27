@@ -21,11 +21,29 @@ class _ProjectScreenState extends State<ProjectScreen> {
         doc['budget'],
         doc['retMoney'],
         doc['funding'],
-        doc['location']
+        doc['location'],
+        doc.id
       ];
     }).toList();
-    
+
     return result;
+  }
+
+  Future<String> getEngineer(projId) async {
+    try {
+      final engineerEmail = await FirebaseFirestore.instance
+          .collection('engineers')
+          .where('projectId', isEqualTo: projId)
+          .get();
+      final email = engineerEmail.docs.map((doc) => doc.id).toList();
+      final userName = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email[0])
+          .get();
+      return userName.data()!['username'];
+    } catch (e) {
+      return 'No Engineer Assigned';
+    }
   }
 
   @override
@@ -48,12 +66,15 @@ class _ProjectScreenState extends State<ProjectScreen> {
             return ListView.builder(
                 itemCount: data!.length,
                 itemBuilder: ((context, index) => ListTile(
-                      onTap: () {
+                      onTap: () async {
+                        final id = data[index][7];
+                        final getname = await getEngineer(id);
                         if (widget.isCnslt) {
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
                               return ProjectDetail(
-                                projectDataList:data[index] ,
+                                projectDataList: data[index],
+                                engineerName: getname,
                               );
                             },
                           ));

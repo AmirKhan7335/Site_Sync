@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ProjectDetail extends StatefulWidget {
-  ProjectDetail({required this.projectDataList, super.key});
+  ProjectDetail({required this.projectDataList, required String this.engineerName,super.key,});
 
   List projectDataList;
-
+String engineerName;
   @override
   State<ProjectDetail> createState() => _RequestBodyState();
 }
@@ -179,6 +179,24 @@ class _RequestBodyState extends State<ProjectDetail> {
                       SizedBox(
                         height: 25,
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 50,
+                          ),
+                          Text(
+                            'Engineer :  ',
+                          ),
+                          Text(
+                            '',
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 25,
+                      ),
+                      
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [

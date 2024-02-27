@@ -2,16 +2,21 @@ import 'dart:io';
 
 import 'package:amir_khan1/controllers/centralTabController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path/path.dart';
+import 'package:open_file/open_file.dart';
 
 class CnsltDocumentScreen extends StatefulWidget {
-   CnsltDocumentScreen({super.key, required String this.projectId});
+  CnsltDocumentScreen({super.key, required String this.projectId});
   String projectId;
   @override
   State<CnsltDocumentScreen> createState() => _DocumentScreenState();
@@ -49,7 +54,7 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
 
       await uploadTask.whenComplete(() => null);
       String downloadUrl = await ref.getDownloadURL();
-      final projId =  widget.projectId;
+      final projId = widget.projectId;
       FirebaseFirestore.instance.collection('Projects').doc(projId).update({
         'documents': FieldValue.arrayUnion([
           [
@@ -63,6 +68,46 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
     }
     // Use downloadUrl as needed, e.g., save to Firestore database
     // print('File uploaded to: $downloadUrl');
+  }
+
+  getPath() async {
+    final Directory? tempDir = await getExternalStorageDirectory();
+    final filePath = Directory("${tempDir!.path}/files");
+    if (await filePath.exists()) {
+      return filePath.path;
+    } else {
+      await filePath.create(recursive: true);
+      return filePath.path;
+    }
+  }
+
+  Future<void> _checkFileAndOpen(fileUrl, fileName) async {
+    try {
+      var storePath = await getPath();
+      bool isExist = await File('$storePath/$fileName').exists();
+      if (isExist) {
+        OpenFile.open('$storePath/$fileName');
+      } else {
+        var filePath = '$storePath/$fileName';
+        // setState(() {
+        //   dowloading = true;
+        //   progress = 0;
+        // });
+
+        await Dio().download(
+          fileUrl,
+          filePath,
+          onReceiveProgress: (count, total) {
+            // setState(() {
+            //   progress = (count / total);
+            // });
+          },
+        );
+        OpenFile.open(filePath);
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   Future<List> getDocuments() async {
@@ -122,13 +167,18 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
                         return ListTile(
                           onTap: () async {
                             try {
-                              final Uri _url = Uri.parse(getlist[1]);
-                              if (await canLaunchUrl(_url)) {
-                                // print('object');
-                                await launchUrl(_url);
-                              } else {
-                                Get.snackbar('Error', 'Unknown Error');
-                              }
+                              //------------------------------------------
+                              // final Uri _url = Uri.parse(getlist[1]);
+                              // if (await canLaunchUrl(_url)) {
+                              //   // print('object');
+                              //   await launchUrl(_url);
+                              // } else {
+                              //   Get.snackbar('Error', 'Unknown Error');
+                              // }
+                              //-------------------------------------------
+                              controller.isDocumentLoading.value = true;
+                              _checkFileAndOpen(getlist[1], getlist[0]);
+                              controller.isDocumentLoading.value = false;
                             } catch (e) {
                               Get.snackbar('Error', e.toString());
                             }

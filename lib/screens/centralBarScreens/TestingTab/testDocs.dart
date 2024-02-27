@@ -2,13 +2,17 @@ import 'dart:io';
 
 import 'package:amir_khan1/controllers/centralTabController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 class TestDocumentScreen extends StatefulWidget {
   TestDocumentScreen(
@@ -82,6 +86,46 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
     return query.data()!['documents'];
   }
 
+  getPath() async {
+    final Directory? tempDir = await getExternalStorageDirectory();
+    final filePath = Directory("${tempDir!.path}/files");
+    if (await filePath.exists()) {
+      return filePath.path;
+    } else {
+      await filePath.create(recursive: true);
+      return filePath.path;
+    }
+  }
+
+  Future<void> _checkFileAndOpen(fileUrl, fileName) async {
+    try {
+      var storePath = await getPath();
+      bool isExist = await File('$storePath/$fileName').exists();
+      if (isExist) {
+        OpenFile.open('$storePath/$fileName');
+      } else {
+        var filePath = '$storePath/$fileName';
+        // setState(() {
+        //   dowloading = true;
+        //   progress = 0;
+        // });
+
+        await Dio().download(
+          fileUrl,
+          filePath,
+          onReceiveProgress: (count, total) {
+            // setState(() {
+            //   progress = (count / total);
+            // });
+          },
+        );
+        OpenFile.open(filePath);
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final control = Get.put(CentralTabController());
@@ -130,13 +174,16 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
                         return ListTile(
                           onTap: () async {
                             try {
-                              final Uri _url = Uri.parse(getlist[1]);
-                              if (await canLaunchUrl(_url)) {
-                                // print('object');
-                                await launchUrl(_url);
-                              } else {
-                                Get.snackbar('Error', 'Unknown Error');
-                              }
+                              // final Uri _url = Uri.parse(getlist[1]);
+                              // if (await canLaunchUrl(_url)) {
+                              //   // print('object');
+                              //   await launchUrl(_url);
+                              // } else {
+                              //   Get.snackbar('Error', 'Unknown Error');
+                              // }
+                              controller.isDocumentLoading.value = true;
+                              _checkFileAndOpen(getlist[1], getlist[0]);
+                              controller.isDocumentLoading.value = false;
                             } catch (e) {
                               Get.snackbar('Error', e.toString());
                             }
