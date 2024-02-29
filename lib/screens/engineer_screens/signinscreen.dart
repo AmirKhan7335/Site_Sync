@@ -1,4 +1,5 @@
-import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
@@ -176,6 +177,17 @@ class _SigninScreenState extends State<SigninScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => ConsultantSplash(),
+              ),
+            );
+            setState(() {
+              isloading = false;
+            });
+          }
+          else if (getRole == 'Contractor') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ContractorHomePage(),
               ),
             );
             setState(() {

@@ -7,14 +7,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ProgressPage extends StatefulWidget {
-  const ProgressPage({super.key});
+class ContrProgressPage extends StatefulWidget {
+  const ContrProgressPage({super.key});
 
   @override
-  State<ProgressPage> createState() => _ScheduleProjectsState();
+  State<ContrProgressPage> createState() => _ScheduleProjectsState();
 }
 
-class _ScheduleProjectsState extends State<ProgressPage> {
+class _ScheduleProjectsState extends State<ContrProgressPage> {
   final user = FirebaseAuth.instance.currentUser;
      calculateProgress(DateTime startDate, DateTime endDate) {
   try{if (endDate.isBefore(startDate)) {

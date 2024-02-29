@@ -1,6 +1,8 @@
 import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
-import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
+import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
@@ -73,7 +75,11 @@ class _AuthPageState extends State<AuthPage> {
                       }
                     } else if (snapshot.data == 'Consultant') {
                       return ConsultantHomePage();
-                    } else {
+                    }
+                     else if (snapshot.data == 'Contractor') {
+                      return ContractorHomePage();
+                    }
+                     else {
                       return Center(child: Text('Nothing To Show'));
                     }
                   } else if (snapshot.connectionState ==

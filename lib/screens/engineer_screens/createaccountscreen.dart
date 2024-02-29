@@ -1,6 +1,6 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltCompanyInfo.dart';
-import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
-import 'package:amir_khan1/screens/contractor_screen/companyInfo.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/signinscreen.dart';
@@ -62,7 +62,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         isloading = false;
       });
     } catch (e) {
-      showErrorDialog('An error occurred. ${e}');
+      Get.snackbar('Error', e.toString());
       setState(() {
         isloading = false;
       });

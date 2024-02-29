@@ -1,5 +1,6 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/progressWidgets.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/contrSchedule/schedDetail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:excel/excel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,14 +8,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ScheduleProjects extends StatefulWidget {
-  const ScheduleProjects({super.key});
+class ContrScheduleProjects extends StatefulWidget {
+  const ContrScheduleProjects({super.key});
 
   @override
-  State<ScheduleProjects> createState() => _ScheduleProjectsState();
+  State<ContrScheduleProjects> createState() => _ScheduleProjectsState();
 }
 
-class _ScheduleProjectsState extends State<ScheduleProjects> {
+class _ScheduleProjectsState extends State<ContrScheduleProjects> {
   final user = FirebaseAuth.instance.currentUser;
 
   Future<List> fetchOngoingProjects() async {
@@ -92,7 +93,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                 onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ConsultantSchedule(
+                        builder: (context) => ContrScheduleDetail(
                             projId: data[index][7], title: data[index][0]))),
                 leading: CircleAvatar(
                   backgroundColor: Colors.grey[400],

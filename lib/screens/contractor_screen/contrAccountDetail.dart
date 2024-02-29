@@ -1,5 +1,7 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
+import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
+import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,14 +9,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AccountDetails extends StatefulWidget {
-  AccountDetails({super.key});
+class ContrAccountDetails extends StatefulWidget {
+  ContrAccountDetails({super.key});
 
   @override
-  State<AccountDetails> createState() => _AccountDetailsState();
+  State<ContrAccountDetails> createState() => _AccountDetailsState();
 }
 
-class _AccountDetailsState extends State<AccountDetails> {
+class _AccountDetailsState extends State<ContrAccountDetails> {
   final _formKey = GlobalKey<FormState>();
 
   bool isloading = false;
@@ -26,7 +28,7 @@ class _AccountDetailsState extends State<AccountDetails> {
   Future<void> sendRequestToConsultant(projectId) async {
     final email = FirebaseAuth.instance.currentUser!.email;
     var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('engineers')
+        .collection('contractor')
         .doc(email)
         .set({
       'consultantEmail': consultantEmail,
@@ -233,7 +235,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                       width: double.infinity,
                       child: Center(
                         child: Text(
-                          'Accounts Details',
+                          'New Project',
                           style: TextStyle(fontSize: 21.0, color: Colors.white),
                           textAlign: TextAlign.left,
                         ),
@@ -352,7 +354,16 @@ class _AccountDetailsState extends State<AccountDetails> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 100),
+                    
+                    
+                    Row(mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(onPressed: (){
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ContractorHomePage()));
+                        }, child: Text('Skip',style: TextStyle(color: Colors.white),),style: ButtonStyle(),),
+                      ],
+                    ),
+                    const SizedBox(height: 50),
                     MyButton(
                       text: 'Continue',
                       bgColor: Colors.yellow,

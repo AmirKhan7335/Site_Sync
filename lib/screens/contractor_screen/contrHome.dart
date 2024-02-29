@@ -12,6 +12,9 @@ import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/scheduledProjects.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
 import 'package:amir_khan1/models/activity.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/contrCreateProject.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/contrHomeTab.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/contrSchedule/contrSchedule.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
@@ -22,14 +25,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ConsultantHomePage extends StatefulWidget {
-  const ConsultantHomePage({super.key});
+class ContractorHomePage extends StatefulWidget {
+  const ContractorHomePage({super.key});
 
   @override
   ConsultantHomePageState createState() => ConsultantHomePageState();
 }
 
-class ConsultantHomePageState extends State<ConsultantHomePage> {
+class ConsultantHomePageState extends State<ContractorHomePage> {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
@@ -37,14 +40,14 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
         drawer: const MyDrawer(),
         backgroundColor: const Color(0xFF212832),
         body: Obx(
-          () => controller.cnsltCurrentIndex.value == 1
+          () => controller.contrCurrentIndex.value == 1
               ? ChatScreen()
-              : controller.cnsltCurrentIndex.value == 2
-                  ? CreateProject()
-                  : controller.cnsltCurrentIndex.value == 0
-                      ? ConsultantHomeTab()
-                      : controller.cnsltCurrentIndex.value == 3
-                          ? const ScheduleProjects()
+              : controller.contrCurrentIndex.value == 2
+                  ? ContrCreateProject()
+                  : controller.contrCurrentIndex.value == 0
+                      ? ContrHomeTab()
+                      : controller.contrCurrentIndex.value == 3
+                          ? const ContrScheduleProjects()
                           : const NotificationsScreen(),
         ),
         bottomNavigationBar: Obx(
@@ -52,9 +55,9 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
             backgroundColor: const Color.fromARGB(255, 38, 50, 56),
             type: BottomNavigationBarType.fixed,
             selectedItemColor: Colors.yellow,
-            currentIndex: controller.cnsltCurrentIndex.value,
+            currentIndex: controller.contrCurrentIndex.value,
             onTap: (int index) {
-              controller.cnsltCurrentIndex.value = index;
+              controller.contrCurrentIndex.value = index;
             },
             items: [
               const BottomNavigationBarItem(
@@ -99,11 +102,11 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
   }
 }
 
-class ConsultantUserData {
+class ContractorUserData {
   final String username;
   final String? profilePicUrl;
 
-  ConsultantUserData({
+  ContractorUserData({
     required this.username,
     this.profilePicUrl,
   });

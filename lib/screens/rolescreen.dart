@@ -1,5 +1,5 @@
-import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
-import 'package:amir_khan1/screens/contractor_screen/companyInfo.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:flutter/material.dart';
