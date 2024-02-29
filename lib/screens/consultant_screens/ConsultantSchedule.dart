@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ConsultantSchedule extends StatefulWidget {
   ConsultantSchedule({required this.projId, required this.title, super.key});
@@ -145,24 +146,24 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: ListTile(
-                                      onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ActivityGallery(
-                                                      engEmail: engEmail,
-                                                      activityId:data[index][5]
-                                                      ))),
-                                      title: Text(
-                                        '${data[index][1]}',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      subtitle: Text(
-                                          '${data[index][3]} - ${data[index][4]}',
-                                          style: TextStyle(fontSize: 12)),
-                                     ),
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ActivityGallery(
+                                                    engEmail: engEmail,
+                                                    activityId: data[index]
+                                                        [5]))),
+                                    title: Text(
+                                      '${data[index][1]}',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle: Text(
+                                        '${DateFormat('dd/MM/yyyy').format(data[index][3].toDate())} - ${DateFormat('dd/MM/yyyy').format(data[index][4].toDate())}',
+                                        style: TextStyle(fontSize: 12)),
+                                  ),
                                 ),
                               );
                             }),

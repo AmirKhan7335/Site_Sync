@@ -1,5 +1,6 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltCompanyInfo.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/companyInfo.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/signinscreen.dart';
@@ -29,7 +30,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
   bool isChecked = false;
   bool isloading = false;
   String dropdownValue = 'Choose Your Role';
-  List<String> list = ['Choose Your Role', 'Engineer', 'Consultant'];
+  List<String> list = ['Choose Your Role', 'Engineer', 'Consultant','Contractor'];
   void registerUser() async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -115,6 +116,14 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => CnsltCompanyInfo(),
+          ),
+        );
+      }
+      else if (getRole == 'Contractor') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContractorCompanyInfo(),
           ),
         );
       }

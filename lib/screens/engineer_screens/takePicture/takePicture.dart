@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class TakePicture extends StatefulWidget {
   TakePicture({super.key});
@@ -153,8 +154,8 @@ class _AddPicState extends State<AddPic> {
       tempActivities.add(Activity(
           id: data['id'], // Use the Firestore document ID as the activity ID
           name: data['name'],
-          startDate: data['startDate'],
-          finishDate: data['finishDate'],
+          startDate: DateFormat('dd/MM/yyyy').format(data['startDate'].toDate()),
+          finishDate: DateFormat('dd/MM/yyyy').format(data['finishDate'].toDate()),
           order: data['order'],
           image: data['image']));
     }

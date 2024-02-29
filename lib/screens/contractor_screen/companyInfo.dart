@@ -1,33 +1,51 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class CompanyInfo extends StatefulWidget {
-  const CompanyInfo({super.key});
+class ContractorCompanyInfo extends StatefulWidget {
+  const ContractorCompanyInfo({super.key});
 
   @override
-  State<CompanyInfo> createState() => _CompanyInfoState();
+  State<ContractorCompanyInfo> createState() => _CompanyInfoState();
 }
 
-class _CompanyInfoState extends State<CompanyInfo> {
+class _CompanyInfoState extends State<ContractorCompanyInfo> {
   final _formKey = GlobalKey<FormState>();
   bool isloading = false;
   TextEditingController nameController = TextEditingController();
   TextEditingController ownerController = TextEditingController();
   TextEditingController typeController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+ // TextEditingController emailController = TextEditingController();
   TextEditingController officeController = TextEditingController();
   @override
   void dispose() {
     nameController.dispose();
     ownerController.dispose();
     typeController.dispose();
-    emailController.dispose();
+   // emailController.dispose();
     officeController.dispose();
     super.dispose();
   }
+  addDatatoDatabase() async {
+    try {
+      final email = await FirebaseAuth.instance.currentUser!.email;
+      
+      await FirebaseFirestore.instance.collection("users").doc(email).update({
+        'companyName': nameController.text,
+        'owner': ownerController.text,
+        'type': typeController.text,
+        'office': officeController.text
+      });
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,27 +140,27 @@ class _CompanyInfoState extends State<CompanyInfo> {
                       keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 20),
-                    const SizedBox(
-                      height: 25,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 6.0),
-                        child: Text(
-                          'Email',
-                          style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                    ),
-                    MyTextField(
-                      hintText: 'arco@gmail.com',
-                      obscureText: false,
-                      controller: emailController,
-                      icon: Icons.email,
-                      keyboardType: TextInputType.text,
-                    ),
-                    const SizedBox(height: 20),
+                    // const SizedBox(
+                    //   height: 25,
+                    //   width: double.infinity,
+                    //   child: Padding(
+                    //     padding: EdgeInsets.only(left: 6.0),
+                    //     child: Text(
+                    //       'Email',
+                    //       style:
+                    //           TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                    //       textAlign: TextAlign.left,
+                    //     ),
+                    //   ),
+                    // ),
+                    // MyTextField(
+                    //   hintText: 'arco@gmail.com',
+                    //   obscureText: false,
+                    //   controller: emailController,
+                    //   icon: Icons.email,
+                    //   keyboardType: TextInputType.text,
+                    // ),
+                    // const SizedBox(height: 20),
                     const SizedBox(
                       height: 25,
                       width: double.infinity,
@@ -170,12 +188,23 @@ class _CompanyInfoState extends State<CompanyInfo> {
                       text: 'Confirm',
                       bgColor: Colors.yellow,
                       textColor: Colors.black,
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ConsultantHomePage()));
-                      },
+                      onTap: () { if (nameController.text.isNotEmpty &&
+                            typeController.text.isNotEmpty &&
+                            officeController.text.isNotEmpty) {
+                          setState(() {
+                            isloading = true;
+                          });
+                          addDatatoDatabase();
+                          setState(() {
+                            isloading = false;
+                          });
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ConsultantHomePage()));
+                        } else {
+                          Get.snackbar('Sorry', 'Please Fill All the Fields');
+                        }},
                     ),
                     const SizedBox(height: 20),
                   ],

@@ -2,6 +2,7 @@ import 'package:amir_khan1/screens/consultant_screens/widgets/projDetail.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProjectScreen extends StatefulWidget {
   ProjectScreen({super.key, required bool this.isCnslt});
@@ -11,8 +12,29 @@ class ProjectScreen extends StatefulWidget {
 }
 
 class _ProjectScreenState extends State<ProjectScreen> {
+  final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
+  getprojIdFromEngineer() async {
+    final query = await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc(currentUserEmail)
+        .get();
+    final projId = await query.data()!['projectId'];
+    return projId;
+  }
+
   Future<List> fetchProjects() async {
-    final query = await FirebaseFirestore.instance.collection('Projects').get();
+    
+    final projIdFromEngineer =widget.isCnslt?'': await getprojIdFromEngineer();
+    
+    final query = widget.isCnslt
+        ? await FirebaseFirestore.instance
+            .collection('Projects')
+            .where('email', isEqualTo: currentUserEmail)
+            .get()
+        : await FirebaseFirestore.instance
+            .collection('Projects')
+            .where(FieldPath.documentId, isEqualTo: projIdFromEngineer)
+            .get();
     final result = query.docs.map((doc) {
       return [
         doc['title'],
