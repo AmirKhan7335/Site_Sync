@@ -325,7 +325,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                           if (consultantEmail != '') {
                             showProjects(context);
                           } else {
-                            Get.snackbar("Sorry", 'Select Consultant First');
+                            Get.snackbar("Sorry", 'Select Company First');
                           }
                         },
                         style: const TextStyle(

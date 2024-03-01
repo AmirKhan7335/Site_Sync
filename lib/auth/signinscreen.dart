@@ -1,4 +1,6 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
+import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
@@ -12,10 +14,10 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
-import '../../components/my_button.dart';
-import '../../components/mytextfield.dart';
-import '../../main.dart';
-import 'createaccountscreen.dart';
+import '../components/my_button.dart';
+import '../components/mytextfield.dart';
+import '../main.dart';
+import '../screens/engineer_screens/createaccountscreen.dart';
 
 // Google sign in
 Future<User?> signInWithGoogle() async {
@@ -187,7 +189,7 @@ class _SigninScreenState extends State<SigninScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ContractorHomePage(),
+                builder: (context) => ContrAccountDetails(),
               ),
             );
             setState(() {
@@ -227,7 +229,7 @@ class _SigninScreenState extends State<SigninScreen> {
           }
         }
       } else {
-        showErrorDialog('Invalid email or password');
+        showErrorDialog('${e}');
         if (kDebugMode) {
           print('Error: ${e.message}');
         }

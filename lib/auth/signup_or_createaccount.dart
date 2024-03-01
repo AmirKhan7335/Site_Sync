@@ -1,7 +1,7 @@
+import 'package:amir_khan1/auth/signinscreen.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/engineer_screens/createaccountscreen.dart';
-import '../screens/engineer_screens/signinscreen.dart';
 
 class LoginOrRegister extends StatefulWidget {
   const LoginOrRegister({super.key});

@@ -30,6 +30,8 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
     var activitiesSnapshot = await FirebaseFirestore.instance
         .collection('contractor')
         .doc(email)
+        .collection('projects')
+        .doc()
         .set({
       'consultantEmail': consultantEmail,
       'projectId': projectId,
@@ -39,7 +41,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
     var projectSelected = await FirebaseFirestore.instance
         .collection('Projects')
         .doc(projectId)
-        .update({'isSelected': true});
+        .update({'isContrSelected': true});
   }
 
   Future<List> fetchConsultant() async {
@@ -55,7 +57,8 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
             if (doc.data().containsKey('companyName')) {
               return [doc['companyName'], doc['email']];
             } else {
-              return null; // Return null for documents without the 'companyName' field
+              return null;
+              // Return null for documents without the 'companyName' field
             }
           })
           .where((data) => data != null) // Filter out null values
@@ -70,14 +73,14 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
 
   Future<List> fetchProjects(email) async {
 //..
-    final alreaySelectedProjects =
-        await FirebaseFirestore.instance.collection('engineers').get();
-    final selectedProject =
-        await alreaySelectedProjects.docs.map((e) => e['projectId']).toList();
+    // final alreaySelectedProjects =
+    //     await FirebaseFirestore.instance.collection('engineers').get();
+    // final selectedProject =
+    //     await alreaySelectedProjects.docs.map((e) => e['projectId']).toList();
     final collectionData = await FirebaseFirestore.instance
         .collection('Projects')
         .where('email', isEqualTo: email)
-        .where('isSelected', isEqualTo: false)
+        .where('isContrSelected', isEqualTo: false)
         .get();
 
     final userData = collectionData.docs.map(
@@ -354,13 +357,23 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                         ),
                       ),
                     ),
-                    
-                    
-                    Row(mainAxisAlignment: MainAxisAlignment.end,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        TextButton(onPressed: (){
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ContractorHomePage()));
-                        }, child: Text('Skip',style: TextStyle(color: Colors.white),),style: ButtonStyle(),),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ContractorHomePage()));
+                          },
+                          child: Text(
+                            'Skip',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          style: ButtonStyle(),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 50),
@@ -379,10 +392,10 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           setState(() {
                             isloading = false;
                           });
-                          Navigator.pushReplacement(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => WelcomeEngineer()));
+                                  builder: (context) => ContractorHomePage()));
                         }
                       },
                     ),

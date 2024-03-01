@@ -16,29 +16,65 @@ class ContrProgressPage extends StatefulWidget {
 
 class _ScheduleProjectsState extends State<ContrProgressPage> {
   final user = FirebaseAuth.instance.currentUser;
-     calculateProgress(DateTime startDate, DateTime endDate) {
-  try{if (endDate.isBefore(startDate)) {
-    throw ArgumentError('End date cannot be before start date.');
-  }
-  final now = DateTime.now();
-  final totalDuration = endDate.difference(startDate).inSeconds;
-  final elapsedDuration = now.difference(startDate).inSeconds;
+  calculateProgress(DateTime startDate, DateTime endDate) {
+    try {
+      if (endDate.isBefore(startDate)) {
+        throw ArgumentError('End date cannot be before start date.');
+      }
+      final now = DateTime.now();
+      final totalDuration = endDate.difference(startDate).inSeconds;
+      final elapsedDuration = now.difference(startDate).inSeconds;
 
-  if (elapsedDuration < 0) {
-    return 0.0;
-  } else if (elapsedDuration >= totalDuration) {
-    return 100.0;
-  }
+      if (elapsedDuration < 0) {
+        return 0.0;
+      } else if (elapsedDuration >= totalDuration) {
+        return 100.0;
+      }
 
-  // Calculate progress as a percentage
-  final progress = elapsedDuration / totalDuration * 100.0;
-  return progress.roundToDouble();}catch(e){Get.snackbar('Error', e.toString());}
-}
+      // Calculate progress as a percentage
+      final progress = elapsedDuration / totalDuration * 100.0;
+      return progress.roundToDouble();
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
 
   Future<List> fetchOngoingProjects() async {
 //..
     try {
       DateTime currentDate = DateTime.now();
+// Contractor Contributions..--..--..--..--..--..--..--..--..
+
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+
+      final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          // .where(FieldPath.documentId, whereIn: contrProjId)
+          .where('endDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          .get();
+
+      final contrResult = await contrProj.docs
+          .where((doc) => contrProjId.contains(doc.id))
+          .map((doc) {
+        return [
+          doc['title'],
+          doc['budget'],
+          doc['funding'],
+          doc['startDate'],
+          doc['endDate'],
+          doc['location'],
+          doc['creationDate']
+        ];
+      }).toList();
+//===========================================================
 
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
@@ -59,7 +95,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
           ];
         },
       ).toList();
-
+      userData.addAll(contrResult);
       return userData;
 //..
     } catch (e) {
@@ -73,6 +109,38 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
     try {
       DateTime currentDate = DateTime.now();
 
+// Contractor Contributions..--..--..--..--..--..--..--..--..
+
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+
+      final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          // .where(FieldPath.documentId, whereIn: contrProjId)
+
+          .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
+          .get();
+
+      final contrResult = await contrProj.docs
+          .where((doc) => contrProjId.contains(doc.id))
+          .map((doc) {
+        return [
+          doc['title'],
+          doc['budget'],
+          doc['funding'],
+          doc['startDate'],
+          doc['endDate'],
+          doc['location'],
+          doc['creationDate']
+        ];
+      }).toList();
+//===========================================================
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
@@ -92,7 +160,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
           ];
         },
       ).toList();
-
+      userData.addAll(contrResult);
       return userData;
 //..
     } catch (e) {
@@ -155,7 +223,8 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                                 ),
                               ),
                               SizedBox(width: 10),
-                              Text('${ calculateProgress(data[index][3].toDate(), data[index][4].toDate())}%'),
+                              Text(
+                                  '${calculateProgress(data[index][3].toDate(), data[index][4].toDate())}%'),
                             ],
                           )
                         ],

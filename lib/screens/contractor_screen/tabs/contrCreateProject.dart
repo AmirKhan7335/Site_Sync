@@ -75,7 +75,8 @@ class _CreateProjectState extends State<ContrCreateProject> {
           'email': email,
           'creationDate': DateTime.now(),
           'isSelected': false,
-          'retMoney': retMoneyController.text
+          'retMoney': retMoneyController.text,
+          'isContrSelected': false
         },
       );
 

@@ -3,7 +3,7 @@ import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
 import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/signinscreen.dart';
+import 'package:amir_khan1/auth/signinscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

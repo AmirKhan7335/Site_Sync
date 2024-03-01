@@ -9,6 +9,7 @@ import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/contrPojectScreen.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/contrTest/choooseProj.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/doc/chooseProject.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/contrProgress.dart';
@@ -100,7 +101,6 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
   Future<int> fetchCompletedProjects() async {
     try {
       DateTime currentDate = DateTime.now();
-
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
@@ -109,7 +109,30 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
 
       final userData = collectionData.docs.length;
 
-      return userData;
+//Contractor  Masail----------------------------------
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+
+      List contractorProjIdList =
+          await contractorQuery.docs.map((e) => e['projectId']).toList();
+      final contractorProjects = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
+          // .where(FieldPath.documentId, whereIn: contractorProjIdList)
+          .get();
+
+      final contractorProjectCount = contractorProjects.docs
+          .where((e) => contractorProjIdList.contains(e.id))
+          .map((e) {
+        return [e.id].toList();
+      });
+
+//---------------------------------------------------
+      return userData + contractorProjectCount.length;
     } catch (e) {
       Get.snackbar('Error', e.toString());
 
@@ -120,18 +143,24 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
   Future<List> fetchRecentProjects() async {
 //..
     try {
-      
-    DateTime fifteenDaysAgo = DateTime.now().subtract(Duration(days: 15));
-
-    final collectionData = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where('email',isEqualTo:user!.email )
-        .where('creationDate',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
-        .orderBy('creationDate', descending: true)
-        .get();
-    final userData = collectionData.docs.map(
-      (doc) {
+      DateTime fifteenDaysAgo = DateTime.now().subtract(Duration(days: 15));
+//Contr Contributions--------------------------------------------
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+      final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('creationDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
+          //   .where(FieldPath.documentId, whereIn: contrProjId)
+          .get();
+      final contrResult = await contrProj.docs
+      .where((doc) => contrProjId.contains(doc.id))
+      .map((doc) {
         return [
           doc['title'],
           doc['budget'],
@@ -141,10 +170,30 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
           doc['location'],
           doc['creationDate']
         ];
-      },
-    ).toList();
-
-    return userData;
+      }).toList();
+//-----------------------------------------------------------------------
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('email', isEqualTo: user!.email)
+          .where('creationDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
+          .orderBy('creationDate', descending: true)
+          .get();
+      final userData = collectionData.docs.map(
+        (doc) {
+          return [
+            doc['title'],
+            doc['budget'],
+            doc['funding'],
+            doc['startDate'],
+            doc['endDate'],
+            doc['location'],
+            doc['creationDate']
+          ];
+        },
+      ).toList();
+      userData.addAll(contrResult);
+      return userData;
 //..
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -153,26 +202,61 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
   }
 
   Future<int> fetchOngoingProjects() async {
-    DateTime currentDate = DateTime.now();
+    try {
+      DateTime currentDate = DateTime.now();
 
-    final collectionData = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where('email', isEqualTo: user!.email)
-        // .where('startDate',
-        //     isLessThanOrEqualTo: Timestamp.fromDate(currentDate))
-        .where('endDate',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
-        .get();
+      //--Creating Query for Contractor-----------------------------------------------
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+      List contractorProjIdList =
+          await contractorQuery.docs.map((e) => e['projectId']).toList();
+      // Get.snackbar('title', contractorProjIdList.toString());
+      final contractorProjects = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('endDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
 
-    final userData = collectionData.docs.length;
+          // .where(FieldPath.documentId, whereIn: contractorProjIdList)
+          .get();
 
-    return userData;
+      final contractorProjectCount = contractorProjects.docs
+          .where((e) => contractorProjIdList.contains(e.id))
+          .map((e) {
+        return [e.id].toList();
+      });
+
+      //--------------------------------------------------------------------------
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('email', isEqualTo: user!.email)
+          // .where('startDate',
+          //     isLessThanOrEqualTo: Timestamp.fromDate(currentDate))
+          .where('endDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          .get();
+
+      final userData = collectionData.docs.length;
+
+      return userData + contractorProjectCount.length;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return 0;
+    }
   }
 
   Future<int> fetchMyProjects() async {
     try {
       DateTime currentDate = DateTime.now();
-
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
@@ -180,7 +264,9 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
 
       final userData = collectionData.docs.length;
 
-      return userData;
+      final contractorProjects = contractorQuery.docs.length;
+
+      return userData + contractorProjects;
     } catch (e) {
       Get.snackbar('Error', e.toString());
 
@@ -215,10 +301,11 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                       children: [
                         InkWell(
                           onTap: () {
-                              Scaffold.of(context).openDrawer();
+                            Scaffold.of(context).openDrawer();
                           },
                           child: CircleAvatar(
-                            backgroundImage: snapshot.data?.profilePicUrl != null
+                            backgroundImage: snapshot.data?.profilePicUrl !=
+                                    null
                                 ? NetworkImage(snapshot.data!.profilePicUrl!)
                                 : const NetworkImage(
                                     'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
@@ -471,8 +558,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ChooseContrProjectForDocument())),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChooseContrProjectForDocument())),
             child: Card(
               elevation: 5,
               child: Container(
@@ -537,8 +626,12 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             ),
           ),
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProjectScreen(isCnslt: true,))),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ContrProjectScreen(
+                          
+                        ))),
             child: Card(
               elevation: 5,
               child: Container(
@@ -572,8 +665,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             ),
           ),
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ChooseContrProjectForTest())),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChooseContrProjectForTest())),
             child: Card(
               elevation: 5,
               child: Container(
