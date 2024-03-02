@@ -189,7 +189,7 @@ class _SigninScreenState extends State<SigninScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ContrAccountDetails(),
+                builder: (context) => ContractorHomePage(),
               ),
             );
             setState(() {

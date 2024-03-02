@@ -17,23 +17,6 @@ class _ChooseProjectForDocumentState
     extends State<ChooseContrProjectForDocument> {
   final myEmail = FirebaseAuth.instance.currentUser!.email;
   Future<List> fetchProjects() async {
-    //Contractor Code---------------------------------------------
-    final contractorQuery = await FirebaseFirestore.instance
-        .collection('contractor')
-        .doc(myEmail)
-        .collection('projects')
-        .where('reqAccepted', isEqualTo: true)
-        .get();
-    final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
-    final contrProj = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where(FieldPath.documentId, whereIn: contrProjId)
-        .get();
-    final contrResult = await contrProj.docs.map((doc) {
-      return [doc['title'], doc.id];
-    }).toList();
-    //----------------------------------------------------------------------
-
     final query = await FirebaseFirestore.instance
         .collection('Projects')
         .where('email', isEqualTo: myEmail)
@@ -41,9 +24,30 @@ class _ChooseProjectForDocumentState
     final result = await query.docs.map((doc) {
       return [doc['title'], doc.id];
     }).toList();
-    result.addAll(contrResult);
+    //Contractor Code---------------------------------------------
+    final contractorQuery = await FirebaseFirestore.instance
+        .collection('contractor')
+        .doc(myEmail)
+        .collection('projects')
+        .where('reqAccepted', isEqualTo: true)
+        .get();
 
-    return result;
+    final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+    if (contrProjId.isNotEmpty) {
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where(FieldPath.documentId, whereIn: contrProjId)
+          .get();
+      final contrResult = await contrProj.docs.map((doc) {
+        return [doc['title'], doc.id];
+      }).toList();
+      //----------------------------------------------------------------------
+
+      result.addAll(contrResult);
+      return result;
+    } else {
+      return result;
+    }
   }
 
   @override

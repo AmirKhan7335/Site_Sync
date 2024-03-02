@@ -25,41 +25,7 @@ class _ProjectScreenState extends State<ContrProjectScreen> {
   }
 
   Future<List> fetchProjects() async {
-
- //   final projIdFromEngineer = await getprojIdFromEngineer();
-// Contractor Contributions..--..--..--..--..--..--..--..--..
-
-    final contractorQuery = await FirebaseFirestore.instance
-        .collection('contractor')
-        .doc(currentUserEmail)
-        .collection('projects')
-        .where('reqAccepted', isEqualTo: true)
-        .get();
-    
-
-    final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
-
-
-    final contrProj = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where(FieldPath.documentId, whereIn: contrProjId)
-        .get();
-    
-
-    final contrResult = await contrProj.docs.map((doc) {
-      return [
-        doc['title'],
-        doc['startDate'],
-        doc['endDate'],
-        doc['budget'],
-        doc['retMoney'],
-        doc['funding'],
-        doc['location'],
-        doc.id
-      ];
-    }).toList();
-//===========================================================
-
+    //   final projIdFromEngineer = await getprojIdFromEngineer();
     final query = await FirebaseFirestore.instance
         .collection('Projects')
         .where('email', isEqualTo: currentUserEmail)
@@ -76,8 +42,42 @@ class _ProjectScreenState extends State<ContrProjectScreen> {
         doc.id
       ];
     }).toList();
-    result.addAll(contrResult);
-    return result;
+// Contractor Contributions..--..--..--..--..--..--..--..--..
+
+    final contractorQuery = await FirebaseFirestore.instance
+        .collection('contractor')
+        .doc(currentUserEmail)
+        .collection('projects')
+        .where('reqAccepted', isEqualTo: true)
+        .get();
+
+    final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+
+    if (contrProjId.isNotEmpty) {
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where(FieldPath.documentId, whereIn: contrProjId)
+          .get();
+
+      final contrResult = await contrProj.docs.map((doc) {
+        return [
+          doc['title'],
+          doc['startDate'],
+          doc['endDate'],
+          doc['budget'],
+          doc['retMoney'],
+          doc['funding'],
+          doc['location'],
+          doc.id
+        ];
+      }).toList();
+      result.addAll(contrResult);
+      return result;
+    } else {
+      return result;
+    }
+
+//===========================================================
   }
 
   Future<String> getEngineer(projId) async {

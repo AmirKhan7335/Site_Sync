@@ -16,6 +16,13 @@ class ChooseContrProjectForTest extends StatefulWidget {
 class _ChooseProjectForTestState extends State<ChooseContrProjectForTest> {
   final myEmail = FirebaseAuth.instance.currentUser!.email;
   Future<List> fetchProjects() async {
+    final query = await FirebaseFirestore.instance
+        .collection('Projects')
+        .where('email', isEqualTo: myEmail)
+        .get();
+    final result = await query.docs.map((doc) {
+      return [doc['title'], doc.id];
+    }).toList();
 // Contr Contributions-------------------------------------------
     final contractorQuery = await FirebaseFirestore.instance
         .collection('contractor')
@@ -24,24 +31,22 @@ class _ChooseProjectForTestState extends State<ChooseContrProjectForTest> {
         .where('reqAccepted', isEqualTo: true)
         .get();
     final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
-    final contrProj = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where(FieldPath.documentId, whereIn: contrProjId)
-        .get();
-    final contrResult = await contrProj.docs.map((doc) {
-      return [doc['title'], doc.id];
-    }).toList();
-//----------------------------------------------------------------
+    if (contrProjId.isNotEmpty) {
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where(FieldPath.documentId, whereIn: contrProjId)
+          .get();
+      final contrResult = await contrProj.docs.map((doc) {
+        return [doc['title'], doc.id];
+      }).toList();
 
-    final query = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where('email', isEqualTo: myEmail)
-        .get();
-    final result = await query.docs.map((doc) {
-      return [doc['title'], doc.id];
-    }).toList();
-    result.addAll(contrResult);
+      result.addAll(contrResult);
+      return result;
+    } else {
+      
     return result;
+    }
+//----------------------------------------------------------------
   }
 
   @override

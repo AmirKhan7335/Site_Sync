@@ -23,6 +23,39 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
     try {
       DateTime currentDate = DateTime.now();
 
+// Contractor Contributions..--..--..--..--..--..--..--..--..
+
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+
+      final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          // .where(FieldPath.documentId, whereIn: contrProjId)
+          .where('endDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          .get();
+
+      final contrResult = await contrProj.docs
+          .where((doc) => contrProjId.contains(doc.id))
+          .map((doc) {
+        return [
+          doc['title'],
+          doc['budget'],
+          doc['funding'],
+          doc['startDate'],
+          doc['endDate'],
+          doc['location'],
+          doc['creationDate'],
+          doc.id
+        ];
+      }).toList();
+//===========================================================
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
@@ -43,7 +76,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
           ];
         },
       ).toList();
-
+      userData.addAll(contrResult);
       return userData;
 //..
     } catch (e) {
@@ -52,27 +85,28 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
     }
   }
 
+  calculateProgress(DateTime startDate, DateTime endDate) {
+    try {
+      if (endDate.isBefore(startDate)) {
+        throw ArgumentError('End date cannot be before start date.');
+      }
+      final now = DateTime.now();
+      final totalDuration = endDate.difference(startDate).inSeconds;
+      final elapsedDuration = now.difference(startDate).inSeconds;
 
-     calculateProgress(DateTime startDate, DateTime endDate) {
-  try{if (endDate.isBefore(startDate)) {
-    throw ArgumentError('End date cannot be before start date.');
+      if (elapsedDuration < 0) {
+        return 0.0;
+      } else if (elapsedDuration >= totalDuration) {
+        return 100.0;
+      }
+
+      // Calculate progress as a percentage
+      final progress = elapsedDuration / totalDuration * 100.0;
+      return progress.roundToDouble();
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
-  final now = DateTime.now();
-  final totalDuration = endDate.difference(startDate).inSeconds;
-  final elapsedDuration = now.difference(startDate).inSeconds;
-
-  if (elapsedDuration < 0) {
-    return 0.0;
-  } else if (elapsedDuration >= totalDuration) {
-    return 100.0;
-  }
-
-  // Calculate progress as a percentage
-  final progress = elapsedDuration / totalDuration * 100.0;
-  return progress.roundToDouble();}catch(e){Get.snackbar('Error', e.toString());}
-}
-
-  
 
   Widget Ongoing() {
     return FutureBuilder(
@@ -128,7 +162,6 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
         });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -155,22 +188,20 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: Get.width*0.9,
+                  width: Get.width * 0.9,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.yellow ,
+                    color: Colors.yellow,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(
-                    onTap: () {
-                      
-                    },
+                    onTap: () {},
                     child: Center(
                       child: Text(
                         'Ongoing',
                         style: TextStyle(
                           fontSize: 20,
-                          color:  Colors.black ,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -190,7 +221,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.68,
-                child: Ongoing() ,
+                child: Ongoing(),
               ),
             ),
           )

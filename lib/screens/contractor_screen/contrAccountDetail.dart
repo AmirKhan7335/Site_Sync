@@ -35,7 +35,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
         .set({
       'consultantEmail': consultantEmail,
       'projectId': projectId,
-      'reqAccepted': false,
+      'reqAccepted': true,
       'date': DateTime.now()
     });
     var projectSelected = await FirebaseFirestore.instance
@@ -362,7 +362,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
@@ -392,7 +392,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           setState(() {
                             isloading = false;
                           });
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ContractorHomePage()));

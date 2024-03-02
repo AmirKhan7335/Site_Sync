@@ -52,10 +52,9 @@ class ChatListScreenState extends State<ChatListScreen> {
             .where('consultantEmail', isEqualTo: userEmail)
             .get();
         final docIds = await consltData.docs.map((doc) {
-          
           return doc.id;
         }).toList();
-//-----------------------------------------------
+
         final usersData = await FirebaseFirestore.instance
             .collection('users')
             // .where('email',
@@ -71,6 +70,66 @@ class ChatListScreenState extends State<ChatListScreen> {
             name: data['username'] ?? '',
           );
         }).toList();
+      } else if (role == 'Contractor') {
+        //For Consultant Valid Users:
+        final consltData = await FirebaseFirestore.instance
+            .collection('engineers')
+            .where('consultantEmail', isEqualTo: userEmail)
+            .get();
+        final docIds = await consltData.docs.map((doc) {
+          return doc.id;
+        }).toList();
+        final usersData = await FirebaseFirestore.instance
+            .collection('users')
+            // .where('email',
+            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+            .where(FieldPath.documentId, whereIn: docIds)
+            .get();
+
+        validUsers = usersData.docs.map((doc) {
+          final Map<String, dynamic> data =
+              doc.data(); // Cast to Map<String, dynamic>
+          return ChatUser(
+            id: doc.id,
+            name: data['username'] ?? '',
+          );
+        }).toList();
+        //----Contractor Contributions----------------------------------------
+
+        final contractorQuery = await FirebaseFirestore.instance
+            .collection('contractor')
+            .doc(userEmail)
+            .collection('projects')
+            .where('reqAccepted', isEqualTo: true)
+            .get();
+
+        final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+
+//////////////////////////////////////////////////////////////////
+        final contrData = await FirebaseFirestore.instance
+            .collection('engineers')
+            .where('projectId', whereIn: contrProjId)
+            .get();
+        final contrdocIds = await contrData.docs.map((doc) {
+          return doc.id;
+        }).toList();
+        final contrusersData = await FirebaseFirestore.instance
+            .collection('users')
+            // .where('email',
+            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+            .where(FieldPath.documentId, whereIn: docIds)
+            .get();
+
+        final validContrUsers = contrusersData.docs.map((doc) {
+          final Map<String, dynamic> data =
+              doc.data(); // Cast to Map<String, dynamic>
+          return ChatUser(
+            id: doc.id,
+            name: data['username'] ?? '',
+          );
+        }).toList();
+        validUsers.addAll(validContrUsers);
+        //====================================================================
       } else {
         final query = await FirebaseFirestore.instance
             .collection('engineers')
