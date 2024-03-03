@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../components/my_button.dart';
-import '../../components/mytextfield.dart';
-import '../../helper/helper_functions.dart';
+import '../components/my_button.dart';
+import '../components/mytextfield.dart';
+import '../helper/helper_functions.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key, required this.onTap});
@@ -29,8 +29,8 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController confirmPasswordController = TextEditingController();
   bool isChecked = false;
   bool isloading = false;
-  String dropdownValue = 'Choose Your Role';
-  List<String> list = ['Choose Your Role', 'Engineer', 'Consultant','Contractor'];
+  String dropdownValue = 'Choose Your Role\n----------------------------';
+  List<String> list = ['Choose Your Role\n----------------------------', 'Engineer', 'Consultant','Contractor'];
   void registerUser() async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -180,23 +180,23 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(top: 70.0, left: 25.0, right: 25.0),
+          padding: const EdgeInsets.only(top: 30.0, left: 25.0, right: 25.0),
           child: Column(
             children: <Widget>[
               const CircleAvatar(
-                radius: 50,
+                radius: 70,
                 backgroundImage: AssetImage('assets/images/logo1.png'),
                 backgroundColor: Colors.transparent,
               ),
-              const SizedBox(height: 15),
+              
               const Text('Create Account',
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+                      color: Colors.black)),
               const SizedBox(height: 30),
               MyTextField(
                 hintText: 'Enter your full name',
@@ -205,7 +205,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 icon: Icons.contacts,
                 keyboardType: TextInputType.text,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               Container(
                 height: 58,
                 width: 376,
@@ -214,26 +214,30 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                   border: Border.all(
                     color: Colors.transparent,
                   ),
-                  color: const Color(0xFF6B8D9F), // Set the background color
+                  color: const Color(0xFFF3F3F3), // Set the background color
                 ),
                 child: Row(
                   children: [
                     SizedBox(
                       width: 10,
                     ),
-                    Icon(Icons.person_add),
+                    Icon(Icons.person_add,color: Colors.grey,),
                     SizedBox(
                       width: 20,
                     ),
                     DropdownButton<String>(
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    
+                      dropdownColor: Colors.white,
+                      iconEnabledColor: Colors.grey,
                       value: dropdownValue,
                       //  icon: const Icon(Icons.arrow_downward),
                       elevation: 16,
                       style: TextStyle(
-                        fontSize: 20,
-                        color: dropdownValue == 'Choose Your Role'
+                        fontSize: 16,
+                        color: dropdownValue == 'Choose Your Role\n----------------------------'
                             ? Colors.grey // Lighter color for initial label
-                            : Colors.white, // Darker color for selected value
+                            : Colors.black, // Darker color for selected value
                       ),
                       onChanged: (String? value) {
                         // This is called when the user selects an item.
@@ -241,8 +245,10 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                           dropdownValue = value!;
                         });
                       },
+                      
                       items: list.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
+                          
                           value: value,
                           child: Text(value),
                         );
@@ -251,7 +257,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               MyTextField(
                 hintText: 'Enter your email',
                 obscureText: false,
@@ -259,7 +265,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               MyTextField(
                 hintText: 'Enter your password',
                 obscureText: true,
@@ -267,7 +273,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 icon: Icons.lock,
                 keyboardType: TextInputType.text,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               MyTextField(
                 hintText: 'Confirm your password',
                 obscureText: true,
@@ -275,9 +281,9 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 icon: Icons.lock,
                 keyboardType: TextInputType.text,
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 5),
               Theme(
-                data: ThemeData(unselectedWidgetColor: Colors.yellow),
+                data: ThemeData(unselectedWidgetColor: Colors.green),
                 child: CheckboxListTile(
                   controlAffinity: ListTileControlAffinity.leading,
                   title: const Text.rich(
@@ -290,11 +296,11 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                         TextSpan(
                             text: "Privacy Policy, Terms and Conditions",
                             style:
-                                TextStyle(fontSize: 16, color: Colors.yellow)),
+                                TextStyle(fontSize: 16, color: Colors.green)),
                       ],
                     ),
                   ),
-                  activeColor: Colors.yellow,
+                  activeColor: Colors.green,
                   value: isChecked,
                   onChanged: (newValue) =>
                       setState(() => isChecked = newValue!),
@@ -308,11 +314,11 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
               const SizedBox(height: 10),
               isloading
                   ? Center(
-                      child: CircularProgressIndicator(color: Colors.yellow),
+                      child: CircularProgressIndicator(color: Colors.green),
                     )
                   : MyButton(
                       text: 'Sign Up',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () {
                         if (isChecked) {
@@ -356,7 +362,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                                 ))),
                     child: const Text('Sign in',
                         style: TextStyle(
-                            color: Colors.yellow,
+                            color: Colors.green,
                             decoration: TextDecoration.underline)),
                   ),
                 ],

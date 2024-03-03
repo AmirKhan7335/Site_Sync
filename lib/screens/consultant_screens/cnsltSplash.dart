@@ -13,7 +13,7 @@ class ConsultantSplash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -29,7 +29,7 @@ class ConsultantSplash extends StatelessWidget {
                   children: [
                     const SizedBox(height: 30),
                     const CircleAvatar(
-                      radius: 60,
+                      radius: 90,
                       backgroundImage: AssetImage('assets/images/logo1.png'),
                       backgroundColor: Colors.transparent,
                     ),
@@ -40,7 +40,7 @@ class ConsultantSplash extends StatelessWidget {
                       child: Center(
                         child: Text(
                           'Construction\n Progress Tracking',
-                          style: TextStyle(fontSize: 35.0, color: Colors.white),
+                          style: TextStyle(fontSize: 35.0, color: Colors.black),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -49,7 +49,7 @@ class ConsultantSplash extends StatelessWidget {
                     const SizedBox(height: 150),
                     MyButton(
                       text: 'Let\'s Start',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () {
                         Navigator.pushReplacement(

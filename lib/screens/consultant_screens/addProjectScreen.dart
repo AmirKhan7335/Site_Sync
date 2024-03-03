@@ -133,7 +133,7 @@ class _CreateProjectState extends State<CreateProject> {
                       child: Center(
                         child: Text(
                           'Create New Project',
-                          style: TextStyle(fontSize: 21.0, color: Colors.white),
+                          style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -153,7 +153,7 @@ class _CreateProjectState extends State<CreateProject> {
                       ),
                     ),
                     MyTextField(
-                      hintText: 'Construction of NHSH',
+                      hintText: 'Construction of ABC',
                       obscureText: false,
                       controller: titleController,
                       icon: Icons.title,
@@ -289,7 +289,7 @@ class _CreateProjectState extends State<CreateProject> {
                     const SizedBox(height: 50),
                     MyButton(
                       text: 'Confirm',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () {
                         if (titleController.text.isEmpty ||

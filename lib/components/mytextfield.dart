@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 class MyTextField extends StatefulWidget {
   final String hintText;
   final bool obscureText;
@@ -12,8 +13,7 @@ class MyTextField extends StatefulWidget {
     required this.obscureText,
     required this.controller,
     required this.icon,
-    required this.
-        keyboardType, // Required icon parameter in constructor
+    required this.keyboardType, // Required icon parameter in constructor
   }) : super(key: key);
 
   @override
@@ -32,36 +32,37 @@ class MyTextFieldState extends State<MyTextField> {
         });
       },
       child: Container(
-        height: 58,
+        height: 50,
         width: 376,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
           border: Border.all(
-            color: isFocused ? Colors.yellow : Colors.transparent,
+            color: isFocused ? Colors.green : Colors.transparent,
           ),
-          color: const Color(0xFF6B8D9F), // Set the background color
+          color: const Color(0xFFF3F3F3), // Set the background color
         ),
         child: TextFormField(
+          
           style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20.0,
+            color: Colors.black,
+            fontSize: 16.0,
           ),
           controller: widget.controller,
           obscureText: widget.obscureText,
           keyboardType: widget.keyboardType,
-         // inputFormatters: [ThousandsSeparatorInputFormatter()],
+          // inputFormatters: [ThousandsSeparatorInputFormatter()],
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: widget.hintText,
             hintStyle: const TextStyle(
               color: Colors.grey,
             ),
-            filled: true, // Ensure that the fillColor is applied
+            filled: false, // Ensure that the fillColor is applied
             fillColor: const Color(
-                0xFF6B8D9F), // Set the fillColor to the same background color
+                0xFFF3F3F3), // Set the fillColor to the same background color
             prefixIcon: Icon(
               widget.icon,
-              color: Colors.white, // Set icon color to white
+              color: Colors.grey, // Set icon color to white
             ),
           ),
         ),
@@ -116,17 +117,17 @@ class MyDateFieldState extends State<MyDateField> {
         height: 58,
         width: 376,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
+          borderRadius: BorderRadius.circular(15.0),
           border: Border.all(
-            color: isFocused ? Colors.yellow : Colors.transparent,
+            color: isFocused ? Colors.green : Colors.transparent,
           ),
-          color: const Color(0xFF6B8D9F), // Set the background color
+          color: const Color(0xFFF3F3F3), // Set the background color
         ),
         child: TextFormField(
           readOnly: true,
           onTap: () => widget.callback(context),
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: 20.0,
           ),
           decoration: InputDecoration(
@@ -139,14 +140,14 @@ class MyDateFieldState extends State<MyDateField> {
                       ? Colors.grey
                       : widget.hintText == 'Start Date'
                           ? Colors.grey
-                          : Colors.white,
+                          : Colors.black,
             ),
-            filled: true, // Ensure that the fillColor is applied
+            filled: false, // Ensure that the fillColor is applied
             fillColor: const Color(
-                0xFF6B8D9F), // Set the fillColor to the same background color
+                0xFFF3F3F3), // Set the fillColor to the same background color
             prefixIcon: Icon(
               Icons.calendar_month,
-              color: Colors.white, // Set icon color to white
+              color: Colors.grey, // Set icon color to white
             ),
           ),
         ),

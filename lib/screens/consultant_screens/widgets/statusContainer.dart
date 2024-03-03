@@ -23,29 +23,29 @@ class _StatusContainserState extends State<StatusContainer> {
         height: 130,
         width: 100,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Color(0xFF3EED88),
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 10),
-            Icon(widget.icon, color: Colors.white),
+            Icon(widget.icon,color: Colors.black, ),
             const SizedBox(height: 10),
             Text(
               widget.count.toString(),
-              style: TextStyle(color: Colors.white, fontSize: 25),
+              style: TextStyle(color: Colors.black, fontSize: 25),
             ),
             SizedBox(height: 10),
             Container(
               height: 1.5,
               width: 30,
-              color: Colors.white,
+              color: Colors.black,
             ),
             const SizedBox(height: 10),
             Text(
               widget.text,
-              style: TextStyle(color: Colors.white, fontSize: 10),
+              style: TextStyle(color: Colors.black, fontSize: 10),
             ),
           ],
         ),

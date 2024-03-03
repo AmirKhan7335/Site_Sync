@@ -17,7 +17,7 @@ import 'package:mailer/smtp_server/gmail.dart';
 import '../components/my_button.dart';
 import '../components/mytextfield.dart';
 import '../main.dart';
-import '../screens/engineer_screens/createaccountscreen.dart';
+import 'createaccountscreen.dart';
 
 // Google sign in
 Future<User?> signInWithGoogle() async {
@@ -261,7 +261,7 @@ class _SigninScreenState extends State<SigninScreen> {
   @override
   Widget build(context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -277,7 +277,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   children: [
                     const SizedBox(height: 30),
                     const CircleAvatar(
-                      radius: 60,
+                      radius: 80,
                       backgroundImage: AssetImage('assets/images/logo1.png'),
                       backgroundColor: Colors.transparent,
                     ),
@@ -288,7 +288,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: Center(
                         child: Text(
                           'Sign in to continue',
-                          style: TextStyle(fontSize: 21.0, color: Colors.white),
+                          style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -355,7 +355,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     const SizedBox(height: 20),
                     MyButton(
                       text: 'Log in',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       icon: Icons.login,
                       onTap: () {
