@@ -83,23 +83,29 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
   }
 
   Future<List<Activity>> fetchActivities() async {
-    var email = user?.email;
-    var activitiesSnapshot = await FirebaseFirestore.instance
-        .collection('engineers')
-        .doc(email)
-        .collection('activities')
-        .get();
+    try {
+      var email = user?.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(email)
+          .collection('activities')
+          .get();
 
-    // Convert documents to Activity objects
-    return activitiesSnapshot.docs.map((doc) {
-      return Activity(
-        id: doc['id'],
-        name: doc['name'],
-        startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
-        finishDate: DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
-        order: doc['order'],
-      );
-    }).toList();
+      // Convert documents to Activity objects
+      return activitiesSnapshot.docs.map((doc) {
+        return Activity(
+          id: doc['id'],
+          name: doc['name'],
+          startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
+          finishDate:
+              DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+          order: doc['order'],
+        );
+      }).toList();
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [];
+    }
   }
 
   Activity? findTodaysActivity(List<Activity> activities) {
@@ -308,7 +314,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
           .doc(user?.email)
           .get();
 
-      if (userSnapshot.exists) {
+      if (userSnapshot['profilePic'].exists) {
         return userSnapshot['profilePic'];
       } else {
         return null;
@@ -317,7 +323,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       if (kDebugMode) {
         print('Error fetching profile picture: $e');
       }
-      return null;
+      return 'https://t4.ftcdn.net/jpg/00/65/77/27/360_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv.jpg';
     }
   }
 
@@ -337,10 +343,16 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                   future: data,
 
                   builder: (context, snapshot) {
-                    // if (!snapshot.hasData) {
-                    //   return const Center(child: Text('No Data Found'));
-                    // }
-                    if (snapshot.hasError) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator(color: Colors.blue));
+                    } else if (!snapshot.hasData) {
+                      return const Center(
+                          child: Text(
+                        'No Data Found',
+                        style: TextStyle(color: Colors.black),
+                      ));
+                    } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (snapshot.hasData) {
                       final userData = snapshot.data![0];
@@ -350,9 +362,13 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                       Activity? todayActivity = findTodaysActivity(activities);
                       Activity? upcomingActivity =
                           findUpcomingActivity(activities);
-                      overAllPercent = calculateOverallPercent(activities);
+                      // overAllPercent = calculatePercentComplete();----------------Causes blunder in Release mode
                       final projData = snapshot.data[1];
-                      return Column(
+                      return
+                          //   Center(
+                          //   child: Text('Data is Present',style: TextStyle(color: Colors.black),),
+                          // );
+                          Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // User information
@@ -447,7 +463,16 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                             endDate: DateFormat('dd-MM-yyyy')
                                                 .format(projData[4].toDate())
                                                 .toString(),
-                                            activityProgress: overAllPercent),
+                                            activityProgress:
+                                                calculatePercentComplete(
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(projData[3]
+                                                            .toDate())
+                                                        .toString(),
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(projData[4]
+                                                            .toDate())
+                                                        .toString())),
                                         PageTwo(
                                             total: projData[1],
                                             retMoney: projData[7]),
@@ -472,6 +497,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                               );
                             },
                           ),
+
                           const SizedBox(height: 10),
                           // Today's activity
                           Padding(
@@ -711,7 +737,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                     Text(
                                       todayActivity?.name ?? 'No Activity',
                                       style: const TextStyle(
-                                        color: Colors.black,
+                                          color: Colors.black,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -751,7 +777,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       activities.isNotEmpty
                                           ? 'Due: ${todayActivity?.finishDate ?? "No Due Date"}'
                                           : 'No Due Date',
-                                      style: const TextStyle(fontSize: 14,color: Colors.black),
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.black),
                                     ),
                                     const SizedBox(width: 45),
                                     Align(
@@ -770,7 +797,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                                             null
                                                         ? "Completed"
                                                         : "",
-                                                    style: const TextStyle(color: Colors.black,
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
                                                         fontSize: 14)),
                                                 Text(
                                                   todayActivity?.finishDate !=
@@ -778,7 +806,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                                       ? '${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%'
                                                       : '0%',
                                                   style: const TextStyle(
-                                                    color: Colors.black,
+                                                      color: Colors.black,
                                                       fontSize: 14),
                                                 ),
                                               ],
@@ -838,7 +866,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   upcomingActivity?.name ??
                                       'No Upcoming Activity',
                                   style: const TextStyle(
-                                    color: Colors.black,
+                                      color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -849,7 +877,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       activities.isNotEmpty
                                           ? 'Starts: ${upcomingActivity?.startDate ?? "No Start Date"}'
                                           : 'No Start Date',
-                                      style: const TextStyle(fontSize: 14,color: Colors.black),
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.black),
                                     ),
                                   ],
                                 ),
@@ -858,10 +887,6 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           ),
                         ],
                       );
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(
-                          child: CircularProgressIndicator(color: Colors.blue));
                     } else {
                       return Text('Nothing');
                     }

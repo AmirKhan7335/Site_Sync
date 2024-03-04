@@ -30,7 +30,9 @@ class MyHomePageState extends State<EngineerHomePage> {
             : controller.engCurrentIndex.value== 2
                 ? TakePicture()
                 : controller.engCurrentIndex.value == 0
-                    ? EngineerHomeTab()
+                    ?
+                    //Placeholder()
+                     EngineerHomeTab()
                     : controller.engCurrentIndex.value == 3
                         ? const ScheduleScreen()
                         : const NotificationsScreen(),),

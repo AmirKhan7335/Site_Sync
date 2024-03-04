@@ -61,7 +61,7 @@ class _TakePictureState extends State<TakePicture> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text('Take Picture',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black)),
             ),
             Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -79,7 +79,7 @@ class _TakePictureState extends State<TakePicture> {
                     width: 150,
                     height: 150,
                     decoration: BoxDecoration(
-                      color: Colors.yellow,
+                      color: Colors.green,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(
@@ -96,7 +96,8 @@ class _TakePictureState extends State<TakePicture> {
                     width: 150,
                     height: 150,
                     decoration: BoxDecoration(
-                      color: Colors.yellow,
+                      color: Colors.green
+                      ,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(
