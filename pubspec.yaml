@@ -61,6 +61,7 @@ dependencies:
   
   open_file: ^3.3.2
   dio: ^5.4.1
+  flutter_launcher_icons: ^0.13.1
 
   
   
@@ -79,7 +80,13 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_launcher_icons:
+  android: "launcher_icon"
+  background_color: "#FFFFFF"  
+  ios: true
+  image_path: "assets/images/logo1.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+ 
 # The following section is specific to Flutter packages.
 flutter:
 
