@@ -17,7 +17,7 @@ class _PageThreeState extends State<PageThree> {
       padding: const EdgeInsets.only(
           left: 8.0, top: 2.0, bottom: 2.0, right: 0.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F2935),
+        color: Colors.white,
         // Adjusted color here
         borderRadius: BorderRadius.circular(8.0),
       ),
@@ -26,7 +26,7 @@ class _PageThreeState extends State<PageThree> {
           const Center(
               child: Text(
                 'Weather',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20,color: Colors.black),
               )),
           Row(
             children: [
@@ -64,13 +64,13 @@ class _PageThreeState extends State<PageThree> {
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors
-                                      .white) // Increased size to 40
+                                      .black) // Increased size to 40
                           ),
                           TextSpan(
                               text: '\nTomorrow 11 PM',
                               style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white)),
+                                  color: Colors.black)),
                         ],
                       ),
                     ),
@@ -88,13 +88,13 @@ class _PageThreeState extends State<PageThree> {
                           text: ' 26°',
                           style: TextStyle(
                               fontSize: 80,
-                              color: Colors.white) // Increased size to 40
+                              color: Colors.black) // Increased size to 40
                       ),
                       TextSpan(
                           text: '\nCurrent Weather',
                           style: TextStyle(
                               fontSize: 16,
-                              color: Colors.white)),
+                              color: Colors.black)),
                     ],
                   ),
                 ),

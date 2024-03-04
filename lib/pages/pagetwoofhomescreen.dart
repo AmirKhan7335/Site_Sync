@@ -18,7 +18,7 @@ class _PageTwoState extends State<PageTwo> {
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F2935),
+        color: Colors.white,
         // Adjusted color here
         borderRadius: BorderRadius.circular(8.0),
       ),
@@ -38,7 +38,7 @@ class _PageTwoState extends State<PageTwo> {
                 0.0, 0.0, 0.0, 1, 0,
                 // alpha channel
               ]),
-              child: Image.asset('assets/images/budget_icon.png'),
+              child: Image.asset('assets/images/budget_icon.png',color: Colors.green,),
             ),
           ),
           Transform.translate(
@@ -51,8 +51,8 @@ class _PageTwoState extends State<PageTwo> {
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                        Text('${widget.total}')
+                        color: Colors.black)),
+                        Text('${widget.total}',style: TextStyle(color: Colors.white),)
               ],
             ),
           ),

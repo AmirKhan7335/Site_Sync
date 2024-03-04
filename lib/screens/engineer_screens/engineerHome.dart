@@ -24,7 +24,7 @@ class MyHomePageState extends State<EngineerHomePage> {
     return 
        Scaffold(
         drawer: const MyDrawer(),
-        backgroundColor: const Color(0xFF212832),
+        backgroundColor: Color(0xFFF3F3F3),
         body: Obx(() => controller.engCurrentIndex.value == 1
             ? ChatScreen()
             : controller.engCurrentIndex.value== 2
@@ -36,9 +36,15 @@ class MyHomePageState extends State<EngineerHomePage> {
                         : const NotificationsScreen(),),
         bottomNavigationBar: Obx(()
           => BottomNavigationBar(
-            backgroundColor: const Color.fromARGB(255, 38, 50, 56),
+             selectedIconTheme:
+                IconThemeData(color: Color(0xFF3EED88), ),
+
+            unselectedIconTheme: IconThemeData(color: Colors.black, size: 22.5),
+            unselectedLabelStyle: TextStyle(color: Colors.black),
+            backgroundColor:  Colors.white,
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: Colors.yellow,
+            selectedItemColor: Color.fromARGB(255, 47, 235, 125),
+            unselectedItemColor: Colors.black,
             currentIndex: controller.engCurrentIndex.value,
             onTap: (int index) {
               
@@ -63,11 +69,11 @@ class MyHomePageState extends State<EngineerHomePage> {
                       width: 60.0,
                       height: 38.0,
                       decoration: const BoxDecoration(
-                        color: Colors.yellow,
+                        color: Colors.green,
                         borderRadius: BorderRadius.all(Radius.circular(20.0)),
                       ),
                       child: const Icon(Icons.camera_alt,
-                          color: Colors.black, size: 40.0),
+                          color: Colors.white, size: 40.0),
                     ),
                   ),
                 ),

@@ -96,8 +96,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
         id: doc['id'],
         name: doc['name'],
         startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
-        finishDate:
-            DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+        finishDate: DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
         order: doc['order'],
       );
     }).toList();
@@ -384,7 +383,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   const Text(
                                     "Welcome Back!",
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.yellow),
+                                        fontSize: 14, color: Colors.green),
                                   ),
                                   const SizedBox(height: 0),
                                   Text(
@@ -392,7 +391,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 22,
-                                      color: Colors.white,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ],
@@ -402,7 +401,10 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   onPressed: () {
                                     setState(() {});
                                   },
-                                  icon: Icon(Icons.refresh)),
+                                  icon: Icon(
+                                    Icons.refresh,
+                                    color: Colors.black,
+                                  )),
                               IconButton(
                                   onPressed: () {
                                     Navigator.push(
@@ -411,7 +413,10 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                             builder: (context) => Scaffold(
                                                 body: NotificationsScreen())));
                                   },
-                                  icon: Icon(Icons.notifications))
+                                  icon: Icon(
+                                    Icons.notifications,
+                                    color: Colors.black,
+                                  ))
                             ],
                           ),
                           const SizedBox(height: 10),
@@ -436,12 +441,16 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       },
                                       children: [
                                         PageOne(
-                                            startDate:DateFormat('dd-MM-yyyy')
-                                          .format (projData[3].toDate()).toString(),
-                                            endDate:DateFormat('dd-MM-yyyy')
-                                          .format (projData[4].toDate()).toString(),
+                                            startDate: DateFormat('dd-MM-yyyy')
+                                                .format(projData[3].toDate())
+                                                .toString(),
+                                            endDate: DateFormat('dd-MM-yyyy')
+                                                .format(projData[4].toDate())
+                                                .toString(),
                                             activityProgress: overAllPercent),
-                                         PageTwo(total:projData[1],retMoney:projData[7]),
+                                        PageTwo(
+                                            total: projData[1],
+                                            retMoney: projData[7]),
                                         const PageThree(),
                                       ],
                                     ),
@@ -478,29 +487,42 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                               DocumentScreen())),
                                   child: Card(
                                     elevation: 5,
+                                    color: Colors.transparent,
                                     child: Container(
+                                      height: 70,
+                                      width: 65,
                                       decoration: BoxDecoration(
+                                        color: Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: Column(
                                           children: [
-                                            Icon(Icons.file_copy),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Icon(
+                                              Icons.file_copy,
+                                              color: Colors.black,
+                                            ),
                                             SizedBox(
                                               height: 10,
                                             ),
                                             Container(
                                               height: 1.5,
                                               width: 45,
-                                              color: Colors.white,
+                                              color: Colors.black,
                                             ),
                                             SizedBox(
-                                              height: 5,
+                                              height: 2.5,
                                             ),
                                             Text(
                                               'Documents',
-                                              style: TextStyle(fontSize: 10),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.black,
+                                              ),
                                             )
                                           ],
                                         ),
@@ -511,29 +533,42 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                 InkWell(
                                   child: Card(
                                     elevation: 5,
+                                    color: Colors.transparent,
                                     child: Container(
+                                      height: 70,
+                                      width: 65,
                                       decoration: BoxDecoration(
+                                        color: Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: Column(
                                           children: [
-                                            Icon(Icons.video_call),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Icon(
+                                              Icons.video_call,
+                                              color: Colors.black,
+                                            ),
                                             SizedBox(
                                               height: 10,
                                             ),
                                             Container(
                                               height: 1.5,
                                               width: 45,
-                                              color: Colors.white,
+                                              color: Colors.black,
                                             ),
                                             SizedBox(
-                                              height: 5,
+                                              height: 2.5,
                                             ),
                                             Text(
                                               'Site',
-                                              style: TextStyle(fontSize: 10),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.black,
+                                              ),
                                             )
                                           ],
                                         ),
@@ -545,33 +580,47 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              ProjectScreen(isCnslt: false,))),
+                                          builder: (context) => ProjectScreen(
+                                                isCnslt: false,
+                                              ))),
                                   child: Card(
+                                    color: Colors.transparent,
                                     elevation: 5,
                                     child: Container(
+                                      height: 70,
+                                      width: 65,
                                       decoration: BoxDecoration(
+                                        color: Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: Column(
                                           children: [
-                                            Icon(Icons.calendar_month),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Icon(
+                                              Icons.calendar_month,
+                                              color: Colors.black,
+                                            ),
                                             SizedBox(
                                               height: 10,
                                             ),
                                             Container(
                                               height: 1.5,
                                               width: 45,
-                                              color: Colors.white,
+                                              color: Colors.black,
                                             ),
                                             SizedBox(
-                                              height: 5,
+                                              height: 2.5,
                                             ),
                                             Text(
                                               'Projects',
-                                              style: TextStyle(fontSize: 10),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.black,
+                                              ),
                                             )
                                           ],
                                         ),
@@ -583,33 +632,46 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              TestingScreen(projId:projData[8],isCnslt: false,))),
+                                          builder: (context) => TestingScreen(
+                                                projId: projData[8],
+                                                isCnslt: false,
+                                              ))),
                                   child: Card(
+                                    color: Colors.transparent,
                                     elevation: 5,
                                     child: Container(
+                                      height: 70,
+                                      width: 65,
                                       decoration: BoxDecoration(
+                                        color: Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: Column(
                                           children: [
-                                            Icon(Icons.checklist),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Icon(Icons.checklist,
+                                                color: Colors.black),
                                             SizedBox(
                                               height: 10,
                                             ),
                                             Container(
                                               height: 1.5,
                                               width: 45,
-                                              color: Colors.white,
+                                              color: Colors.black,
                                             ),
                                             SizedBox(
-                                              height: 5,
+                                              height: 2.5,
                                             ),
                                             Text(
                                               'Testing',
-                                              style: TextStyle(fontSize: 10),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.black,
+                                              ),
                                             )
                                           ],
                                         ),
@@ -628,7 +690,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                             children: [
                               Text("Today's activity",
                                   style: TextStyle(
-                                      fontSize: 18, color: Colors.white)),
+                                      fontSize: 18, color: Colors.black)),
                             ],
                           ),
                           const SizedBox(height: 10),
@@ -636,7 +698,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                             padding: const EdgeInsets.only(
                                 left: 16.0, top: 10, bottom: 16, right: 16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6B8D9F),
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(16.0),
                             ),
                             child: Column(
@@ -649,6 +711,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                     Text(
                                       todayActivity?.name ?? 'No Activity',
                                       style: const TextStyle(
+                                        color: Colors.black,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -657,7 +720,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       width: 80,
                                       padding: const EdgeInsets.all(3.0),
                                       decoration: BoxDecoration(
-                                        color: Colors.yellow,
+                                        color: Colors.green,
                                         borderRadius:
                                             BorderRadius.circular(10.0),
                                       ),
@@ -688,7 +751,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       activities.isNotEmpty
                                           ? 'Due: ${todayActivity?.finishDate ?? "No Due Date"}'
                                           : 'No Due Date',
-                                      style: const TextStyle(fontSize: 14),
+                                      style: const TextStyle(fontSize: 14,color: Colors.black),
                                     ),
                                     const SizedBox(width: 45),
                                     Align(
@@ -707,7 +770,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                                             null
                                                         ? "Completed"
                                                         : "",
-                                                    style: const TextStyle(
+                                                    style: const TextStyle(color: Colors.black,
                                                         fontSize: 14)),
                                                 Text(
                                                   todayActivity?.finishDate !=
@@ -715,6 +778,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                                       ? '${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%'
                                                       : '0%',
                                                   style: const TextStyle(
+                                                    color: Colors.black,
                                                       fontSize: 14),
                                                 ),
                                               ],
@@ -756,7 +820,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                             children: [
                               Text("Upcoming activity",
                                   style: TextStyle(
-                                      fontSize: 18, color: Colors.white)),
+                                      fontSize: 18, color: Colors.black)),
                             ],
                           ),
                           const SizedBox(height: 10),
@@ -764,7 +828,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                             padding: const EdgeInsets.only(
                                 left: 16.0, right: 16, top: 10, bottom: 16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6B8D9F),
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(16.0),
                             ),
                             child: Column(
@@ -774,6 +838,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   upcomingActivity?.name ??
                                       'No Upcoming Activity',
                                   style: const TextStyle(
+                                    color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -784,7 +849,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                       activities.isNotEmpty
                                           ? 'Starts: ${upcomingActivity?.startDate ?? "No Start Date"}'
                                           : 'No Start Date',
-                                      style: const TextStyle(fontSize: 14),
+                                      style: const TextStyle(fontSize: 14,color: Colors.black),
                                     ),
                                   ],
                                 ),

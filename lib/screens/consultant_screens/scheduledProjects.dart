@@ -143,6 +143,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black
                   ),
                 ),
               ),
@@ -157,7 +158,7 @@ class _ScheduleProjectsState extends State<ScheduleProjects> {
                   width: Get.width*0.9,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.yellow ,
+                    color: Color(0xFF3EED88) ,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(

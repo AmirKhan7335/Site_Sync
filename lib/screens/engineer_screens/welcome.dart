@@ -37,7 +37,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      backgroundColor: const Color(0xFFF3F3F3),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -71,7 +71,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                           'Welcome',
                           style: TextStyle(
                               fontSize: 21.0,
-                              color: Colors.white,
+                              color: Colors.black,
                               fontWeight: FontWeight.bold),
                           textAlign: TextAlign.left,
                         ),
@@ -84,7 +84,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                         padding: EdgeInsets.only(left: 6.0),
                         child: Text(
                           'Request has been sent to the \n client for approval',
-                          style: TextStyle(fontSize: 18.0, color: Colors.white),
+                          style: TextStyle(fontSize: 18.0, color: Colors.black),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -92,7 +92,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                     const SizedBox(height: 200),
                     MyButton(
                       text: 'Continue',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () async {
                         bool status = await checkRequestStatus();

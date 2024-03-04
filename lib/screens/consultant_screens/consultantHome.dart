@@ -48,31 +48,32 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
                           : const NotificationsScreen(),
         ),
         bottomNavigationBar: Obx(
-          () => BottomNavigationBar(
-            
+          () => 
+          BottomNavigationBar(
             backgroundColor: Colors.white,
             type: BottomNavigationBarType.fixed,
             // selectedItemColor:  Color(0xFF3EED88),
             // unselectedItemColor: Colors.black,
-            
+
             currentIndex: controller.cnsltCurrentIndex.value,
             onTap: (int index) {
               controller.cnsltCurrentIndex.value = index;
             },
-            
-            selectedIconTheme: IconThemeData(color:  Color(0xFF3EED88),size: 30),
+
+            selectedIconTheme:
+                IconThemeData(color: Color(0xFF3EED88), size: 30),
             showUnselectedLabels: false,
             unselectedLabelStyle: TextStyle(color: Colors.black),
             showSelectedLabels: false,
-            unselectedIconTheme: IconThemeData(color: Colors.black,size: 22.5),
+            unselectedIconTheme: IconThemeData(color: Colors.black, size: 22.5),
             selectedFontSize: 0,
             unselectedFontSize: 0,
             items: [
               const BottomNavigationBarItem(
-                
-                icon: Icon(Icons.home,),
+                icon: Icon(
+                  Icons.home,
+                ),
                 label: 'Home',
-                
               ),
               const BottomNavigationBarItem(
                 icon: Icon(Icons.chat),
@@ -87,7 +88,7 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
                       width: 46.0,
                       height: 36.0,
                       decoration: const BoxDecoration(
-                        color:  Color.fromARGB(255, 47, 235, 125),
+                        color: Color.fromARGB(255, 47, 235, 125),
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
                       child: const Icon(Icons.add_box_outlined,
@@ -108,7 +109,8 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
             ],
             iconSize: 20.0,
           ),
-        ));
+        )
+        );
   }
 }
 

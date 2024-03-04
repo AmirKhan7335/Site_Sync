@@ -159,8 +159,8 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
           //   .where(FieldPath.documentId, whereIn: contrProjId)
           .get();
       final contrResult = await contrProj.docs
-      .where((doc) => contrProjId.contains(doc.id))
-      .map((doc) {
+          .where((doc) => contrProjId.contains(doc.id))
+          .map((doc) {
         return [
           doc['title'],
           doc['budget'],
@@ -321,7 +321,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                             const Text(
                               "Welcome Back!",
                               style:
-                                  TextStyle(fontSize: 14, color: Colors.yellow),
+                                  TextStyle(fontSize: 14, color: Colors.green),
                             ),
                             const SizedBox(height: 0),
                             Text(
@@ -329,13 +329,14 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
                           ],
                         ),
                         const Spacer(),
                         IconButton(
+                            color: Colors.black,
                             onPressed: () {
                               Navigator.push(
                                   context,
@@ -379,61 +380,69 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                     // Today's activity
 
                     const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, top: 10, bottom: 16, right: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: 10,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ContrProgressPage()));
-                            },
-                            child: Text('Progress',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20)),
-                          ),
-                          Container(
-                            height: 30,
-                            width: 1.5,
-                            color: Colors.yellow,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ContrRequestPage()));
-                            },
-                            child: Text(
-                              'Request',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
+                    Card(
+                      color: Colors.transparent,
+                      elevation: 5,
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                            left: 16.0, top: 10, bottom: 16, right: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: 10,
                             ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ProgressPage()));
+                              },
+                              child: Text('Progress',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20)),
+                            ),
+                            Container(
+                              height: 30,
+                              width: 1.5,
+                              color: Colors.green,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RequestPage()));
+                              },
+                              child: Text(
+                                'Request',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 15),
                     // Upcoming activity
                     centralbar(),
                     const SizedBox(
-                      height: 15,
+                      height: 25,
                     ),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -441,11 +450,11 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                         Text("Recently Added",
                             style: TextStyle(
                                 fontSize: 18,
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold)),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 0),
                   ],
                 );
               }
@@ -463,11 +472,16 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
           future: fetchRecentProjects(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Text('No Projects Added');
+              return Text(
+                'No Projects Added',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              );
             } else if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                   child: CircularProgressIndicator(
-                color: Colors.blue,
+                color: Colors.green,
               ));
             } else if (snapshot.hasError) {
               return Text('Error');
@@ -478,69 +492,88 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                   itemCount: projectList!.length,
                   itemBuilder: ((context, index) => Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                            child: ListTile(
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(Icons.calendar_month,
-                                          size: 15, color: Colors.yellow),
-                                      Text(DateFormat('dd-MM-yyyy')
-                                          .format(
-                                              projectList[index][3].toDate())
-                                          .toString()),
-                                      Text(' to '),
-                                      Text(DateFormat('dd-MM-yyyy')
-                                          .format(
-                                              projectList[index][4].toDate())
-                                          .toString()),
-                                      Expanded(child: SizedBox()),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.location_on_outlined,
-                                              size: 15, color: Colors.yellow),
-                                          Text(projectList[index][5]),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      projectList[index][0],
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 25,
+                        child: Card(
+                          elevation: 10,
+                          color: Colors.transparent,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                              child: ListTile(
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.calendar_month,
+                                            size: 15, color: Colors.green),
+                                        Text(
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(
+                                                projectList[index][3].toDate(),
+                                              )
+                                              .toString(),
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        Text(' to ',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                        Text(
+                                            DateFormat('dd-MM-yyyy')
+                                                .format(projectList[index][4]
+                                                    .toDate())
+                                                .toString(),
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                        Expanded(child: SizedBox()),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.location_on_outlined,
+                                                size: 15, color: Colors.green),
+                                            Text(projectList[index][5],
+                                                style: TextStyle(
+                                                    color: Colors.black)),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        projectList[index][0],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 25,
+                                            color: Colors.black),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.person, color: Colors.yellow),
-                                      Text(projectList[index][2]),
-                                      Expanded(
-                                        child: SizedBox(),
-                                      ),
-                                      Text(
-                                        'Rs ',
-                                        style: TextStyle(color: Colors.yellow),
-                                      ),
-                                      Text(projectList[index][1]),
-                                    ],
-                                  ),
-                                ],
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.person, color: Colors.green),
+                                        Text(projectList[index][2],
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                        Expanded(
+                                          child: SizedBox(),
+                                        ),
+                                        Text(
+                                          'Rs ',
+                                          style: TextStyle(color: Colors.green),
+                                        ),
+                                        Text(projectList[index][1],
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -561,32 +594,46 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ChooseContrProjectForDocument())),
+                    builder: (context) => ChooseProjectForDocument())),
             child: Card(
+              color: Colors.transparent,
               elevation: 5,
               child: Container(
+                height: 70,
+                width: 65,
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.file_copy),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Icon(
+                        Icons.file_copy,
+                        color: Colors.black,
+                      ),
                       SizedBox(
                         height: 10,
                       ),
                       Container(
                         height: 1.5,
                         width: 45,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                       SizedBox(
-                        height: 5,
+                        height: 2.5,
                       ),
                       Text(
                         'Documents',
-                        style: TextStyle(fontSize: 10),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
                       )
                     ],
                   ),
@@ -595,30 +642,43 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             ),
           ),
           Card(
+            color: Colors.transparent,
             elevation: 5,
             child: Container(
+              height: 70,
+              width: 65,
               decoration: BoxDecoration(
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Column(
                   children: [
-                    Icon(Icons.video_call),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Icon(
+                      Icons.video_call,
+                      color: Colors.black,
+                    ),
                     SizedBox(
                       height: 10,
                     ),
                     Container(
                       height: 1.5,
                       width: 45,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                     SizedBox(
-                      height: 5,
+                      height: 2.5,
                     ),
                     Text(
                       'Site',
-                      style: TextStyle(fontSize: 10),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.black,
+                      ),
                     )
                   ],
                 ),
@@ -629,34 +689,47 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ContrProjectScreen(
-                          
+                    builder: (context) => ProjectScreen(
+                          isCnslt: true,
                         ))),
             child: Card(
+              color: Colors.transparent,
               elevation: 5,
               child: Container(
+                height: 70,
+                width: 65,
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
                     children: [
-                      Icon(Icons.calendar_month),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Icon(
+                        Icons.calendar_month,
+                        color: Colors.black,
+                      ),
                       SizedBox(
                         height: 10,
                       ),
                       Container(
                         height: 1.5,
                         width: 45,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                       SizedBox(
-                        height: 5,
+                        height: 2.5,
                       ),
                       Text(
                         'Projects',
-                        style: TextStyle(fontSize: 10),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
                       )
                     ],
                   ),
@@ -668,32 +741,42 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ChooseContrProjectForTest())),
+                    builder: (context) => ChooseProjectForTest())),
             child: Card(
+              color: Colors.transparent,
               elevation: 5,
               child: Container(
+                height: 70,
+                width: 65,
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
                     children: [
-                      Icon(Icons.checklist),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Icon(Icons.checklist, color: Colors.black),
                       SizedBox(
                         height: 10,
                       ),
                       Container(
                         height: 1.5,
                         width: 45,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                       SizedBox(
-                        height: 5,
+                        height: 2.5,
                       ),
                       Text(
                         'Testing',
-                        style: TextStyle(fontSize: 10),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
                       )
                     ],
                   ),

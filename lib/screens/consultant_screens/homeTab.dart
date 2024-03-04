@@ -116,31 +116,30 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
   Future<List> fetchRecentProjects() async {
 //..
     try {
-      
-    DateTime fifteenDaysAgo = DateTime.now().subtract(Duration(days: 15));
+      DateTime fifteenDaysAgo = DateTime.now().subtract(Duration(days: 15));
 
-    final collectionData = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where('email',isEqualTo:user!.email )
-        .where('creationDate',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
-        .orderBy('creationDate', descending: true)
-        .get();
-    final userData = collectionData.docs.map(
-      (doc) {
-        return [
-          doc['title'],
-          doc['budget'],
-          doc['funding'],
-          doc['startDate'],
-          doc['endDate'],
-          doc['location'],
-          doc['creationDate']
-        ];
-      },
-    ).toList();
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('email', isEqualTo: user!.email)
+          .where('creationDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
+          .orderBy('creationDate', descending: true)
+          .get();
+      final userData = collectionData.docs.map(
+        (doc) {
+          return [
+            doc['title'],
+            doc['budget'],
+            doc['funding'],
+            doc['startDate'],
+            doc['endDate'],
+            doc['location'],
+            doc['creationDate']
+          ];
+        },
+      ).toList();
 
-    return userData;
+      return userData;
 //..
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -202,7 +201,8 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
               } else {
                 final userData = snapshot.data!;
 
-                return Column(
+                return 
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // User information
@@ -211,10 +211,11 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                       children: [
                         InkWell(
                           onTap: () {
-                              Scaffold.of(context).openDrawer();
+                            Scaffold.of(context).openDrawer();
                           },
                           child: CircleAvatar(
-                            backgroundImage: snapshot.data?.profilePicUrl != null
+                            backgroundImage: snapshot.data?.profilePicUrl !=
+                                    null
                                 ? NetworkImage(snapshot.data!.profilePicUrl!)
                                 : const NetworkImage(
                                     'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
@@ -245,7 +246,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                         ),
                         const Spacer(),
                         IconButton(
-                          color: Colors.black,
+                            color: Colors.black,
                             onPressed: () {
                               Navigator.push(
                                   context,
@@ -314,8 +315,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                             const ProgressPage()));
                               },
                               child: Text('Progress',
-                                  style: TextStyle(color: Colors.black,
-                                      fontWeight: FontWeight.bold, fontSize: 20)),
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20)),
                             ),
                             Container(
                               height: 30,
@@ -332,8 +335,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                               },
                               child: Text(
                                 'Request',
-                                style: TextStyle(color: Colors.black,
-                                    fontWeight: FontWeight.bold, fontSize: 20),
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
                               ),
                             ),
                             SizedBox(
@@ -377,7 +382,12 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
           future: fetchRecentProjects(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Text('No Projects Added',style: TextStyle( color: Colors.black,),);
+              return Text(
+                'No Projects Added',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              );
             } else if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                   child: CircularProgressIndicator(
@@ -393,8 +403,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                   itemBuilder: ((context, index) => Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: Card(
-                          
-                          elevation: 5,
+                          elevation: 10,
                           color: Colors.transparent,
                           child: Container(
                             decoration: BoxDecoration(
@@ -405,7 +414,6 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                               padding:
                                   const EdgeInsets.only(top: 8.0, bottom: 8.0),
                               child: ListTile(
-                                
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -414,23 +422,31 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                         Icon(Icons.calendar_month,
                                             size: 15, color: Colors.green),
                                         Text(
-                                        DateFormat('dd-MM-yyyy')
-                                            .format(
-                                                projectList[index][3].toDate()
-                                                ,
-                                                )
-                                            .toString(),style: TextStyle(color: Colors.black),),
-                                        Text(' to ',style: TextStyle(color: Colors.black)),
-                                        Text(DateFormat('dd-MM-yyyy')
-                                            .format(
-                                                projectList[index][4].toDate())
-                                            .toString(),style: TextStyle(color: Colors.black)),
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(
+                                                projectList[index][3].toDate(),
+                                              )
+                                              .toString(),
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        Text(' to ',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                        Text(
+                                            DateFormat('dd-MM-yyyy')
+                                                .format(projectList[index][4]
+                                                    .toDate())
+                                                .toString(),
+                                            style:
+                                                TextStyle(color: Colors.black)),
                                         Expanded(child: SizedBox()),
                                         Row(
                                           children: [
                                             Icon(Icons.location_on_outlined,
                                                 size: 15, color: Colors.green),
-                                            Text(projectList[index][5],style: TextStyle(color: Colors.black)),
+                                            Text(projectList[index][5],
+                                                style: TextStyle(
+                                                    color: Colors.black)),
                                           ],
                                         )
                                       ],
@@ -440,9 +456,9 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                       child: Text(
                                         projectList[index][0],
                                         style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 25,color: Colors.black
-                                        ),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 25,
+                                            color: Colors.black),
                                       ),
                                     ),
                                     SizedBox(
@@ -451,7 +467,9 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                     Row(
                                       children: [
                                         Icon(Icons.person, color: Colors.green),
-                                        Text(projectList[index][2],style: TextStyle(color: Colors.black)),
+                                        Text(projectList[index][2],
+                                            style:
+                                                TextStyle(color: Colors.black)),
                                         Expanded(
                                           child: SizedBox(),
                                         ),
@@ -459,7 +477,9 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                           'Rs ',
                                           style: TextStyle(color: Colors.green),
                                         ),
-                                        Text(projectList[index][1],style: TextStyle(color: Colors.black)),
+                                        Text(projectList[index][1],
+                                            style:
+                                                TextStyle(color: Colors.black)),
                                       ],
                                     ),
                                   ],
@@ -481,8 +501,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ChooseProjectForDocument())),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChooseProjectForDocument())),
             child: Card(
               color: Colors.transparent,
               elevation: 5,
@@ -498,9 +520,13 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-
-                      SizedBox(height: 10,),
-                      Icon(Icons.file_copy, color: Colors.black,),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Icon(
+                        Icons.file_copy,
+                        color: Colors.black,
+                      ),
                       SizedBox(
                         height: 10,
                       ),
@@ -514,7 +540,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                       ),
                       Text(
                         'Documents',
-                        style: TextStyle(fontSize: 10, color: Colors.black,),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
                       )
                     ],
                   ),
@@ -523,23 +552,26 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
             ),
           ),
           Card(
-             color: Colors.transparent,
+            color: Colors.transparent,
             elevation: 5,
             child: Container(
-                height: 70,
-                width: 65,
+              height: 70,
+              width: 65,
               decoration: BoxDecoration(
-                 color: Colors.white,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Column(
                   children: [
-                     SizedBox(
+                    SizedBox(
                       height: 10,
                     ),
-                    Icon(Icons.video_call, color: Colors.black,),
+                    Icon(
+                      Icons.video_call,
+                      color: Colors.black,
+                    ),
                     SizedBox(
                       height: 10,
                     ),
@@ -553,7 +585,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                     ),
                     Text(
                       'Site',
-                      style: TextStyle(fontSize: 10, color: Colors.black,),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.black,
+                      ),
                     )
                   ],
                 ),
@@ -561,26 +596,34 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
             ),
           ),
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProjectScreen(isCnslt: true,))),
-            child: Card(
-               color: Colors.transparent,
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ProjectScreen(
+                          isCnslt: true,
+                        ))),
+            child: 
+            Card(
+              color: Colors.transparent,
               elevation: 5,
               child: Container(
-                  height: 70,
+                height: 70,
                 width: 65,
                 decoration: BoxDecoration(
-                   color: Colors.white,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
                     children: [
-                       SizedBox(
-                      height: 10,
-                    ),
-                      Icon(Icons.calendar_month, color: Colors.black,),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Icon(
+                        Icons.calendar_month,
+                        color: Colors.black,
+                      ),
                       SizedBox(
                         height: 10,
                       ),
@@ -594,7 +637,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                       ),
                       Text(
                         'Projects',
-                        style: TextStyle(fontSize: 10, color: Colors.black,),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
                       )
                     ],
                   ),
@@ -603,25 +649,28 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
             ),
           ),
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ChooseProjectForTest())),
-            child: Card(
-               color: Colors.transparent,
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChooseProjectForTest())),
+            child:
+             Card(
+              color: Colors.transparent,
               elevation: 5,
               child: Container(
-                  height: 70,
+                height: 70,
                 width: 65,
                 decoration: BoxDecoration(
-                   color: Colors.white,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
                     children: [
-                       SizedBox(
-                      height: 10,
-                    ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Icon(Icons.checklist, color: Colors.black),
                       SizedBox(
                         height: 10,
@@ -636,7 +685,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                       ),
                       Text(
                         'Testing',
-                        style: TextStyle(fontSize: 10, color: Colors.black,),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
                       )
                     ],
                   ),

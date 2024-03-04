@@ -15,7 +15,7 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.only(top: 10.0, left: 25.0, right: 25.0),
         child: Column(
@@ -32,7 +32,7 @@ class SplashScreen extends StatelessWidget {
             const Center(
               child: Text(
                 'Construction Progress Tracking',
-                style: TextStyle(fontSize: 44.0, color: Colors.white),
+                style: TextStyle(fontSize: 44.0, color: Colors.black),
                 textAlign: TextAlign.center,
               ),
             ),

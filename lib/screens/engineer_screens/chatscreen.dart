@@ -223,17 +223,17 @@ class ChatScreenState extends State<ChatScreen> {
                   'Messages',
                   style: TextStyle(
                     fontSize: 20,
-                    color: Colors.white,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Expanded(child: SizedBox()),
                 IconButton(
-                  icon: const Icon(Icons.search, color: Colors.white),
+                  icon: const Icon(Icons.search, color: Colors.black),
                   onPressed: () {},
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add, color: Colors.white),
+                  icon: const Icon(Icons.add, color: Colors.black),
                   onPressed: () async {
                     // Navigate to ChatListScreen
                     final result = await Navigator.push(context,
@@ -248,7 +248,7 @@ class ChatScreenState extends State<ChatScreen> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                  icon: const Icon(Icons.more_vert, color: Colors.black),
                   onPressed: () {},
                 ),
               ],
@@ -263,7 +263,7 @@ class ChatScreenState extends State<ChatScreen> {
                   width: 150,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: isChat ? Colors.yellow : Colors.grey,
+                    color: isChat ?  Color(0xFF3EED88): Colors.grey,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(
@@ -291,7 +291,7 @@ class ChatScreenState extends State<ChatScreen> {
                   width: 150,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: !isChat ? Colors.yellow : Colors.grey,
+                    color: !isChat ?  Color(0xFF3EED88): Colors.grey,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(
@@ -342,7 +342,7 @@ class ChatScreenState extends State<ChatScreen> {
                                 child: Text(
                                   'No Chats yet',
                                   style: TextStyle(
-                                      color: Colors.white, fontSize: 25),
+                                      color: Colors.black, fontSize: 25),
                                 ),
                               );
                             } else {

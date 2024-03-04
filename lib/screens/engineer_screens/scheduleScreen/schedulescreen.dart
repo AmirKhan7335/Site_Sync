@@ -418,9 +418,11 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     setState(() => isLoading = true);
     // Show a dialog to get activity details (name, start date, finish date, and order)
     final result = await showDialog(
+      
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Add New Activity'),
+        backgroundColor:  Color(0xFFF3F3F3),
+        title: const Text('Add New Activity',style: TextStyle(color: Colors.black),),
         content: Obx(
           () => Column(
             mainAxisSize: MainAxisSize.min,
@@ -748,6 +750,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                         child: Text(
                       'Schedule',
                       style: TextStyle(
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 20.0,
                       ),
@@ -755,7 +758,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                     IconButton(
                       icon: const Icon(Icons.file_upload),
                       onPressed: isLoading ? null : pickFile,
-                      color: const Color(0xFFFED36A),
+                      color: Colors.black,
                     ),
                   ],
                 ),
@@ -785,7 +788,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text('No activities to display',
-                                    style: TextStyle(fontSize: 18)),
+                                    style: TextStyle(fontSize: 18,color: Colors.black)),
                                 const SizedBox(height: 16),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -795,7 +798,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                                Colors.yellow),
+                                                Colors.green),
                                       ),
                                       child: const Text('Add Activity',
                                           style:
@@ -818,7 +821,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                                Colors.yellow),
+                                                Colors.green),
                                       ),
                                       child: isdownloading
                                           ? Padding(
@@ -844,7 +847,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                               IconButton(
                                 icon: const ColorFiltered(
                                   colorFilter: ColorFilter.mode(
-                                    Colors.yellow,
+                                    Colors.green,
                                     BlendMode.srcIn,
                                   ),
                                   child: ImageIcon(AssetImage(
@@ -854,7 +857,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),
-                                color: Colors.yellow,
+                                color: Colors.green,
                                 onPressed: _deleteActivity,
                               ),
                               ElevatedButton(
@@ -862,7 +865,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                 style: ButtonStyle(
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
-                                          Colors.yellow),
+                                          Colors.green),
                                 ),
                                 child: const Text('Add Activity',
                                     style: TextStyle(color: Colors.black)),

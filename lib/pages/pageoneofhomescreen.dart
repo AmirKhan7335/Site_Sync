@@ -20,7 +20,7 @@ class PageOne extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F2935),
+        color:  Colors.white,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Center(
@@ -31,7 +31,7 @@ class PageOne extends StatelessWidget {
               height: 50,
               child: ColorFiltered(
                 colorFilter: const ColorFilter.mode(
-                  Colors.yellow,
+                  Colors.green,
                   BlendMode.saturation,
                 ),
                 child: Image.asset('assets/images/progress_image.png'),
@@ -45,15 +45,15 @@ class PageOne extends StatelessWidget {
                   children: [
                     const Text(
                       "Status: On Time",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                     Text(
                       "Start Date: $startDate",
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
                     ),
                     Text(
                       "End Date: $endDate",
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   ],
                 ),
@@ -95,7 +95,7 @@ class PageOne extends StatelessWidget {
                         child: Center(
                           child: Text(
                             "${activityProgress.toInt()}%",
-                            style: const TextStyle(fontSize: 20),
+                            style: const TextStyle(fontSize: 20,color: Colors.black),
                           ),
                         ),
                       ),

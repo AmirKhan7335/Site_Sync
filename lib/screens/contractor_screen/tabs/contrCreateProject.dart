@@ -133,7 +133,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                       child: Center(
                         child: Text(
                           'Create New Project',
-                          style: TextStyle(fontSize: 21.0, color: Colors.white),
+                          style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),

@@ -207,7 +207,7 @@ class _AccountDetailsState extends State<AccountDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -234,7 +234,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                       child: Center(
                         child: Text(
                           'Accounts Details',
-                          style: TextStyle(fontSize: 21.0, color: Colors.white),
+                          style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -262,9 +262,10 @@ class _AccountDetailsState extends State<AccountDetails> {
                           color: Colors.transparent,
                         ),
                         color:
-                            const Color(0xFF6B8D9F), // Set the background color
+                            const Color(0xFFF3F3F3), // Set the background color
                       ),
                       child: TextFormField(
+                        
                         readOnly: true,
                         onTap: () {
                           showConsultant(context);
@@ -282,14 +283,14 @@ class _AccountDetailsState extends State<AccountDetails> {
                           hintStyle: TextStyle(
                             color: consultantUserName.isEmpty
                                 ? Colors.grey
-                                : Colors.white,
+                                : Colors.black,
                           ),
-                          filled: true, // Ensure that the fillColor is applied
+                          filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
                           prefixIcon: Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.white, // Set icon color to white
+                            color: Colors.grey, // Set icon color to white
                           ),
                         ),
                       ),
@@ -317,7 +318,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                           color: Colors.transparent,
                         ),
                         color:
-                            const Color(0xFF6B8D9F), // Set the background color
+                            const Color(0xFFF3F3F3), // Set the background color
                       ),
                       child: TextFormField(
                         readOnly: true,
@@ -340,14 +341,14 @@ class _AccountDetailsState extends State<AccountDetails> {
                           hintStyle: TextStyle(
                             color: selectedProject.isEmpty
                                 ? Colors.grey
-                                : Colors.white,
+                                : Colors.black,
                           ),
-                          filled: true, // Ensure that the fillColor is applied
+                          filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
                           prefixIcon: Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.white, // Set icon color to white
+                            color: Colors.grey, // Set icon color to white
                           ),
                         ),
                       ),
@@ -355,7 +356,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                     const SizedBox(height: 100),
                     MyButton(
                       text: 'Continue',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () async {
                         if (consultantEmail == '' || selectedProject == '') {

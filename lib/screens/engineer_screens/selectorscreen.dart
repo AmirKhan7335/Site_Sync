@@ -8,6 +8,7 @@ class Selector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -23,7 +24,7 @@ class Selector extends StatelessWidget {
                 const Text(
                   "Construction Progress Tracking",
                   style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.bold),
                 ),
@@ -32,14 +33,14 @@ class Selector extends StatelessWidget {
                 ),
                 const Text(
                   "Track like a pro",
-                  style: TextStyle(color: Colors.white, fontSize: 15),
+                  style: TextStyle(color: Colors.black, fontSize: 15),
                 ),
                 const SizedBox(
                   height: 180,
                 ),
                 MyButton(
                   text: "Log in",
-                  bgColor: Colors.yellow,
+                  bgColor: Colors.green,
                   textColor: Colors.white,
                   onTap: () {
                     Navigator.pushNamed(context, "/signin");
