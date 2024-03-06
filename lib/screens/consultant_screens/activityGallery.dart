@@ -196,17 +196,29 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Column(
                                           children: [
-                                            Container(
-                                              height: 300,
-                                              width: 300,
-                                              decoration: BoxDecoration(
-                                                border:
-                                                    Border.all(color: Colors.brown),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
+                                            InkWell(
+                                              onTap: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => Scaffold(
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                          body: Center(
+                                                              child: Image.network(
+                                                                  snapshot.data![
+                                                                      index]))))),
+                                              child: Container(
+                                                height: 300,
+                                                width: 300,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.brown),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Image.network(
+                                                    snapshot.data![index]),
                                               ),
-                                              child: Image.network(
-                                                  snapshot.data![index]),
                                             ),
                                           ],
                                         ),
@@ -214,25 +226,25 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                                     ),
                                   ),
                                 ),
-                                 Padding(
-                      padding: const EdgeInsets.only(
-                          right: 32.0, left: 32.0, top: 32),
-                      child: MyButton(
-                          text: 'Approve',
-                          bgColor: Colors.yellow,
-                          textColor: Colors.black,
-                          icon: Icons.cloud_done_outlined,
-                          onTap: () {
-                            approvePicture(widget.activityId, widget.engEmail,snapshot.data);
-                          }),
-                    )
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 32.0, left: 32.0, top: 32),
+                                  child: MyButton(
+                                      text: 'Approve',
+                                      bgColor: Colors.yellow,
+                                      textColor: Colors.black,
+                                      icon: Icons.cloud_done_outlined,
+                                      onTap: () {
+                                        approvePicture(widget.activityId,
+                                            widget.engEmail, snapshot.data);
+                                      }),
+                                )
                               ],
                             );
                           } else {
                             return Center(child: Text('No Images Found'));
                           }
                         }),
-                   
                   ],
                 )
               : FutureBuilder(
@@ -258,12 +270,24 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                                 ),
                                 itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.brown),
-                                      borderRadius: BorderRadius.circular(10),
+                                  return InkWell(
+                                    onTap: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => Scaffold(
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                          body: Center(
+                                                              child: Image.network(
+                                                                  snapshot.data![
+                                                                      index]))))),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.brown),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Image.network(snapshot.data![index]),
                                     ),
-                                    child: Image.network(snapshot.data![index]),
                                   );
                                 }),
                           ),

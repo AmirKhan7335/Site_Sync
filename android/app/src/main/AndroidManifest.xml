@@ -6,8 +6,6 @@
 <!-- Required for requesting install packages -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
     <!-- Provide required visibility configuration for API level 30 and above -->
     <queries>
     <!-- If your app checks for SMS support -->

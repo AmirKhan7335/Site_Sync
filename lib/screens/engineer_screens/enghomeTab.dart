@@ -1,3 +1,4 @@
+import 'package:amir_khan1/controllers/progressTrackingController.dart';
 import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/models/user_data.dart';
 import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
@@ -24,7 +25,6 @@ class EngineerHomeTab extends StatefulWidget {
 
 class _EngineerHomeTabState extends State<EngineerHomeTab> {
   int currentPage = 0;
-  int overAllPercent = 0;
 
   final PageController pageController = PageController();
   final user = FirebaseAuth.instance.currentUser;
@@ -60,6 +60,29 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [];
+    }
+  }
+
+  int calculatePercentComplete(String startDate, String finishDate) {
+    try {
+      DateTime today = DateTime.now();
+      DateTime parsedStartDate = parseDate(startDate);
+      DateTime parsedFinishDate = parseDate(finishDate);
+
+      int totalDuration =
+          parsedFinishDate.difference(parsedStartDate).inDays + 1;
+      int timeElapsed = today.difference(parsedStartDate).inDays;
+      if (totalDuration <= 0) {
+        return 0; // Return 0 if total duration is non-positive
+      }
+
+      double percentComplete = (timeElapsed / totalDuration) * 100;
+      // Round the percentComplete to the nearest integer
+      return percentComplete
+          .round()
+          .clamp(0, 100); // Ensure the result is within [0, 100] range
+    } catch (e) {
+      return -1; // Return a default value or error code in case of any error
     }
   }
 
@@ -176,89 +199,6 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
     }
   }
 
-  int calculatePercentComplete(String startDate, String finishDate) {
-    try {
-      DateTime today = DateTime.now();
-      DateTime parsedStartDate = parseDate(startDate);
-      DateTime parsedFinishDate = parseDate(finishDate);
-
-      int totalDuration =
-          parsedFinishDate.difference(parsedStartDate).inDays + 1;
-      int timeElapsed = today.difference(parsedStartDate).inDays;
-      if (totalDuration <= 0) {
-        return 0; // Return 0 if total duration is non-positive
-      }
-
-      double percentComplete = (timeElapsed / totalDuration) * 100;
-      // Round the percentComplete to the nearest integer
-      return percentComplete
-          .round()
-          .clamp(0, 100); // Ensure the result is within [0, 100] range
-    } catch (e) {
-      return -1; // Return a default value or error code in case of any error
-    }
-  }
-
-  int calculateOverallPercent(List<Activity> activities) {
-    try {
-      DateTime today = DateTime.now();
-      int totalDuration = 0;
-      for (int i = 0; i < activities.length; i++) {
-        DateTime parsedStartDate = parseDate(activities[i].startDate);
-        DateTime parsedFinishDate = parseDate(activities[i].finishDate);
-        int activityDuration =
-            parsedFinishDate.difference(parsedStartDate).inDays + 1;
-        totalDuration += activityDuration;
-      }
-      double completedActivitiesPercentages = 0;
-      int todaysactivityduration = 0;
-
-      for (int i = 0; i < activities.length; i++) {
-        DateTime parsedStartDate = parseDate(activities[i].startDate);
-        DateTime parsedFinishDate = parseDate(activities[i].finishDate);
-        int activityDuration =
-            parsedFinishDate.difference(parsedStartDate).inDays + 1;
-        for (var activity in activities) {
-          if (activity.name == findTodaysActivity(activities)?.name) {
-            todaysactivityduration = activityDuration;
-            break; // Break out of the loop once a match is found
-          }
-        }
-
-        if (parsedFinishDate.isBefore(today)) {
-          // Activity is completed
-          double percentComplete = (activityDuration / totalDuration) * 100;
-          completedActivitiesPercentages += percentComplete;
-        }
-      }
-
-      // Find today's activity and calculate its percentage
-      Activity? todayActivity = findTodaysActivity(activities);
-      if (todayActivity != null &&
-          todayActivity.finishDate !=
-              DateFormat('dd/MM/yyyy').format(DateTime.now())) {
-        int todayActivityPercent = calculatePercentComplete(
-          todayActivity.startDate,
-          todayActivity.finishDate,
-        );
-        // Calculate the contribution of today's activity to the overall percentage
-        int todayContribution =
-            (todayActivityPercent * (todaysactivityduration / totalDuration))
-                .round();
-
-        completedActivitiesPercentages += todayContribution.round();
-      }
-
-      // Update the state with the overall percentage
-      setState(() {
-        overAllPercent = completedActivitiesPercentages.round();
-      });
-    } catch (e) {
-      // Handle the error, log it, or display an error message
-    }
-    return overAllPercent;
-  }
-
   DateTime parseDate(String dateStr) {
     try {
       // Try parsing with "dd/MM/yyyy" format
@@ -330,6 +270,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
   @override
   Widget build(BuildContext context) {
     var data = fetchData();
+    final controller = Get.put(ProjectProgressController());
     return SafeArea(
       minimum: const EdgeInsets.only(top: 16),
       child: SingleChildScrollView(
@@ -364,6 +305,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           findUpcomingActivity(activities);
                       // overAllPercent = calculatePercentComplete();----------------Causes blunder in Release mode
                       final projData = snapshot.data[1];
+                      controller.calculateOverallPercent(activities);
                       return
                           //   Center(
                           //   child: Text('Data is Present',style: TextStyle(color: Colors.black),),
@@ -456,23 +398,17 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                         });
                                       },
                                       children: [
-                                        PageOne(
-                                            startDate: DateFormat('dd-MM-yyyy')
-                                                .format(projData[3].toDate())
-                                                .toString(),
-                                            endDate: DateFormat('dd-MM-yyyy')
-                                                .format(projData[4].toDate())
-                                                .toString(),
-                                            activityProgress:
-                                                calculatePercentComplete(
-                                                    DateFormat('dd-MM-yyyy')
-                                                        .format(projData[3]
-                                                            .toDate())
-                                                        .toString(),
-                                                    DateFormat('dd-MM-yyyy')
-                                                        .format(projData[4]
-                                                            .toDate())
-                                                        .toString())),
+                                        Obx(()=>
+                                           PageOne(
+                                              startDate: DateFormat('dd-MM-yyyy')
+                                                  .format(projData[3].toDate())
+                                                  .toString(),
+                                              endDate: DateFormat('dd-MM-yyyy')
+                                                  .format(projData[4].toDate())
+                                                  .toString(),
+                                              activityProgress: controller
+                                                  .overAllPercent.value),
+                                        ),
                                         PageTwo(
                                             total: projData[1],
                                             retMoney: projData[7]),

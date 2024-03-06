@@ -1,3 +1,5 @@
+import 'package:amir_khan1/controllers/progressTrackingController.dart';
+import 'package:amir_khan1/models/activity.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/progressWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ProgressPage extends StatefulWidget {
   const ProgressPage({super.key});
@@ -16,24 +19,28 @@ class ProgressPage extends StatefulWidget {
 
 class _ScheduleProjectsState extends State<ProgressPage> {
   final user = FirebaseAuth.instance.currentUser;
-     calculateProgress(DateTime startDate, DateTime endDate) {
-  try{if (endDate.isBefore(startDate)) {
-    throw ArgumentError('End date cannot be before start date.');
-  }
-  final now = DateTime.now();
-  final totalDuration = endDate.difference(startDate).inSeconds;
-  final elapsedDuration = now.difference(startDate).inSeconds;
+  calculateProgress(DateTime startDate, DateTime endDate) {
+    try {
+      if (endDate.isBefore(startDate)) {
+        throw ArgumentError('End date cannot be before start date.');
+      }
+      final now = DateTime.now();
+      final totalDuration = endDate.difference(startDate).inSeconds;
+      final elapsedDuration = now.difference(startDate).inSeconds;
 
-  if (elapsedDuration < 0) {
-    return 0.0;
-  } else if (elapsedDuration >= totalDuration) {
-    return 100.0;
-  }
+      if (elapsedDuration < 0) {
+        return 0.0;
+      } else if (elapsedDuration >= totalDuration) {
+        return 100.0;
+      }
 
-  // Calculate progress as a percentage
-  final progress = elapsedDuration / totalDuration * 100.0;
-  return progress.roundToDouble();}catch(e){Get.snackbar('Error', e.toString());}
-}
+      // Calculate progress as a percentage
+      final progress = elapsedDuration / totalDuration * 100.0;
+      return progress.roundToDouble();
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
 
   Future<List> fetchOngoingProjects() async {
 //..
@@ -55,7 +62,8 @@ class _ScheduleProjectsState extends State<ProgressPage> {
             doc['startDate'],
             doc['endDate'],
             doc['location'],
-            doc['creationDate']
+            doc['creationDate'],
+            doc.id
           ];
         },
       ).toList();
@@ -102,6 +110,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
   }
 
   Widget Ongoing() {
+    final controller = Get.put(ProjectProgressController());
     return FutureBuilder(
         future: fetchOngoingProjects(),
         builder: (context, snapshot) {
@@ -115,54 +124,58 @@ class _ScheduleProjectsState extends State<ProgressPage> {
             final data = snapshot.data;
 
             return ListView.builder(
-              itemCount: data!.length,
-              itemBuilder: (context, index) => ListTile(
-                onTap: () => {},
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey[400],
-                  radius: 30,
-                  child: Text(
-                    '${index + 1}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                title: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${data[index][0]}'),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Container(
-                                width: 160,
-                                child: LinearProgressIndicator(
-                                  minHeight: 7,
-                                  borderRadius: BorderRadius.circular(5),
-                                  value: calculateProgress(
-                                          data[index][3].toDate(),
-                                          data[index][4].toDate()) /
-                                      100,
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.yellow),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text('${ calculateProgress(data[index][3].toDate(), data[index][4].toDate())}%'),
-                            ],
-                          )
-                        ],
+                itemCount: data!.length,
+                itemBuilder: (context, index) {
+                  controller.fetchActivities(data[index][7]);
+
+                  return ListTile(
+                    onTap: () => {},
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.grey[400],
+                      radius: 30,
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    )),
-              ),
-            );
+                    ),
+                    title: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[600],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${data[index][0]}'),
+                              SizedBox(height: 10),
+                              Obx(()=>
+                                 Row(
+                                  children: [
+                                    Container(
+                                      width: 160,
+                                      child: LinearProgressIndicator(
+                                        minHeight: 7,
+                                        borderRadius: BorderRadius.circular(5),
+                                        value: controller.overAllPercent.value
+                                            .toDouble()/100,
+                                        backgroundColor: Colors.white,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                            Colors.yellow),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                        '${controller.overAllPercent.value}%'),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        )),
+                  );
+                });
           } else {
             return Center(
               child: Text('No Ongoing Projects'),

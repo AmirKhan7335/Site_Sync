@@ -18,26 +18,36 @@ class DetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(mainHeading),
-        backgroundColor: const Color(0xFF212832),
+        title: Text(
+          mainHeading,
+          style: TextStyle(color: Colors.black),
+        ),
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
       ),
-      backgroundColor: const Color(0xFF212832),
+      backgroundColor: Colors.white,
       body: ListView.builder(
-        itemCount: image.length,
-        itemBuilder: (context,index) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              
-              
-              Container(
-                width: Get.width*1,
-                height: 350,
-                child: Image.network(image[index]))
-            ],
-          );
-        }
-      ),
+          itemCount: image.length,
+          itemBuilder: (context, index) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                              backgroundColor: Colors.white,
+                              body:
+                                  Center(child: Image.network(image[index]))))),
+                  child: Container(
+                      width: Get.width * 1,
+                      height: 350,
+                      child: Image.network(image[index])),
+                )
+              ],
+            );
+          }),
     );
   }
 }

@@ -207,6 +207,28 @@ class _AccountDetailsState extends State<AccountDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/auth', (route) => false);
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('Error during logout: $e');
+                  }
+                }
+              },
+              icon: Icon(
+                Icons.logout,
+                color: Colors.black,
+              ))
+        ],
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+      ),
       backgroundColor: Colors.white,
       body: Stack(
         children: [
@@ -265,7 +287,6 @@ class _AccountDetailsState extends State<AccountDetails> {
                             const Color(0xFFF3F3F3), // Set the background color
                       ),
                       child: TextFormField(
-                        
                         readOnly: true,
                         onTap: () {
                           showConsultant(context);

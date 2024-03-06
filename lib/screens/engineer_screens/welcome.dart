@@ -37,6 +37,29 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/auth', (route) => false);
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('Error during logout: $e');
+                  }
+                }
+              },
+              icon: Icon(
+                Icons.logout,
+                color: Colors.black,
+              ))
+        ],
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+      ),
       backgroundColor: const Color(0xFFF3F3F3),
       body: Stack(
         children: [
@@ -89,7 +112,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 200),
+                    const SizedBox(height: 150),
                     MyButton(
                       text: 'Continue',
                       bgColor: Colors.green,
@@ -102,7 +125,8 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                             return const EngineerHomePage();
                           }));
                         } else {
-                          Get.snackbar('Sorry', 'Request is not Accepted by Consultant Yet!!');
+                          Get.snackbar('Sorry',
+                              'Request is not Accepted by Consultant Yet!!');
                         }
                       },
                     ),
