@@ -68,48 +68,53 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
                 ),
               );
             },
-            child: ListTile(
-              leading: Container(
-                width: 60,
-                height: 60,
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  widget.otherUser.name.substring(0, 1).toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              title: Text(
-                widget.otherUser.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              subtitle: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    lastMessageText.length<20?lastMessageText:
-                   '${lastMessageText.substring(0, 20)}..',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  if (messageTime != null) // Only display time if not null
-                    Text(
-                      '${DateFormat('h:mm').format(messageTime)} $amPm',
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: ListTile(
+                  leading: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      widget.otherUser.name.substring(0, 1).toUpperCase(),
                       style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                ],
+                  ),
+                  title: Text(
+                    widget.otherUser.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  subtitle: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        lastMessageText.length<20?lastMessageText:
+                       '${lastMessageText.substring(0, 20)}..',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      if (messageTime != null) // Only display time if not null
+                        Text(
+                          '${DateFormat('h:mm').format(messageTime)} $amPm',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           );

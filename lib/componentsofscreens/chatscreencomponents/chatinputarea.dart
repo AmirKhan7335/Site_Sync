@@ -243,7 +243,7 @@ class ChatInputAreaState extends State<ChatInputArea> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF263238),
+      color: const Color.fromARGB(255, 202, 193, 193),
       padding: const EdgeInsets.all(10.0),
       child: Row(
         children: [
@@ -254,7 +254,7 @@ class ChatInputAreaState extends State<ChatInputArea> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.black12,
+                color: Colors.grey,
                 borderRadius: BorderRadius.circular(20.0),
               ),
               child: TextField(

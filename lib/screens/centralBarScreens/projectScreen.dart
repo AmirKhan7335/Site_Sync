@@ -71,8 +71,11 @@ class _ProjectScreenState extends State<ProjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
-        title: Text('Projects'),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text('Projects',style: TextStyle(color: Colors.black)),
       ),
       body: FutureBuilder(
           future: fetchProjects(),
@@ -87,34 +90,41 @@ class _ProjectScreenState extends State<ProjectScreen> {
             final data = snapshot.data;
             return ListView.builder(
                 itemCount: data!.length,
-                itemBuilder: ((context, index) => ListTile(
-                      onTap: () async {
-                        final id = data[index][7];
-                        final getname = await getEngineer(id);
-                        if (widget.isCnslt) {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return ProjectDetail(
-                                projectDataList: data[index],
-                                engineerName: getname,
-                              );
-                            },
-                          ));
-                        }
-                      },
-                      leading: ClipOval(
-                        child: Text(
-                          index.toString(),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                itemBuilder: ((context, index) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    elevation: 5,
+                    color: Colors.white,
+                    child: ListTile(
+                          onTap: () async {
+                            final id = data[index][7];
+                            final getname = await getEngineer(id);
+                            if (widget.isCnslt) {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return ProjectDetail(
+                                    projectDataList: data[index],
+                                    engineerName: getname,
+                                  );
+                                },
+                              ));
+                            }
+                          },
+                          leading: ClipOval(
+                            child: Text(
+                              index.toString(),
+                              style: TextStyle(
+                                  fontSize: 20, color: Colors.black,fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          title: Text(data[index][0].toString(),style: TextStyle(color: Colors.black)),
+                          subtitle: Text(
+                              DateTime.now().isAfter(data[index][2].toDate())
+                                  ? 'Completed'
+                                  : 'Ongoing',style: TextStyle(color: Colors.black)),
                         ),
-                      ),
-                      title: Text(data[index][0].toString()),
-                      subtitle: Text(
-                          DateTime.now().isAfter(data[index][2].toDate())
-                              ? 'Completed'
-                              : 'Ongoing'),
-                    )));
+                  ),
+                )));
           }),
     );
   }

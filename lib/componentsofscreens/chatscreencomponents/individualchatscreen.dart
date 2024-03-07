@@ -34,6 +34,7 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
         titleSpacing: 0.0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,7 +46,7 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
                   backgroundColor: Colors.blue,
                   child: Text(
                     widget.selectedUser?.name[0] ?? '', // Use widget.selectedUser
-                    style: const TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18,),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -53,7 +54,7 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(widget.selectedUser?.name ?? 'User', // Use widget.selectedUser
-                        style: const TextStyle(fontSize: 18)),
+                        style: const TextStyle(fontSize: 18,color: Colors.black)),
                     const Text('Online',
                         style:
                         TextStyle(fontSize: 12, color: Colors.green)),
@@ -64,11 +65,11 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.video_call, color: Colors.white),
+                  icon: const Icon(Icons.video_call, color: Colors.black),
                   onPressed: () {},
                 ),
                 IconButton(
-                  icon: const Icon(Icons.call, color: Colors.white),
+                  icon: const Icon(Icons.call, color: Colors.black),
                   onPressed: () {},
                 ),
               ],
@@ -76,7 +77,7 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
           ],
         ),
       ),
-      backgroundColor: const Color(0xFF212832),
+      
       body: Column(
         children: [
           Expanded(

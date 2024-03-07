@@ -131,7 +131,9 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.docName),
+        elevation: 0,
+        title: Text(widget.docName,style: TextStyle(color:Colors.black),),
+        iconTheme: IconThemeData(color: Colors.black),
         actions: [
           IconButton(
             onPressed: () {
@@ -182,10 +184,10 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
                             }
                           },
                           leading: ClipOval(
-                            child: Icon(Icons.file_copy),
+                            child: Icon(Icons.file_copy,color: Colors.black,),
                           ),
-                          title: Text(getlist[0]),
-                          subtitle: Text('00/00/2000'),
+                          title: Text(getlist[0],style: TextStyle(color: Colors.black),),
+                          subtitle: Text('00/00/2000',style: TextStyle(color: Colors.black)),
                         );
                       }));
                 }

@@ -131,14 +131,16 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.docName),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text(widget.docName,style: TextStyle(color:Colors.black),),
         actions: [
           IconButton(
             onPressed: () {
               uploadFile();
               control.isDocumentLoading.value = false;
             },
-            icon: Icon(Icons.upload_file),
+            icon: Icon(Icons.upload_file,color:Colors.black),
           ),
         ],
       ),
@@ -157,7 +159,7 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('Error: ${snapshot.error}'),
+                    child: Text('Error: ${snapshot.error}',style: TextStyle(color:Colors.black),),
                   );
                 } else {
                   final List data = snapshot.data!;
@@ -188,10 +190,10 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
                             }
                           },
                           leading: ClipOval(
-                            child: Icon(Icons.file_copy),
+                            child: Icon(Icons.file_copy,color:Colors.black,),
                           ),
-                          title: Text(getlist[0]),
-                          subtitle: Text('00/00/2000'),
+                          title: Text(getlist[0],style: TextStyle(color:Colors.black),),
+                          subtitle: Text('00/00/2000',style: TextStyle(color:Colors.black),),
                         );
                       }));
                 }

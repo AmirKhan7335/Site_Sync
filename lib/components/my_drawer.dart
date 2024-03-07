@@ -48,7 +48,7 @@ class MyDrawerState extends State<MyDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: const Color(0xFF212832), // Set the overall background color
+        color: Color.fromARGB(255, 177, 178, 179), // Set the overall background color
         child: FutureBuilder<String>(
           // Fetch the username asynchronously
           future: fetchUsername(),
@@ -66,20 +66,22 @@ class MyDrawerState extends State<MyDrawer> {
                       // Drawer header
                       UserAccountsDrawerHeader(
                         decoration: const BoxDecoration(
-                          color: Color(0xFF6B8D9F), // Set the background color
+                          color: Colors.white, // Set the background color
                         ),
                         accountName: Text(
                           snapshot.data ?? 'Guest',
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold, // Set the font weight
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black // Set the font weight
                           ),
                         ),
                         accountEmail: Text(
                           user?.email ?? 'guest@gmail.com',
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold, // Set the font weight
+                            fontWeight: FontWeight.bold,
+                            color:Colors.black // Set the font weight
                           ),
                         ),
                       ),
@@ -88,8 +90,8 @@ class MyDrawerState extends State<MyDrawer> {
                       Padding(
                         padding: const EdgeInsets.only(left: 25,),
                         child: ListTile(
-                          leading: const Icon(Icons.home),
-                          title: const Text('HOME'),
+                          leading: const Icon(Icons.home,color: Colors.black,),
+                          title: const Text('HOME',style: TextStyle(color: Colors.black)),
                           onTap: () {
                             // this is already the home screen so just pop drawer
                             Navigator.pop(context);
@@ -100,8 +102,8 @@ class MyDrawerState extends State<MyDrawer> {
                       Padding(
                         padding: const EdgeInsets.only(left: 25,),
                         child: ListTile(
-                          leading: const Icon(Icons.person),
-                          title: const Text('PROFILE'),
+                          leading: const Icon(Icons.person,color: Colors.black,),
+                          title: const Text('PROFILE',style: TextStyle(color: Colors.black)),
                           onTap: () {
                             // this is already the home screen so just pop drawer
                             Navigator.pop(context);
@@ -114,8 +116,8 @@ class MyDrawerState extends State<MyDrawer> {
                       Padding(
                         padding: const EdgeInsets.only(left: 25,),
                         child: ListTile(
-                          leading: const Icon(Icons.group),
-                          title: const Text('USERS'),
+                          leading: const Icon(Icons.group,color:Colors.black),
+                          title: const Text('USERS',style: TextStyle(color: Colors.black)),
                           onTap: () {
                             // this is already the home screen so just pop drawer
                             Navigator.pop(context);
@@ -130,8 +132,8 @@ class MyDrawerState extends State<MyDrawer> {
                   Padding(
                     padding: const EdgeInsets.only(left: 25, bottom: 25,),
                     child: ListTile(
-                      leading: const Icon(Icons.group),
-                      title: const Text('LOGOUT'),
+                      leading: const Icon(Icons.group,color: Colors.black,),
+                      title: const Text('LOGOUT',style: TextStyle(color: Colors.black)),
                       onTap: () {
                         Navigator.pop(context);
                         logout(context);

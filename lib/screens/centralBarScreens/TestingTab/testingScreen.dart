@@ -31,7 +31,7 @@ class _TestingScreenState extends State<TestingScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('Cancel',style: TextStyle(color:Colors.black),),
             ),
             TextButton(
               onPressed: () {
@@ -57,7 +57,9 @@ class _TestingScreenState extends State<TestingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Testing'),
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.black),
+          title: Text('Testing',style: TextStyle(color:Colors.black),),
         ),
         body: NamesList(projId: widget.projId),
         floatingActionButton: widget.isCnslt
@@ -129,12 +131,12 @@ class _NamesListState extends State<NamesList> {
                           },
                           leading: ClipOval(
                               child: Text(
-                            '${index + 1}',
-                            style: TextStyle(fontSize: 20),
+                            '${index + 1}',style: TextStyle(color:Colors.black,fontSize: 20),
+                            
                           )),
                           title: Text(
                             '${data[index].id}',
-                            style: TextStyle(
+                            style: TextStyle(color:Colors.black,
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -175,7 +177,9 @@ class DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text(widget.title,style: TextStyle(color:Colors.black),),
       ),
       body: ListView.builder(
           itemCount: names.length,
@@ -193,11 +197,11 @@ class DetailScreenState extends State<DetailScreen> {
                                       projId: widget.projId,
                                     )));
                       },
-                      leading: ClipOval(child: Icon(icons[index])),
+                      leading: ClipOval(child: Icon(icons[index],color:Colors.black,)),
                       title: Text(
                         '${names[index]}',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 20,color:Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Padding(

@@ -162,7 +162,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                                             .toDouble()/100,
                                         backgroundColor: Colors.white,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                            Colors.yellow),
+                                            Colors.green),
                                       ),
                                     ),
                                     SizedBox(width: 10),
@@ -230,7 +230,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                                   value: 1,
                                   backgroundColor: Colors.white,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.yellow),
+                                      Colors.green),
                                 ),
                               ),
                               SizedBox(width: 10),
@@ -265,6 +265,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                   child: Text(
                     'Schedule',
                     style: TextStyle(
+                      color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -281,7 +282,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                     width: 150,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: isOngoing ? Colors.yellow : Colors.grey,
+                      color: isOngoing ? Colors.green : Colors.grey,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(
@@ -309,7 +310,7 @@ class _ScheduleProjectsState extends State<ProgressPage> {
                     width: 150,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: !isOngoing ? Colors.yellow : Colors.grey,
+                      color: !isOngoing ? Colors.green : Colors.grey,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(

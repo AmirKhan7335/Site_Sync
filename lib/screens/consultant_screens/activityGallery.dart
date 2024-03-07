@@ -93,13 +93,13 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(Icons.arrow_back_ios_outlined)),
+                    icon: Icon(Icons.arrow_back_ios_outlined,color: Colors.black,)),
                 Text(
                   'Concreting',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 17,color: Colors.black, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                    onPressed: () {}, icon: Icon(Icons.add_box_outlined)),
+                    onPressed: () {}, icon: Icon(Icons.add_box_outlined,color: Colors.black,)),
               ],
             ),
           ),
@@ -115,7 +115,7 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                   width: 150,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: isPending ? Colors.yellow : Colors.grey,
+                    color: isPending ? Colors.green : Colors.grey,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(
@@ -143,7 +143,7 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                   width: 150,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: !isPending ? Colors.yellow : Colors.grey,
+                    color: !isPending ? Colors.green : Colors.grey,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: InkWell(
@@ -231,7 +231,7 @@ class _ActivityGalleryState extends State<ActivityGallery> {
                                       right: 32.0, left: 32.0, top: 32),
                                   child: MyButton(
                                       text: 'Approve',
-                                      bgColor: Colors.yellow,
+                                      bgColor: Colors.green,
                                       textColor: Colors.black,
                                       icon: Icons.cloud_done_outlined,
                                       onTap: () {

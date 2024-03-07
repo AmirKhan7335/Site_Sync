@@ -40,7 +40,9 @@ class _RequestBodyState extends State<ProjectDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Project Detail'),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text('Project Detail',style: TextStyle(color: Colors.black)),
       ),
       body: Container(
         child: Column(
@@ -55,7 +57,7 @@ class _RequestBodyState extends State<ProjectDetail> {
                 children: [
                   Text(
                     '${widget.projectDataList[0]}',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, color: Colors.black,fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -67,7 +69,7 @@ class _RequestBodyState extends State<ProjectDetail> {
               padding: const EdgeInsets.only(right: 32, left: 32),
               child: Container(
                 height: 1.5,
-                color: Colors.white,
+                color: Colors.grey,
               ),
             ),
             SizedBox(
@@ -80,7 +82,7 @@ class _RequestBodyState extends State<ProjectDetail> {
                 children: [
                   Text(
                     'Progress',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 24, color: Colors.black,fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 90,
@@ -106,7 +108,9 @@ class _RequestBodyState extends State<ProjectDetail> {
                           height: 126,
                           width: 127,
                           child: CustomPaint(
+                            
                             painter: ArcPainter(
+                              
                               progress: calculateProgress(
                                   widget.projectDataList[1].toDate(),
                                   widget.projectDataList[2].toDate()),
@@ -123,7 +127,7 @@ class _RequestBodyState extends State<ProjectDetail> {
                               "${calculateProgress(
                                   widget.projectDataList[1].toDate(),
                                   widget.projectDataList[2].toDate())} %",
-                              style: const TextStyle(fontSize: 20),
+                              style: const TextStyle(fontSize: 20,color: Colors.black),
                             ),
                           ),
                         ),

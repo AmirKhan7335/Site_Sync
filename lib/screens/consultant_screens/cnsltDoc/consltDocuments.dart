@@ -124,7 +124,9 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Documents'),
+        elevation: 0,
+iconTheme: IconThemeData(color: Colors.black),
+        title: Text('Documents', style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
             onPressed: () {
@@ -150,7 +152,7 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('Error: ${snapshot.error}'),
+                    child: Text('Error: ${snapshot.error}',style: TextStyle(color: Colors.black)),
                   );
                 } else {
                   final List data = snapshot.data!;
@@ -163,30 +165,37 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
                         final getlist =
                             list.split(',').map((e) => e.trim()).toList();
 
-                        return ListTile(
-                          onTap: () async {
-                            try {
-                              //------------------------------------------
-                              // final Uri _url = Uri.parse(getlist[1]);
-                              // if (await canLaunchUrl(_url)) {
-                              //   // print('object');
-                              //   await launchUrl(_url);
-                              // } else {
-                              //   Get.snackbar('Error', 'Unknown Error');
-                              // }
-                              //-------------------------------------------
-                              controller.isDocumentLoading.value = true;
-                              _checkFileAndOpen(getlist[1], getlist[0]);
-                              controller.isDocumentLoading.value = false;
-                            } catch (e) {
-                              Get.snackbar('Error', e.toString());
-                            }
-                          },
-                          leading: ClipOval(
-                            child: Icon(Icons.file_copy),
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 5,
+                            child: ListTile(
+                              onTap: () async {
+                                try {
+                                  //------------------------------------------
+                                  // final Uri _url = Uri.parse(getlist[1]);
+                                  // if (await canLaunchUrl(_url)) {
+                                  //   // print('object');
+                                  //   await launchUrl(_url);
+                                  // } else {
+                                  //   Get.snackbar('Error', 'Unknown Error');
+                                  // }
+                                  //-------------------------------------------
+                                  controller.isDocumentLoading.value = true;
+                                  _checkFileAndOpen(getlist[1], getlist[0]);
+                                  controller.isDocumentLoading.value = false;
+                                } catch (e) {
+                                  Get.snackbar('Error', e.toString());
+                                }
+                              },
+                              leading: ClipOval(
+                                child: Icon(Icons.file_copy,color: Colors.black,),
+                              ),
+                              title: Text(getlist[0],style: TextStyle(color: Colors.black)),
+                              subtitle: Text('00/00/2000',style: TextStyle(color: Colors.black)),
+                            ),
                           ),
-                          title: Text(getlist[0]),
-                          subtitle: Text('00/00/2000'),
                         );
                       }));
                 }
@@ -195,7 +204,7 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
             control.isDocumentLoading.value
                 ? Center(
                     child: CircularProgressIndicator(
-                    color: Colors.yellow,
+                    color: Colors.green,
                   ))
                 : Center()
           ],

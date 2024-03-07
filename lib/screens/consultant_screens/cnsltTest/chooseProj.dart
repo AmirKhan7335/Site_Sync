@@ -30,8 +30,11 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
         appBar: AppBar(
-          title: Text('Select Project'),
+          elevation: 0,
+          title: Text('Select Project',style: TextStyle(color:Colors.black),),
+          iconTheme: IconThemeData(color: Colors.black),
         ),
         body: FutureBuilder(
             future: fetchProjects(),
@@ -46,31 +49,38 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
               final data = snapshot.data;
               return ListView.builder(
                   itemCount: data!.length,
-                  itemBuilder: ((context, index) => ListTile(
-                        onTap: () {
-                          final projId = data[index][1];
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      TestingScreen(
-                                          projId: projId,
-                                          isCnslt: true,)));
-                        },
-                        leading: ClipOval(
-                          child: Text(
-                            index.toString(),
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                  itemBuilder: ((context, index) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 5,
+                      child: ListTile(
+                            onTap: () {
+                              final projId = data[index][1];
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          TestingScreen(
+                                              projId: projId,
+                                              isCnslt: true,)));
+                            },
+                            leading: ClipOval(
+                              child: Text(
+                                index.toString(),
+                                style: TextStyle(color:Colors.black,
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            title: Text(data[index][0].toString(),style: TextStyle(color:Colors.black),),
+                            subtitle: Container(
+                              height: 1.5,
+                              width: 500,
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
-                        title: Text(data[index][0].toString()),
-                        subtitle: Container(
-                          height: 1.5,
-                          width: 500,
-                          color: Colors.grey,
-                        ),
-                      )));
+                    ),
+                  )));
             }));
   }
 }

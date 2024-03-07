@@ -378,7 +378,7 @@ class ChatScreenState extends State<ChatScreen> {
                                             },
                                           ),
                                           const Divider(
-                                              color: Colors.white, height: 0)
+                                              color: Colors.grey, height: 0)
                                         ],
                                       ),
                                     );

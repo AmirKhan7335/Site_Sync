@@ -188,7 +188,9 @@ class ChatListScreenState extends State<ChatListScreen> {
       appBar: userSelected
           ? null // Remove the AppBar when a user is selected
           : AppBar(
-              title: const Text('Valid Users'),
+            elevation: 0,
+              iconTheme: IconThemeData(color: Colors.black),
+              title: const Text('Valid Users',style: TextStyle(color: Colors.black)),
             ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
@@ -214,7 +216,7 @@ class ChatListScreenState extends State<ChatListScreen> {
                         );
                       },
                     )
-                  : const Center(child: Text('No users available')),
+                  : const Center(child: Text('No users available',style: TextStyle(color: Colors.black))),
     );
   }
 }

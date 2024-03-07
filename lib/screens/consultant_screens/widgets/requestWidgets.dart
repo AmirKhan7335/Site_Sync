@@ -23,7 +23,8 @@ class _PendingRequestState extends State<PendingRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Pending Requests'),
+          elevation: 0,
+          title: Text('Pending Requests',style: TextStyle(color:Colors.black),),
           centerTitle: true,
         ),
         body: Column(
@@ -42,7 +43,7 @@ class _PendingRequestState extends State<PendingRequest> {
                 children: [
                   MyButton(
                     text: 'Confirm',
-                    bgColor: Colors.yellow,
+                    bgColor: Colors.green,
                     textColor: Colors.black,
                     icon: Icons.cloud_done_rounded,
                     onTap: () async {
@@ -107,10 +108,12 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Approved Requests'),
+          elevation: 0,
+          title: Text('Approved Requests',style: TextStyle(color:Colors.black),),
           centerTitle: true,
         ),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             RequestBody(
               name: widget.name,
@@ -177,16 +180,16 @@ class _RequestBodyState extends State<RequestBody> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.yellow,
+                  backgroundColor: Colors.green,
                   radius: 30,
-                  child: Icon(Icons.person),
+                  child: Icon(Icons.person,color:Colors.black,),
                 ),
                 SizedBox(
                   width: 10,
                 ),
                 Text(
                   '${widget.name}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20, color:Colors.black,fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -216,6 +219,8 @@ class _RequestBodyState extends State<RequestBody> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 24, bottom: 24),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
