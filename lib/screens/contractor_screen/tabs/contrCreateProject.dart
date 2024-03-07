@@ -289,7 +289,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                     const SizedBox(height: 50),
                     MyButton(
                       text: 'Confirm',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () {
                         if (titleController.text.isEmpty ||

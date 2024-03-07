@@ -212,7 +212,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -239,7 +239,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                       child: Center(
                         child: Text(
                           'New Project',
-                          style: TextStyle(fontSize: 21.0, color: Colors.white),
+                          style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -370,7 +370,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           },
                           child: Text(
                             'Skip',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(),
                           ),
                           style: ButtonStyle(),
                         ),
@@ -379,7 +379,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                     const SizedBox(height: 50),
                     MyButton(
                       text: 'Continue',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () async {
                         if (consultantEmail == '' || selectedProject == '') {

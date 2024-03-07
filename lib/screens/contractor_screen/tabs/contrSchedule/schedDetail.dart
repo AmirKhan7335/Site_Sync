@@ -67,13 +67,13 @@ class _ConsultantScheduleState extends State<ContrScheduleDetail> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.arrow_back_ios_outlined)),
+                      icon: Icon(Icons.arrow_back_ios_outlined,color: Colors.black,)),
                   Text(
                     'Activities',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black),
                   ),
                   IconButton(
-                      onPressed: () {}, icon: Icon(Icons.add_box_outlined)),
+                      onPressed: () {}, icon: Icon(Icons.add_box_outlined,color: Colors.black,)),
                 ],
               ),
             ),
@@ -87,7 +87,7 @@ class _ConsultantScheduleState extends State<ContrScheduleDetail> {
                 children: [
                   Text(
                     '${widget.title}',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 25,color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -99,7 +99,7 @@ class _ConsultantScheduleState extends State<ContrScheduleDetail> {
               padding: const EdgeInsets.only(right: 32, left: 32),
               child: Container(
                 height: 1.5,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
             FutureBuilder(

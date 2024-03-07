@@ -50,7 +50,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -72,7 +72,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                       child: Center(
                         child: Text(
                           'Company Info',
-                          style: TextStyle(fontSize: 21.0, color: Colors.white),
+                          style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -187,7 +187,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                     const SizedBox(height: 50),
                     MyButton(
                       text: 'Confirm',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () { if (nameController.text.isNotEmpty &&
                             typeController.text.isNotEmpty &&
