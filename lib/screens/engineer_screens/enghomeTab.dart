@@ -398,21 +398,36 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                         });
                                       },
                                       children: [
-                                        Obx(()=>
-                                           PageOne(
-                                              startDate: DateFormat('dd-MM-yyyy')
-                                                  .format(projData[3].toDate())
-                                                  .toString(),
-                                              endDate: DateFormat('dd-MM-yyyy')
-                                                  .format(projData[4].toDate())
-                                                  .toString(),
-                                              activityProgress: controller
-                                                  .overAllPercent.value),
+                                        Obx(
+                                          () => Card(
+                                            color: Colors.transparent,
+                                            elevation: 10,
+                                            child: PageOne(
+                                                startDate: DateFormat(
+                                                        'dd-MM-yyyy')
+                                                    .format(
+                                                        projData[3].toDate())
+                                                    .toString(),
+                                                endDate: DateFormat(
+                                                        'dd-MM-yyyy')
+                                                    .format(
+                                                        projData[4].toDate())
+                                                    .toString(),
+                                                activityProgress: controller
+                                                    .overAllPercent.value),
+                                          ),
                                         ),
-                                        PageTwo(
-                                            total: projData[1],
-                                            retMoney: projData[7]),
-                                        const PageThree(),
+                                        Card(
+                                          color: Colors.transparent,
+                                          elevation: 10,
+                                          child: PageTwo(
+                                              total: projData[1],
+                                              retMoney: projData[7]),
+                                        ),
+                                        Card(
+                                            color: Colors.transparent,
+                                            elevation: 10,
+                                            child: const PageThree()),
                                       ],
                                     ),
                                     Positioned(
@@ -658,123 +673,128 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                           const SizedBox(height: 10),
                           Container(
                             padding: const EdgeInsets.only(
-                                left: 16.0, top: 10, bottom: 16, right: 16),
+                                left: 8.0, top: 10, bottom: 16, right: 8),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16.0),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      todayActivity?.name ?? 'No Activity',
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    // const SizedBox(width: 80),
-                                    Container(
-                                      width: 80,
-                                      padding: const EdgeInsets.all(3.0),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
+                            child: Card(
+                              color: Colors.transparent,
+                              elevation: 10,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        todayActivity?.name ?? 'No Activity',
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                      child: Center(
-                                        child: Text(
-                                          activities.isNotEmpty
-                                              ? (todayActivity != null
-                                                  ? (calculateDaysLeft(
-                                                              todayActivity
-                                                                  .finishDate) ==
-                                                          1
-                                                      ? 'Last Day'
-                                                      : '${calculateDaysLeft(todayActivity.finishDate)} Days left')
-                                                  : 'No Activity')
-                                              : '',
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black),
+                                      // const SizedBox(width: 80),
+                                      Container(
+                                        width: 80,
+                                        padding: const EdgeInsets.all(3.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            activities.isNotEmpty
+                                                ? (todayActivity != null
+                                                    ? (calculateDaysLeft(
+                                                                todayActivity
+                                                                    .finishDate) ==
+                                                            1
+                                                        ? 'Last Day'
+                                                        : '${calculateDaysLeft(todayActivity.finishDate)} Days left')
+                                                    : 'No Activity')
+                                                : '',
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Text(
-                                      activities.isNotEmpty
-                                          ? 'Due: ${todayActivity?.finishDate ?? "No Due Date"}'
-                                          : 'No Due Date',
-                                      style: const TextStyle(
-                                          fontSize: 14, color: Colors.black),
-                                    ),
-                                    const SizedBox(width: 45),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: SizedBox(
-                                        width: 140,
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        activities.isNotEmpty
+                                            ? 'Due: ${todayActivity?.finishDate ?? "No Due Date"}'
+                                            : 'No Due Date',
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                      ),
+                                      const SizedBox(width: 45),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: SizedBox(
+                                          width: 140,
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      todayActivity
+                                                                  ?.finishDate !=
+                                                              null
+                                                          ? "Completed"
+                                                          : "",
+                                                      style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14)),
+                                                  Text(
                                                     todayActivity?.finishDate !=
                                                             null
-                                                        ? "Completed"
-                                                        : "",
+                                                        ? '${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%'
+                                                        : '0%',
                                                     style: const TextStyle(
                                                         color: Colors.black,
-                                                        fontSize: 14)),
-                                                Text(
-                                                  todayActivity?.finishDate !=
-                                                          null
-                                                      ? '${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%'
-                                                      : '0%',
-                                                  style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 146,
-                                              child: LinearProgressIndicator(
-                                                value: todayActivity
-                                                            ?.finishDate !=
-                                                        null
-                                                    ? (calculatePercentComplete(
-                                                            todayActivity
-                                                                    ?.startDate ??
-                                                                "",
-                                                            todayActivity
-                                                                    ?.finishDate ??
-                                                                "") /
-                                                        100)
-                                                    : 0,
-                                                backgroundColor: Colors.grey,
-                                                valueColor:
-                                                    const AlwaysStoppedAnimation<
-                                                        Color>(Colors.blue),
+                                                        fontSize: 14),
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                          ],
+                                              SizedBox(
+                                                width: 146,
+                                                child: LinearProgressIndicator(
+                                                  value: todayActivity
+                                                              ?.finishDate !=
+                                                          null
+                                                      ? (calculatePercentComplete(
+                                                              todayActivity
+                                                                      ?.startDate ??
+                                                                  "",
+                                                              todayActivity
+                                                                      ?.finishDate ??
+                                                                  "") /
+                                                          100)
+                                                      : 0,
+                                                  backgroundColor: Colors.grey,
+                                                  valueColor:
+                                                      const AlwaysStoppedAnimation<
+                                                          Color>(Colors.blue),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -795,30 +815,34 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16.0),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  upcomingActivity?.name ??
-                                      'No Upcoming Activity',
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Text(
-                                      activities.isNotEmpty
-                                          ? 'Starts: ${upcomingActivity?.startDate ?? "No Start Date"}'
-                                          : 'No Start Date',
-                                      style: const TextStyle(
-                                          fontSize: 14, color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            child: Card(
+                              color: Colors.transparent,
+                              elevation: 10,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    upcomingActivity?.name ??
+                                        'No Upcoming Activity',
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        activities.isNotEmpty
+                                            ? 'Starts: ${upcomingActivity?.startDate ?? "No Start Date"}'
+                                            : 'No Start Date',
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],

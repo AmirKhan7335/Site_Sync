@@ -38,7 +38,7 @@ class ConsultantHomePageState extends State<ContractorHomePage> {
     final controller = Get.put(NavigationController());
     return Scaffold(
         drawer: const MyDrawer(),
-        backgroundColor: Colors.white,
+        
         body: Obx(
           () => controller.contrCurrentIndex.value == 1
               ? ChatScreen()

@@ -24,7 +24,7 @@ class MyHomePageState extends State<EngineerHomePage> {
     return 
        Scaffold(
         drawer: const MyDrawer(),
-        backgroundColor: Color(0xFFF3F3F3),
+
         body: Obx(() => controller.engCurrentIndex.value == 1
             ? ChatScreen()
             : controller.engCurrentIndex.value== 2
