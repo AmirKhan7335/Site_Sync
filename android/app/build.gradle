@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -30,9 +31,6 @@ if (keystorePropertiesFile.exists()) {
 
 
 android {
-    
-    
-  
     namespace "com.example.amir_khan1"
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
@@ -66,7 +64,7 @@ android {
     release {
         keyAlias keystoreProperties['keyAlias']
         keyPassword keystoreProperties['keyPassword']
-        storeFile file(keystoreProperties['storeFile'])
+        storeFile file("key.jks")
         storePassword keystoreProperties['storePassword']
        }
    }
@@ -87,4 +85,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation 'com.google.firebase:firebase-appcheck:latest_version'
     implementation("com.google.android.material:material:1.12.0-alpha03")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation("com.google.firebase:firebase-analytics")
 }
