@@ -43,8 +43,7 @@ class _ChooseProjectForTestState extends State<ChooseContrProjectForTest> {
       result.addAll(contrResult);
       return result;
     } else {
-      
-    return result;
+      return result;
     }
 //----------------------------------------------------------------
   }
@@ -81,7 +80,7 @@ class _ChooseProjectForTestState extends State<ChooseContrProjectForTest> {
                         },
                         leading: ClipOval(
                           child: Text(
-                            index.toString(),
+                            '${index + 1}',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),

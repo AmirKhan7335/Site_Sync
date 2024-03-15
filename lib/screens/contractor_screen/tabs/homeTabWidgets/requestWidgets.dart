@@ -23,7 +23,9 @@ class _PendingRequestState extends State<ContrPendingRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Pending Requests'),
+          iconTheme: IconThemeData(color: Colors.black),
+          elevation: 0,
+          title: Text('Pending Requests',style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -42,7 +44,7 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                 children: [
                   MyButton(
                     text: 'Confirm',
-                    bgColor: Colors.yellow,
+                    bgColor: Colors.green,
                     textColor: Colors.black,
                     icon: Icons.cloud_done_rounded,
                     onTap: () async {
@@ -107,7 +109,9 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Approved Requests'),
+          iconTheme: IconThemeData(color: Colors.black),
+          elevation: 0,
+          title: Text('Approved Requests',style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -177,16 +181,16 @@ class _RequestBodyState extends State<RequestBody> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.yellow,
+                  backgroundColor: Colors.green,
                   radius: 30,
-                  child: Icon(Icons.person),
+                  child: Icon(Icons.person,color: Colors.black,),
                 ),
                 SizedBox(
                   width: 10,
                 ),
                 Text(
                   '${widget.name}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20,color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:amir_khan1/models/activity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -147,6 +148,39 @@ class ProjectProgressController extends GetxController {
     try {
       final engEmailQuery = await FirebaseFirestore.instance
           .collection('engineers')
+          .where('projectId', isEqualTo: id)
+          .get();
+      final email = engEmailQuery.docs.map((e) => e.id).toList();
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(email[0])
+          .collection('activities')
+          .get();
+
+      // Convert documents to Activity objects
+      List<Activity> activities = activitiesSnapshot.docs.map((doc) {
+        return Activity(
+          id: doc['id'],
+          name: doc['name'],
+          startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
+          finishDate:
+              DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+          order: doc['order'],
+        );
+      }).toList();
+      calculateOverallPercent(activities);
+    } catch (e) {
+      
+      
+    debugPrint(e.toString());
+      return [];
+    }
+  }
+
+  fetchContrActivities(id) async {
+    try {
+      final engEmailQuery = await FirebaseFirestore.instance
+          .collection('contractor')
           .where('projectId', isEqualTo: id)
           .get();
       final email = engEmailQuery.docs.map((e) => e.id).toList();

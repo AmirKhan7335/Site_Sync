@@ -5,22 +5,22 @@ class PageOne extends StatelessWidget {
   final String? startDate;
   final String? endDate;
   final int activityProgress;
+  final String title;
 
-  const PageOne({
-    super.key,
-    required this.startDate,
-    required this.endDate,
-    required this.activityProgress,
-  });
+  const PageOne(
+      {super.key,
+      required this.startDate,
+      required this.endDate,
+      required this.activityProgress,
+      required this.title});
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color:  Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Center(
@@ -43,8 +43,8 @@ class PageOne extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Status: On Time",
+                     Text(
+                      "Status: ${title}",
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                     Text(
@@ -66,8 +66,9 @@ class PageOne extends StatelessWidget {
                     children: [
                       // Outer Ellipse with a thin border
                       Container(
-                        height: 89,
-                        width: 89,
+                        //89
+                        height: 60,
+                        width: 60,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.transparent,
@@ -79,8 +80,10 @@ class PageOne extends StatelessWidget {
                       ),
                       // Inner Ellipse with custom paint
                       SizedBox(
-                        height: 126,
-                        width: 127,
+                        height:60,
+                        // 126,
+                        width: 60,
+                        //127,
                         child: CustomPaint(
                           painter: ArcPainter(
                             progress: activityProgress.toDouble(),
@@ -91,11 +94,12 @@ class PageOne extends StatelessWidget {
                         top: 0,
                         bottom: 0,
                         left: 0,
-                        right: 0,
+                        right: 25,
                         child: Center(
                           child: Text(
                             "${activityProgress.toInt()}%",
-                            style: const TextStyle(fontSize: 20,color: Colors.black),
+                            style: const TextStyle(
+                                fontSize: 18, color: Colors.black),
                           ),
                         ),
                       ),

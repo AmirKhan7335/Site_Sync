@@ -142,15 +142,15 @@ class _RequestPageState extends State<ContrRequestPage> {
                         radius: 30,
                         child: Icon(Icons.person),
                       ),
-                      title: Text('${data[1][index]}'),
-                      subtitle: Text('Hi, please approve my role'),
+                      title: Text('${data[1][index]}',style: TextStyle(color: Colors.black),),
+                      subtitle: Text('Hi, please approve my role',style: TextStyle(color: Colors.black)),
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text('8 Nov'),
+                          Text('8 Nov',style: TextStyle(color: Colors.black)),
                           Icon(
                             Icons.star,
-                            color: Colors.yellow,
+                            color: Colors.green,
                             size: 10,
                           ),
                         ],
@@ -187,12 +187,12 @@ class _RequestPageState extends State<ContrRequestPage> {
                         radius: 30,
                         child: Icon(Icons.person),
                       ),
-                      title: Text('${data[1][index]}'),
-                      subtitle: Text('Construction of ${data[0][index][0]}'),
+                      title: Text('${data[1][index]}',style: TextStyle(color: Colors.black)),
+                      subtitle: Text('${data[0][index][0]}',style: TextStyle(color: Colors.black)),
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text('08/01/2023'),
+                          Text('08/01/2023',style: TextStyle(color: Colors.black)),
                         ],
                       ),
                     ));
@@ -206,7 +206,9 @@ class _RequestPageState extends State<ContrRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Requests'),
+        iconTheme: IconThemeData(color: Colors.black),
+        elevation: 0,
+        title: Text('Requests',style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Container(
@@ -221,7 +223,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                     width: 150,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: isPending ? Colors.yellow : Colors.grey,
+                      color: isPending ? Colors.green : Colors.grey,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(
@@ -249,7 +251,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                     width: 150,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: !isPending ? Colors.yellow : Colors.grey,
+                      color: !isPending ? Colors.green : Colors.grey,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(

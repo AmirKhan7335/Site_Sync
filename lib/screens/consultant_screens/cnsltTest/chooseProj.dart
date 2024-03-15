@@ -9,8 +9,7 @@ class ChooseProjectForTest extends StatefulWidget {
   const ChooseProjectForTest({super.key});
 
   @override
-  State<ChooseProjectForTest> createState() =>
-      _ChooseProjectForTestState();
+  State<ChooseProjectForTest> createState() => _ChooseProjectForTestState();
 }
 
 class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
@@ -30,10 +29,12 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
         appBar: AppBar(
           elevation: 0,
-          title: Text('Select Project',style: TextStyle(color:Colors.black),),
+          title: Text(
+            'Select Project',
+            style: TextStyle(color: Colors.black),
+          ),
           iconTheme: IconThemeData(color: Colors.black),
         ),
         body: FutureBuilder(
@@ -50,37 +51,42 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
               return ListView.builder(
                   itemCount: data!.length,
                   itemBuilder: ((context, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      color: Colors.white,
-                      elevation: 5,
-                      child: ListTile(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Colors.white,
+                          elevation: 5,
+                          child: ListTile(
                             onTap: () {
                               final projId = data[index][1];
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          TestingScreen(
-                                              projId: projId,
-                                              isCnslt: true,)));
+                                      builder: (context) => TestingScreen(
+                                            projId: projId,
+                                            isCnslt: true,
+                                          )));
                             },
                             leading: ClipOval(
                               child: Text(
-                                index.toString(),
-                                style: TextStyle(color:Colors.black,
-                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                '${index + 1}',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
-                            title: Text(data[index][0].toString(),style: TextStyle(color:Colors.black),),
+                            title: Text(
+                              data[index][0].toString(),
+                              style: TextStyle(color: Colors.black),
+                            ),
                             subtitle: Container(
                               height: 1.5,
                               width: 500,
                               color: Colors.grey,
                             ),
                           ),
-                    ),
-                  )));
+                        ),
+                      )));
             }));
   }
 }

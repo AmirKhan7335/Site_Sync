@@ -414,7 +414,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                                         projData[4].toDate())
                                                     .toString(),
                                                 activityProgress: controller
-                                                    .overAllPercent.value),
+                                                    .overAllPercent.value,
+                                                title: projData[0]),
                                           ),
                                         ),
                                         Card(
@@ -671,16 +672,16 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, top: 10, bottom: 16, right: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            child: Card(
-                              color: Colors.transparent,
-                              elevation: 10,
+                          Card(
+                            elevation: 10,
+                            color: Colors.transparent,
+                            child: Container(
+                              padding: const EdgeInsets.only(
+                                  left: 8.0, top: 10, bottom: 16, right: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -808,16 +809,16 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.only(
-                                left: 16.0, right: 16, top: 10, bottom: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            child: Card(
-                              color: Colors.transparent,
-                              elevation: 10,
+                          Card(
+                            color: Colors.transparent,
+                            elevation: 10,
+                            child: Container(
+                              padding: const EdgeInsets.only(
+                                  left: 16.0, right: 16, top: 10, bottom: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

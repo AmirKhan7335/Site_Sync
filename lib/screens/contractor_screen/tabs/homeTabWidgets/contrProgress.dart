@@ -1,3 +1,4 @@
+import 'package:amir_khan1/controllers/progressTrackingController.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/progressWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -71,7 +72,9 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
           doc['startDate'],
           doc['endDate'],
           doc['location'],
-          doc['creationDate']
+          doc['creationDate'],
+          doc.id,
+          'enrolledByContr'
         ];
       }).toList();
 //===========================================================
@@ -91,10 +94,13 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
             doc['startDate'],
             doc['endDate'],
             doc['location'],
-            doc['creationDate']
+            doc['creationDate'],
+            doc.id,
+            'createdByContr'
           ];
         },
       ).toList();
+
       userData.addAll(contrResult);
       return userData;
 //..
@@ -170,6 +176,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
   }
 
   Widget Ongoing() {
+    final controller = Get.put(ProjectProgressController());
     return FutureBuilder(
         future: fetchOngoingProjects(),
         builder: (context, snapshot) {
@@ -183,58 +190,72 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
             final data = snapshot.data;
 
             return ListView.builder(
-              itemCount: data!.length,
-              itemBuilder: (context, index) => ListTile(
-                onTap: () => {},
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey[400],
-                  radius: 30,
-                  child: Text(
-                    '${index + 1}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                title: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${data[index][0]}'),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Container(
-                                width: 160,
-                                child: LinearProgressIndicator(
-                                  minHeight: 7,
-                                  borderRadius: BorderRadius.circular(5),
-                                  value: calculateProgress(
-                                          data[index][3].toDate(),
-                                          data[index][4].toDate()) /
-                                      100,
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.yellow),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                  '${calculateProgress(data[index][3].toDate(), data[index][4].toDate())}%'),
-                            ],
-                          )
-                        ],
+                itemCount: data!.length,
+                itemBuilder: (context, index) {
+                  controller.fetchActivities(data[index][7]);
+                  return Card(
+                    elevation: 5,
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () => {},
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 30,
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    )),
-              ),
-            );
+                      title: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${data[index][0]}',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 160,
+                                      child: LinearProgressIndicator(
+                                        minHeight: 7,
+                                        borderRadius: BorderRadius.circular(5),
+                                        value:  controller.overAllPercent.value
+                                              .toDouble()/100,
+                                        backgroundColor: Colors.grey,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.green),
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      '${controller.overAllPercent.value}%',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          )),
+                    ),
+                  );
+                });
           } else {
             return Center(
-              child: Text('No Ongoing Projects'),
+              child: Text(
+                'No Ongoing Projects',
+                style: TextStyle(color: Colors.black),
+              ),
             );
           }
         });
@@ -254,53 +275,67 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
             final data = snapshot.data;
             return ListView.builder(
               itemCount: data!.length,
-              itemBuilder: (context, index) => ListTile(
-                onTap: () {},
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey[400],
-                  radius: 30,
-                  child: Text(
-                    '${index + 1}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                title: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(5),
+              itemBuilder: (context, index) => Card(
+                elevation: 5,
+                color: Colors.white,
+                child: ListTile(
+                  onTap: () {},
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 30,
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${data[index][0]}'),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Container(
-                                width: 160,
-                                child: LinearProgressIndicator(
-                                  minHeight: 7,
-                                  borderRadius: BorderRadius.circular(5),
-                                  value: 1,
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.yellow),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text('100%'),
-                            ],
-                          )
-                        ],
+                  ),
+                  title: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
                       ),
-                    )),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${data[index][0]}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 160,
+                                  child: LinearProgressIndicator(
+                                    minHeight: 7,
+                                    borderRadius: BorderRadius.circular(5),
+                                    value: 1,
+                                    backgroundColor: Colors.white,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.green),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  '100%',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      )),
+                ),
               ),
             );
           } else {
             return Center(
-              child: Text('No Completed Projects'),
+              child: Text(
+                'No Completed Projects',
+                style: TextStyle(color: Colors.black),
+              ),
             );
           }
         });
@@ -321,9 +356,9 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                   child: Text(
                     'Schedule',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
                   ),
                 ),
               ],
@@ -337,7 +372,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                     width: 150,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: isOngoing ? Colors.yellow : Colors.grey,
+                      color: isOngoing ? Colors.green : Colors.grey,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(
@@ -365,7 +400,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                     width: 150,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: !isOngoing ? Colors.yellow : Colors.grey,
+                      color: !isOngoing ? Colors.green : Colors.grey,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: InkWell(

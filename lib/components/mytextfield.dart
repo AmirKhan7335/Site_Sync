@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class MyTextField extends StatefulWidget {
   final String hintText;
-  final bool obscureText;
+  bool obscureText;
   final TextEditingController controller;
   final IconData icon; // Add icon property
   final TextInputType keyboardType;
@@ -22,7 +23,7 @@ class MyTextField extends StatefulWidget {
 
 class MyTextFieldState extends State<MyTextField> {
   bool isFocused = false;
-
+  bool obscure = true;
   @override
   Widget build(BuildContext context) {
     return Focus(
@@ -42,13 +43,12 @@ class MyTextFieldState extends State<MyTextField> {
           color: const Color(0xFFF3F3F3), // Set the background color
         ),
         child: TextFormField(
-          
           style: const TextStyle(
             color: Colors.black,
             fontSize: 16.0,
           ),
           controller: widget.controller,
-          obscureText: widget.obscureText,
+          obscureText:  widget.hintText == 'Enter your password'||widget.hintText == 'Confirm your password'?obscure:false,
           keyboardType: widget.keyboardType,
           // inputFormatters: [ThousandsSeparatorInputFormatter()],
           decoration: InputDecoration(
@@ -64,6 +64,21 @@ class MyTextFieldState extends State<MyTextField> {
               widget.icon,
               color: Colors.grey, // Set icon color to white
             ),
+            suffixIcon: widget.hintText == 'Enter your password'||widget.hintText == 'Confirm your password'
+                ? IconButton(
+                    onPressed: () {
+                      setState(() {
+                        obscure = !obscure;
+                      });
+                    },
+                    icon: Icon(
+                      obscure
+                          ? Icons.visibility_off
+                          : Icons.visibility, // Based on obscure state choose the icon
+                      color: Colors.grey, // Set icon color to white
+                    ),
+                  )
+                : null,
           ),
         ),
       ),

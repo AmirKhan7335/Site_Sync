@@ -402,7 +402,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const ProgressPage()));
+                                            const ContrProgressPage()));
                               },
                               child: Text('Progress',
                                   style: TextStyle(
@@ -421,7 +421,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const RequestPage()));
+                                            const ContrRequestPage()));
                               },
                               child: Text(
                                 'Request',

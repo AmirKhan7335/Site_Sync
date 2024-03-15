@@ -143,8 +143,8 @@ class _RequestPageState extends State<RequestPage> {
                         radius: 30,
                         child: Icon(Icons.person),
                       ),
-                      title: Text('${data[1][index]}'),
-                      subtitle: Text('Hi, please approve my role'),
+                      title: Text('${data[1][index]}',style: TextStyle(color: Colors.black)),
+                      subtitle: Text('Hi, please approve my role',style: TextStyle(color: Colors.black)),
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -189,7 +189,7 @@ class _RequestPageState extends State<RequestPage> {
                         child: Icon(Icons.person),
                       ),
                       title: Text('${data[1][index]}',style: TextStyle(color:Colors.black),),
-                      subtitle: Text('Construction of ${data[0][index][0]}',style: TextStyle(color:Colors.black),),
+                      subtitle: Text('${data[0][index][0]}',style: TextStyle(color:Colors.black),),
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [

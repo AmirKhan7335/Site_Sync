@@ -80,7 +80,7 @@ class _ChooseProjectForDocumentState
                         },
                         leading: ClipOval(
                           child: Text(
-                            index.toString(),
+                            '${index + 1}',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),

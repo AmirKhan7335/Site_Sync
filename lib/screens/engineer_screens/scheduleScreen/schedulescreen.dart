@@ -224,46 +224,50 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           );
         }
       },
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        decoration: BoxDecoration(
-          color: const Color(0xFF6B8D9F),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 9.0,
-              height: 50,
-              color: const Color(0xFFFED36A),
-            ),
-            const SizedBox(width: 12.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayText, // Use the modified display text
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 19.0,
-                    ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    '$formattedStartDate - $formattedFinishDate',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.0,
-                    ),
-                  ),
-                ],
+      child: Card(
+        elevation: 5,
+        color: Colors.white,
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            color: Colors.white,  
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 9.0,
+                height: 50,
+                color: Colors.green,
               ),
-            ),
-          ],
+              const SizedBox(width: 12.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayText, // Use the modified display text
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19.0,
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      '$formattedStartDate - $formattedFinishDate',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 11.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

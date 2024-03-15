@@ -76,6 +76,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
           ];
         },
       ).toList();
+      
       userData.addAll(contrResult);
       return userData;
 //..
@@ -134,7 +135,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
                   radius: 30,
                   child: Text(
                     '${index + 1}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
                   ),
                 ),
                 title: Container(
@@ -147,7 +148,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${data[index][0]}'),
+                          Text('${data[index][0]}',style: TextStyle(color: Colors.black),),
                           SizedBox(height: 10),
                         ],
                       ),

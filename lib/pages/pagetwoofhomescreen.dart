@@ -52,7 +52,7 @@ class _PageTwoState extends State<PageTwo> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
-                        Text('${widget.total}',style: TextStyle(color: Colors.white),)
+                        Text('${widget.total}',style: TextStyle(color: Colors.black),)
               ],
             ),
           ),

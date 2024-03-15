@@ -16,7 +16,7 @@ class AccountDetails extends StatefulWidget {
 
 class _AccountDetailsState extends State<AccountDetails> {
   final _formKey = GlobalKey<FormState>();
-
+  String _selectedValue = 'Consultant';
   bool isloading = false;
   String consultantEmail = '';
   String consultantUserName = '';
@@ -46,6 +46,31 @@ class _AccountDetailsState extends State<AccountDetails> {
       final collectionData = await FirebaseFirestore.instance
           .collection('users')
           .where('role', isEqualTo: 'Consultant')
+          .get();
+
+      final userData = collectionData.docs
+          .map((doc) {
+            if (doc.data().containsKey('companyName')) {
+              return [doc['companyName'], doc['email']];
+            } else {
+              return null; // Return null for documents without the 'companyName' field
+            }
+          })
+          .where((data) => data != null) // Filter out null values
+          .toList();
+      return userData;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [];
+    }
+//..
+  }
+  Future<List> fetchContractor() async {
+//..
+    try {
+      final collectionData = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'Contractor')
           .get();
 
       final userData = collectionData.docs
@@ -154,7 +179,7 @@ class _AccountDetailsState extends State<AccountDetails> {
             content: Container(
               height: 400,
               child: FutureBuilder(
-                  future: fetchConsultant(),
+                  future: _selectedValue=='Consultant'? fetchConsultant():fetchContractor(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -208,6 +233,7 @@ class _AccountDetailsState extends State<AccountDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         actions: [
           IconButton(
               onPressed: () async {
@@ -236,32 +262,75 @@ class _AccountDetailsState extends State<AccountDetails> {
             child: Padding(
               padding: const EdgeInsets.only(
                 left: 25.0,
-                top: 25.0,
+                top: 0.0,
                 right: 25.0,
               ),
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    const SizedBox(height: 30),
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 60,
                       backgroundImage: AssetImage('assets/images/logo1.png'),
                       backgroundColor: Colors.transparent,
                     ),
-                    const SizedBox(height: 10),
                     const SizedBox(
                       height: 30,
                       width: double.infinity,
                       child: Center(
                         child: Text(
-                          'Accounts Details',
+                          'New Project',
                           style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .center, // Center the radio buttons horizontally
+                      children: [
+                        Radio<String>(
+                          activeColor: Colors.green,
+
+                          fillColor: MaterialStateProperty.all(Colors.green),
+                          value:
+                              'Consultant', // Value associated with the Consultant radio button
+                          groupValue:
+                              _selectedValue, // This variable should hold the currently selected value
+                          onChanged: (value) {
+                            setState(() {
+                              // Update the state when the radio button is selected
+                              _selectedValue = value!;
+                            });
+                          },
+                        ),
+                        Text(
+                          'Consultant',
+                          style: TextStyle(color: Colors.black),
+                        ), // Label for the Consultant radio button
+                        SizedBox(
+                            width:
+                                20), // Add some spacing between radio button and label
+                        Radio<String>(
+                          activeColor: Colors.green,
+                          fillColor: MaterialStateProperty.all(Colors.green),
+                          value:
+                              'Contractor', // Value associated with the Contractor radio button
+                          groupValue: _selectedValue,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedValue = value!;
+                            });
+                          },
+                        ),
+                        Text('Contractor',
+                            style: TextStyle(
+                                color: Colors
+                                    .black)), // Label for the Contractor radio button
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     const SizedBox(
                       height: 25,
                       width: double.infinity,

@@ -112,7 +112,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                           },
                           leading: ClipOval(
                             child: Text(
-                              index.toString(),
+                              '${index+1}',
                               style: TextStyle(
                                   fontSize: 20, color: Colors.black,fontWeight: FontWeight.bold),
                             ),

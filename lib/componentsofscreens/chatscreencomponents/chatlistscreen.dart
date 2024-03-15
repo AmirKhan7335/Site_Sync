@@ -102,9 +102,26 @@ class ChatListScreenState extends State<ChatListScreen> {
             .collection('projects')
             .where('reqAccepted', isEqualTo: true)
             .get();
+//-----------------------------------------------------------------
+final consultantEmail=contractorQuery.docs.map((e) => e['consultantEmail']);
+ final subData = await FirebaseFirestore.instance
+            .collection('users')
+            // .where('email',
+            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+            .where(FieldPath.documentId, whereIn: consultantEmail)
+            .get();
 
+        final validConslt = subData.docs.map((doc) {
+          final Map<String, dynamic> data =
+              doc.data(); // Cast to Map<String, dynamic>
+          return ChatUser(
+            id: doc.id,
+            name: data['username'] ?? '',
+          );
+        }).toList();
+        validUsers.addAll(validConslt);
+//--------------------------------------------------------------------
         final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
-
 //////////////////////////////////////////////////////////////////
         final contrData = await FirebaseFirestore.instance
             .collection('engineers')
@@ -117,7 +134,7 @@ class ChatListScreenState extends State<ChatListScreen> {
             .collection('users')
             // .where('email',
             //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
-            .where(FieldPath.documentId, whereIn: docIds)
+            .where(FieldPath.documentId, whereIn: contrdocIds)
             .get();
 
         final validContrUsers = contrusersData.docs.map((doc) {
