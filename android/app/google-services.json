@@ -1,26 +1,51 @@
 {
   "project_info": {
-    "project_number": "808199129562",
-    "project_id": "amir-e8895",
-    "storage_bucket": "amir-e8895.appspot.com"
+    "project_number": "550983757478",
+    "project_id": "site-sync-c8a63",
+    "storage_bucket": "site-sync-c8a63.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:808199129562:android:0a8acf919070ea6ccd98e3",
+        "mobilesdk_app_id": "1:550983757478:android:1d375db7b373394122ce67",
         "android_client_info": {
           "package_name": "com.khantech.progress_tracking_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "550983757478-qe8eh12onqqmp04nbf1tokkhrju704vm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.khantech.progress_tracking_app",
+            "certificate_hash": "5c0aae4f5fce6567731e5a7421091d03b2b7070c"
+          }
+        },
+        {
+          "client_id": "550983757478-gfc7q15b3rnggs7qp9ffrue3079sqace.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDnvM_puN-A5Up-w6CL8m_94cJWy30CpfE"
+          "current_key": "AIzaSyDZ2pHvzxtoqUaH9HbqGX0946U-8BSOhuI"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550983757478-gfc7q15b3rnggs7qp9ffrue3079sqace.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "550983757478-mk4lo5sa9orhhevd2o71b1pfm41en4eg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.amirKhan1"
+              }
+            }
+          ]
         }
       }
     }
