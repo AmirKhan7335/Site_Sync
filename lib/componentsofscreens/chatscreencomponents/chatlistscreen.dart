@@ -103,8 +103,9 @@ class ChatListScreenState extends State<ChatListScreen> {
             .where('reqAccepted', isEqualTo: true)
             .get();
 //-----------------------------------------------------------------
-final consultantEmail=contractorQuery.docs.map((e) => e['consultantEmail']);
- final subData = await FirebaseFirestore.instance
+        final consultantEmail =
+            contractorQuery.docs.map((e) => e['consultantEmail']);
+        final subData = await FirebaseFirestore.instance
             .collection('users')
             // .where('email',
             //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
@@ -205,9 +206,10 @@ final consultantEmail=contractorQuery.docs.map((e) => e['consultantEmail']);
       appBar: userSelected
           ? null // Remove the AppBar when a user is selected
           : AppBar(
-            elevation: 0,
+              elevation: 0,
               iconTheme: IconThemeData(color: Colors.black),
-              title: const Text('Valid Users',style: TextStyle(color: Colors.black)),
+              title: const Text('Valid Users',
+                  style: TextStyle(color: Colors.black)),
             ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
@@ -233,7 +235,9 @@ final consultantEmail=contractorQuery.docs.map((e) => e['consultantEmail']);
                         );
                       },
                     )
-                  : const Center(child: Text('No users available',style: TextStyle(color: Colors.black))),
+                  : const Center(
+                      child: Text('No users available',
+                          style: TextStyle(color: Colors.black))),
     );
   }
 }

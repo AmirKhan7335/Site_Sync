@@ -27,6 +27,9 @@
         android:label="Site Sync"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <meta-data
+            android:name="com.google.android.geo.AIzaSyA5dK0MYcSQa1SwxFfkHIpl8BVyZ3vUBco"
+            android:value="AIzaSyA5dK0MYcSQa1SwxFfkHIpl8BVyZ3vUBco" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

@@ -27,6 +27,14 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
   String selectedProject = ''; // Store the selected option
   Future<void> sendRequestToConsultant(projectId) async {
     final email = FirebaseAuth.instance.currentUser!.email;
+    var requests =
+        await FirebaseFirestore.instance.collection('contractorReq').doc().set({
+      'consultantEmail': consultantEmail,
+      'contractorEmail': email,
+      'projectId': projectId,
+      'reqAccepted': false,
+      'date': DateTime.now()
+    });
     var activitiesSnapshot = await FirebaseFirestore.instance
         .collection('contractor')
         .doc(email)
@@ -35,7 +43,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
         .set({
       'consultantEmail': consultantEmail,
       'projectId': projectId,
-      'reqAccepted': true,
+      'reqAccepted': false,
       'date': DateTime.now()
     });
     var projectSelected = await FirebaseFirestore.instance
@@ -212,7 +220,6 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Stack(
         children: [
           SingleChildScrollView(

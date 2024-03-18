@@ -1,12 +1,16 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
-import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
+// import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'cnslt office text field/cnsltofficetxtfield.dart';
 
 class CnsltCompanyInfo extends StatefulWidget {
   const CnsltCompanyInfo({super.key});
@@ -23,6 +27,8 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
   // TextEditingController typeController = TextEditingController();
   // TextEditingController emailController = TextEditingController();
   TextEditingController officeController = TextEditingController();
+  String? selectedLocation;
+
   @override
   void dispose() {
     nameController.dispose();
@@ -33,13 +39,60 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
     super.dispose();
   }
 
+  // Method to open Google Maps
+  Future<void> launchGoogleMaps() async {
+    const String googleMapsUrl = "https://www.google.com/maps";
+    if (await canLaunch(googleMapsUrl)) {
+      await launch(googleMapsUrl);
+    } else {
+      throw 'Could not launch $googleMapsUrl';
+    }
+  }
+
+  // Method to handle navigation back from Google Maps with selected location
+  Future<void> navigateBackFromGoogleMaps(String location) async {
+    // Update the selected location
+    setState(() {
+      selectedLocation = location;
+    });
+
+    // Navigate back to the app with the selected location
+    Navigator.pop(context, location);
+  }
+
+  // Method to handle confirmation and navigation to next screen
+  void confirmAndNavigate() {
+    if (nameController.text.isNotEmpty &&
+        chairController.text.isNotEmpty &&
+        selectedLocation != null) {
+      setState(() {
+        isloading = true;
+      });
+
+      // Add data to Firestore
+      addDatatoDatabase();
+
+      setState(() {
+        isloading = false;
+      });
+
+      // Navigate to the next screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ConsultantSplash()),
+      );
+    } else {
+      Get.snackbar('Sorry', 'Please Fill All the Fields and Select Location');
+    }
+  }
+
   addDatatoDatabase() async {
     try {
-      final email = await FirebaseAuth.instance.currentUser!.email;
+      final email = FirebaseAuth.instance.currentUser!.email;
       await FirebaseFirestore.instance.collection("users").doc(email).update({
         'companyName': nameController.text,
         'chairman': chairController.text,
-        'office': officeController.text
+        'office': selectedLocation ?? officeController.text,
       });
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -49,7 +102,7 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF212832),
+      
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -181,18 +234,29 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
                         ),
                       ),
                     ),
-                    MyTextField(
+                    MyTextFieldConsultant(
                       hintText: 'F7 Islamabad',
-                      obscureText: false,
                       controller: officeController,
                       icon: Icons.location_searching,
+                      onTapIcon: () async {
+                        final String? selectedLocation =
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GoogleMapsScreen(),
+                          ),
+                        );
+                        if (selectedLocation != null) {
+                          officeController.text = selectedLocation;
+                        }
+                      },
                       keyboardType: TextInputType.text,
                     ),
 
                     const SizedBox(height: 50),
                     MyButton(
                       text: 'Confirm',
-                      bgColor: Colors.yellow,
+                      bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () {
                         if (nameController.text.isNotEmpty &&
@@ -231,3 +295,101 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
     );
   }
 }
+
+class GoogleMapsScreen extends StatefulWidget {
+  const GoogleMapsScreen({super.key});
+
+  @override
+  State<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
+}
+
+class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text('Office Location     ', style: TextStyle(fontSize: 20.0, color: Colors.black))),
+      ),
+      body: GoogleMapWidget(
+        onLocationSelected: (selectedLocation) {
+          Navigator.pop(context, selectedLocation);
+        },
+      ),
+    );
+  }
+}
+
+// Google Maps Widget
+class GoogleMapWidget extends StatefulWidget {
+  final Function(String) onLocationSelected;
+
+  const GoogleMapWidget({super.key, required this.onLocationSelected});
+
+  @override
+  GoogleMapWidgetState createState() => GoogleMapWidgetState();
+}
+
+class GoogleMapWidgetState extends State<GoogleMapWidget> {
+  late String selectedLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedLocation = '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        GoogleMap(
+          onMapCreated: (controller) {},
+          initialCameraPosition: const CameraPosition(
+            target: LatLng(0, 0),
+            zoom: 15,
+          ),
+          onTap: (LatLng latLng) {
+            setState(() {
+              selectedLocation = '${latLng.latitude}, ${latLng.longitude}';
+            });
+          },
+          markers: {
+            const Marker(
+              markerId: MarkerId('selected_location'),
+              position: LatLng(0, 0),
+            ),
+          },
+          myLocationEnabled: true,
+          compassEnabled: true,
+          mapType: MapType.normal,
+          zoomGesturesEnabled: true,
+          zoomControlsEnabled: true,
+          buildingsEnabled: true,
+          onLongPress: (latLng) {
+            setState(() {
+              selectedLocation = '${latLng.latitude}, ${latLng.longitude}';
+            });
+          },
+        ),
+        Positioned(
+          bottom: 16.0,
+          right: 156.0,
+          child: FloatingActionButton(
+            backgroundColor: Colors.green,
+            onPressed: () {
+              if (selectedLocation.isNotEmpty) {
+                widget.onLocationSelected(selectedLocation);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please select a location')),
+                );
+              }
+            },
+            child: const Text('Done'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+

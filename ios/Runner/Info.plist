@@ -47,5 +47,16 @@
 	<true/>
 	<key>NSContactsUsageDescription</key>
     <string> Contact list to chat</string>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to location when open.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location always.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to location when open and in the background.</string>
+    <key>GMSServicesApiKey</key>
+    <string>AIzaSyA5dK0MYcSQa1SwxFfkHIpl8BVyZ3vUBco</string>
+
 </dict>
 </plist>
