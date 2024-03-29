@@ -38,7 +38,7 @@ class _AuthPageState extends State<AuthPage> {
         .collection('engineers')
         .doc(user!.email)
         .get();
-    final request     Status = await activitiesSnapshot['reqAccepted'];
+    final requestStatus = await activitiesSnapshot['reqAccepted'];
     return requestStatus;
   }
 

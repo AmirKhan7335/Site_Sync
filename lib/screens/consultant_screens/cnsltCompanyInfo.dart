@@ -383,7 +383,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Please select a location')),
                 );
-              }
+              } // ..
             },
             child: const Text('Done'),
           ),
