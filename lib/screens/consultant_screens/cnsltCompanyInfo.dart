@@ -375,6 +375,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
           bottom: 16.0,
           right: 156.0,
           child: FloatingActionButton(
+            backgroundColor: Colors.green,
             onPressed: () {
               if (selectedLocation.isNotEmpty) {
                 widget.onLocationSelected(selectedLocation);
