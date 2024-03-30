@@ -26,26 +26,26 @@ class MyHomePageState extends State<EngineerHomePage> {
         drawer: const MyDrawer(),
 
         body: Obx(() => controller.engCurrentIndex.value == 1
-            ? ChatScreen()
+            ? const ChatScreen()
             : controller.engCurrentIndex.value== 2
                 ? TakePicture()
                 : controller.engCurrentIndex.value == 0
                     ?
                     //Placeholder()
-                     EngineerHomeTab()
+                     const EngineerHomeTab()
                     : controller.engCurrentIndex.value == 3
                         ? const ScheduleScreen()
                         : const NotificationsScreen(),),
         bottomNavigationBar: Obx(()
           => BottomNavigationBar(
              selectedIconTheme:
-                IconThemeData(color: Color(0xFF3EED88), ),
+                const IconThemeData(color: Color(0xFF3EED88), ),
 
-            unselectedIconTheme: IconThemeData(color: Colors.black, size: 22.5),
-            unselectedLabelStyle: TextStyle(color: Colors.black),
+            unselectedIconTheme: const IconThemeData(color: Colors.black, size: 22.5),
+            unselectedLabelStyle: const TextStyle(color: Colors.black),
             backgroundColor:  Colors.white,
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: Color.fromARGB(255, 47, 235, 125),
+            selectedItemColor: const Color.fromARGB(255, 47, 235, 125),
             unselectedItemColor: Colors.black,
             currentIndex: controller.engCurrentIndex.value,
             onTap: (int index) {

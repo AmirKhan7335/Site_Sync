@@ -1,6 +1,6 @@
 import 'package:amir_khan1/components/my_button.dart';
-import 'package:amir_khan1/components/mytextfield.dart';
-import 'package:amir_khan1/main.dart';
+// import 'package:amir_khan1/components/mytextfield.dart';
+// import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class WelcomeEngineer extends StatefulWidget {
-  WelcomeEngineer({super.key});
+  const WelcomeEngineer({super.key});
 
   @override
   State<WelcomeEngineer> createState() => _WelcomeEngineerState();
@@ -52,7 +52,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                   }
                 }
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.logout,
                 color: Colors.black,
               ))
@@ -77,13 +77,13 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                     const SizedBox(height: 30),
                     const CircleAvatar(
                       radius: 80,
+                      backgroundColor: Colors.transparent,
                       // backgroundImage: AssetImage('assets/images/logo1.png'),
                       child: Icon(
                         Icons.check_circle_outline_rounded,
                         size: 150,
                         color: Colors.green,
                       ),
-                      backgroundColor: Colors.transparent,
                     ),
                     const SizedBox(height: 20),
                     const SizedBox(

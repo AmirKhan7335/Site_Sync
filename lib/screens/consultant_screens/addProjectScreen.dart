@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import 'cnslt office google maps screen/googlemapsscreen.dart';
+import 'cnslt office text field/cnsltofficetxtfield.dart';
+
 class CreateProject extends StatefulWidget {
   const CreateProject({super.key});
 
@@ -259,7 +262,7 @@ class _CreateProjectState extends State<CreateProject> {
                       ),
                     ),
                     MyTextField(
-                      hintText: 'selge generated',
+                      hintText: 'self generated',
                       obscureText: false,
                       controller: fundingController,
                       icon: Icons.man,
@@ -279,11 +282,29 @@ class _CreateProjectState extends State<CreateProject> {
                         ),
                       ),
                     ),
-                    MyTextField(
+                    // MyTextField(
+                    //   hintText: 'NUST',
+                    //   obscureText: false,
+                    //   controller: locationController,
+                    //   icon: Icons.location_searching,
+                    //   keyboardType: TextInputType.text,
+                    // ),
+                    MyTextFieldConsultant(
                       hintText: 'NUST',
-                      obscureText: false,
                       controller: locationController,
                       icon: Icons.location_searching,
+                      onTapIcon: () async {
+                        final String? selectedLocation =
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GoogleMapsScreen(),
+                          ),
+                        );
+                        if (selectedLocation != null) {
+                          locationController.text = selectedLocation;
+                        }
+                      },
                       keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 50),
@@ -299,7 +320,7 @@ class _CreateProjectState extends State<CreateProject> {
                             endDate == null ||
                             fundingController.text.isEmpty ||
                             locationController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text('Please fill all the fields')));
                         } else {
                           setState(() {

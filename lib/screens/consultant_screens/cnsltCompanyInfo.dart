@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:geolocator/geolocator.dart';
+import 'cnslt office google maps screen/googlemapsscreen.dart';
 import 'cnslt office text field/cnsltofficetxtfield.dart';
+import 'package:geocoding/geocoding.dart';
 
 class CnsltCompanyInfo extends StatefulWidget {
   const CnsltCompanyInfo({super.key});
@@ -296,100 +298,7 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
   }
 }
 
-class GoogleMapsScreen extends StatefulWidget {
-  const GoogleMapsScreen({super.key});
 
-  @override
-  State<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
-}
 
-class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('Office Location     ', style: TextStyle(fontSize: 20.0, color: Colors.black))),
-      ),
-      body: GoogleMapWidget(
-        onLocationSelected: (selectedLocation) {
-          Navigator.pop(context, selectedLocation);
-        },
-      ),
-    );
-  }
-}
 
-// Google Maps Widget
-class GoogleMapWidget extends StatefulWidget {
-  final Function(String) onLocationSelected;
-
-  const GoogleMapWidget({super.key, required this.onLocationSelected});
-
-  @override
-  GoogleMapWidgetState createState() => GoogleMapWidgetState();
-}
-
-class GoogleMapWidgetState extends State<GoogleMapWidget> {
-  late String selectedLocation;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedLocation = '';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        GoogleMap(
-          onMapCreated: (controller) {},
-          initialCameraPosition: const CameraPosition(
-            target: LatLng(0, 0),
-            zoom: 15,
-          ),
-          onTap: (LatLng latLng) {
-            setState(() {
-              selectedLocation = '${latLng.latitude}, ${latLng.longitude}';
-            });
-          },
-          markers: {
-            const Marker(
-              markerId: MarkerId('selected_location'),
-              position: LatLng(0, 0),
-            ),
-          },
-          myLocationEnabled: true,
-          compassEnabled: true,
-          mapType: MapType.normal,
-          zoomGesturesEnabled: true,
-          zoomControlsEnabled: true,
-          buildingsEnabled: true,
-          onLongPress: (latLng) {
-            setState(() {
-              selectedLocation = '${latLng.latitude}, ${latLng.longitude}';
-            });
-          },
-        ),
-        Positioned(
-          bottom: 16.0,
-          right: 156.0,
-          child: FloatingActionButton(
-            backgroundColor: Colors.green,
-            onPressed: () {
-              if (selectedLocation.isNotEmpty) {
-                widget.onLocationSelected(selectedLocation);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please select a location')),
-                );
-              } // ..
-            },
-            child: const Text('Done'),
-          ),
-        ),
-      ],
-    );
-  }
-}
 

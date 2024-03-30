@@ -1,5 +1,5 @@
 import 'package:amir_khan1/screens/consultant_screens/widgets/projDetail.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,18 +74,18 @@ class _ProjectScreenState extends State<ProjectScreen> {
 
       appBar: AppBar(
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text('Projects',style: TextStyle(color: Colors.black)),
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Projects',style: TextStyle(color: Colors.black)),
       ),
       body: FutureBuilder(
           future: fetchProjects(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData) {
-              return Center();
+              return const Center();
             }
             final data = snapshot.data;
             return ListView.builder(
@@ -113,15 +113,15 @@ class _ProjectScreenState extends State<ProjectScreen> {
                           leading: ClipOval(
                             child: Text(
                               '${index+1}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20, color: Colors.black,fontWeight: FontWeight.bold),
                             ),
                           ),
-                          title: Text(data[index][0].toString(),style: TextStyle(color: Colors.black)),
+                          title: Text(data[index][0].toString(),style: const TextStyle(color: Colors.black)),
                           subtitle: Text(
                               DateTime.now().isAfter(data[index][2].toDate())
                                   ? 'Completed'
-                                  : 'Ongoing',style: TextStyle(color: Colors.black)),
+                                  : 'Ongoing',style: const TextStyle(color: Colors.black)),
                         ),
                   ),
                 )));

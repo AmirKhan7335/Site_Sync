@@ -4,24 +4,18 @@ import 'package:amir_khan1/models/activity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:excel/excel.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io' if (dart.library.html) 'dart:typed_data';
-import 'package:path/path.dart' as path;
-
 import '../../../components/mytextfield.dart';
-import '../../../main.dart';
-import '../chatscreen.dart';
 import '../detailsscreen.dart';
 import '../foundationschedulescreen.dart';
-import '../notificationsscreen.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:http/http.dart' as http;
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -81,25 +75,45 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
         for (var table in excel.tables.keys) {
           var sheet = excel.tables[table]!;
-          for (var row in sheet.rows) {
-            if (row.length < 3) {
-              debugPrint('Skipping row with LESS NO OF COLUMNS.');
-              continue;
-            }
 
-            // Check if row[0] is a header and skip it
-            if (row[0]?.value?.toString().trim() == 'Activity name') {
-              debugPrint('Skipping header row');
-              continue;
-            }
+          // Check if the first row contains headers
+          bool hasHeaders = sheet.rows.isNotEmpty && sheet.rows.first.any((cell) => cell?.value != null && cell!.value.toString().isNotEmpty);
 
-            String name = row[0]?.value?.toString().trim() ?? '';
-            // debugPrint('Activity Name: $name');
-            String startDate = row[1]?.value?.toString().trim() ?? '';
-            String finishDate = row[2]?.value?.toString().trim() ?? '';
-            // debugPrint('Start Date String: $startDate');
-            // debugPrint('Finish Date String: $finishDate');
+          // Define a mapping of expected column names to their variations
+          Map<String, List<String>> columnHeaderVariations = {
+            'name': ['activity', 'activity name', 'activityname', 'activity_name', 'name', 'Activity', 'Activity Name', 'ActivityName', 'Activity_Name'],
+            'startDate': ['start date', 'startdate', 'start_date', 'start','Start', 'Start Date', 'StartDate', 'Start_Date'],
+            'finishDate': ['finish date', 'finishdate', 'finish_date', 'finish', 'Finish Date', 'FinishDate', 'Finish_Date','Finish']
+          };
 
+          // Find the column indices based on expected column names and variations
+          int nameIndex;
+          int startDateIndex;
+          int finishDateIndex;
+
+          if (hasHeaders) {
+            // If headers are provided, find the corresponding column indices
+            nameIndex = findColumnIndex(sheet.rows.first, columnHeaderVariations['name']!);
+            startDateIndex = findColumnIndex(sheet.rows.first, columnHeaderVariations['startDate']!);
+            finishDateIndex = findColumnIndex(sheet.rows.first, columnHeaderVariations['finishDate']!);
+          } else {
+            // If headers are not provided, use default column indices
+            nameIndex = 0;
+            startDateIndex = 1;
+            finishDateIndex = 2;
+          }
+
+          // Iterate through rows to extract data
+          for (var row in sheet.rows.skip(hasHeaders ? 1 : 0)) {
+            // If the row is empty, skip it
+            if (row.isEmpty) continue;
+
+            // Extract data from the row
+            String name = row.length > nameIndex ? row[nameIndex]?.value?.toString() ?? '' : '';
+            String startDate = row.length > startDateIndex ? row[startDateIndex]?.value?.toString() ?? '' : '';
+            String finishDate = row.length > finishDateIndex ? row[finishDateIndex]?.value?.toString() ?? '' : '';
+
+            // If any of the required fields are empty, skip the row
             if (name.isEmpty || startDate.isEmpty || finishDate.isEmpty) {
               debugPrint('Skipping row with incomplete data');
               continue;
@@ -111,15 +125,13 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               startDateParsed = parseDate(startDate);
               finishDateParsed = parseDate(finishDate);
             } catch (e) {
-              await showErrorDialog('Invalid date format: $e');
+              await showErrorDialog('Invalid date format 22: $e');
               continue;
             }
 
             // Convert to 'dd/MM/yy' format for displaying
-            String formattedStartDate =
-                DateFormat('dd/MM/yyyy').format(startDateParsed);
-            String formattedFinishDate =
-                DateFormat('dd/MM/yyyy').format(finishDateParsed);
+            String formattedStartDate = DateFormat('dd/MM/yyyy').format(startDateParsed);
+            String formattedFinishDate = DateFormat('dd/MM/yyyy').format(finishDateParsed);
 
             var activity = Activity(
               id: 'your_unique_identifier', // Update this accordingly
@@ -159,18 +171,30 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
+// Function to find the index of a column with variations of the expected name
+  int findColumnIndex(List<dynamic> row, List<String> expectedVariations) {
+    for (var variation in expectedVariations) {
+      var index = row.indexWhere((cell) => cell?.value?.toString()?.toLowerCase()?.contains(variation) ?? false);
+      if (index != -1) {
+        return index;
+      }
+    }
+    // If none of the variations are found, return a default index (0)
+    return 0;
+  }
+
+
+
   DateTime parseDate(String dateString) {
     try {
-      return DateTime.parse(dateString);
-    } catch (e) {
       List<String> formats = [
         'dd/MM/yyyy', // Common date format
-        'dd-MM-yyyy',
-        'dd-MM-yy',
-        '44945'
+        'dd-MM-yyyy', 'dd-MM-yy', 'dd/MM/yy', 'MM/dd/yyyy', 'MM-dd-yyyy', 'MM-dd-yy',
+        'MM/dd/yy', 'yyyy-MM-dd', // ISO 8601 format
+        'M/d/yyyy', 'M-d-yyyy', 'M-d-yy', 'M/d/yy', 'yyyy/MM/dd', 'MM/d/yyyy', 'MM-d-yyyy', 'MM-d-yy',
+        'MM/d/yy', 'd/M/yyyy', 'd-M-yyyy', 'd-M-yy', 'M/dd/yyyy', 'M-dd-yyyy', '44945'
         // Add more formats as needed
       ];
-
       for (String format in formats) {
         try {
           final DateFormat formatter = DateFormat(format);
@@ -179,8 +203,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           // Continue to the next format if parsing fails
         }
       }
-
-      throw FormatException('Date not in expected format', dateString);
+      return DateTime.parse(dateString);
+    } catch (e) {
+      throw FormatException('Date not in expected 11 format: $dateString');
     }
   }
 
@@ -425,7 +450,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        backgroundColor:  Color(0xFFF3F3F3),
+        backgroundColor:  const Color(0xFFF3F3F3),
         title: const Text('Add New Activity',style: TextStyle(color: Colors.black),),
         content: Obx(
           () => Column(
@@ -648,7 +673,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         loadedActivities = tempActivities;
       });
     } catch (e) {
-      Get.snackbar('Error', '${e}');
+      Get.snackbar('Error', '$e');
     }
   }
 
@@ -701,42 +726,48 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       });
       
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
       Get.snackbar('Error', e.toString());
     }
   }
 
-  downloadSampleFile() async {
+  Future<void> downloadSampleFile() async {
     try {
-      String url =
-          'https://firebasestorage.googleapis.com/v0/b/amir-e8895.appspot.com/o/sample.xlsx?alt=media&token=068351f0-2bc9-4cfd-b46a-ea609d3e69a0';
-
-      // Get the Excel file download URL from Firebase Storage
-
       // Check and request storage permission
       var status = await Permission.storage.request();
       if (status.isGranted) {
-        var response = await http.get(Uri.parse(url));
-        var downloadsPath = await Directory("/storage/emulated/0/Download");
-        File file = File(path.join(downloadsPath!.path, 'sampleFile.xlsx'));
+        // File URL
+        String url = 'https://firebasestorage.googleapis.com/v0/b/amir-e8895.appspot.com/o/sample.xlsx?alt=media&token=068351f0-2bc9-4cfd-b46a-ea609d3e69a0';
 
-        file.writeAsBytesSync(response.bodyBytes);
+        // Get the Downloads directory
+        Directory? downloadsDirectory = await getExternalStorageDirectory();
 
+        // Create a File instance pointing to the file to be downloaded
+        File file = File('${downloadsDirectory?.path}/sample.xlsx');
+
+        // Download the file and write it to the file system
+        http.Response response = await http.get(Uri.parse(url));
+        await file.writeAsBytes(response.bodyBytes);
         Get.snackbar('Sample File Downloaded', '');
       } else {
-        // Handle permission denied
-        Get.snackbar('Permission Denied', '');
+        Get.snackbar('Permission Denied', 'Storage permission is required');
       }
     } catch (e) {
-      Get.snackbar('Error', '${e.toString()}');
+      if (kDebugMode) {
+        print("An error occurred: $e");
+      }
+      Get.snackbar('Error', e.toString());
     }
   }
+
 
   bool isdownloading = false;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Container(
+      child: SizedBox(
           //height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Column(
@@ -750,7 +781,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Center(
+                    const Center(
                         child: Text(
                       'Schedule',
                       style: TextStyle(
@@ -808,7 +839,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                           style:
                                               TextStyle(color: Colors.black)),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     ),
                                     ElevatedButton(
@@ -828,14 +859,14 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                                 Colors.green),
                                       ),
                                       child: isdownloading
-                                          ? Padding(
+                                          ? const Padding(
                                               padding:
-                                                  const EdgeInsets.all(8.0),
+                                                  EdgeInsets.all(8.0),
                                               child: CircularProgressIndicator(
                                                 color: Colors.black,
                                               ),
                                             )
-                                          : Text('Download File',
+                                          : const Text('Download File',
                                               style: TextStyle(
                                                   color: Colors.black)),
                                     ),

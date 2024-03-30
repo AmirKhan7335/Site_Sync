@@ -1,5 +1,6 @@
 import 'package:amir_khan1/models/activity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -62,7 +63,7 @@ class ProjectProgressController extends GetxController {
     }
   }
 
-  int calculateOverallPercent(List<Activity> activities) {
+  Future<int> calculateOverallPercent(List<Activity> activities) async {
     try {
       DateTime today = DateTime.now();
       int totalDuration = 0;
@@ -97,29 +98,67 @@ class ProjectProgressController extends GetxController {
 
       // Find today's activity and calculate its percentage
       Activity? todayActivity = findTodaysActivity(activities);
-      if (todayActivity != null &&
-          todayActivity.finishDate !=
-              DateFormat('dd/MM/yyyy').format(DateTime.now())) {
+      if (todayActivity != null
+      // && todayActivity.finishDate !=
+          //     DateFormat('dd/MM/yyyy').format(DateTime.now())
+      ) {
         int todayActivityPercent = calculatePercentComplete(
           todayActivity.startDate,
           todayActivity.finishDate,
         );
         // Calculate the contribution of today's activity to the overall percentage
         int todayContribution =
-            (todayActivityPercent * (todaysactivityduration / totalDuration))
+            ((todayActivityPercent/100) * (todaysactivityduration / totalDuration))
                 .round();
 
         completedActivitiesPercentages += todayContribution.round();
       }
 
-      // Update the state with the overall percentage
-
       overAllPercent.value = completedActivitiesPercentages.round();
+
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var engineersCollection = firestore.collection('engineers');
+      var consultantEmail;
+      var projectID;
+
+      try {
+        DocumentSnapshot engineerDoc = await engineersCollection.doc(email).get();
+        if (engineerDoc.exists) {
+          // If document exists, retrieve the consultantEmail field
+          consultantEmail = engineerDoc.get('consultantEmail');
+          projectID = engineerDoc.get('projectId');
+          print('Consultant email: $consultantEmail');
+        } else {
+          print('Engineer document with email $email does not exist.');
+        }
+      } catch (e) {
+        print('Error fetching consultant email: $e');
+      }
+
+      await uploadOverallPercentToProject(projectID, overAllPercent.value);
+
     } catch (e) {
       // Handle the error, log it, or display an error message
     }
     return overAllPercent.value;
   }
+
+  Future<void> uploadOverallPercentToProject(String projectID, int overallPercent) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Get a reference to the project document using the provided project ID
+      DocumentReference projectDocRef = firestore.collection('Projects').doc(projectID);
+
+      // Update the overall percent value in the project document
+      await projectDocRef.update({'overallPercent': overallPercent});
+      print('Overall percent uploaded successfully to the project document with ID: $projectID');
+    } catch (e) {
+      print('Error uploading overall percent to project document: $e');
+    }
+  }
+
 
   int calculatePercentComplete(String startDate, String finishDate) {
     try {

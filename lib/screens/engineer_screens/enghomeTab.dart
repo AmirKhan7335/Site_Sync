@@ -17,7 +17,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class EngineerHomeTab extends StatefulWidget {
-  EngineerHomeTab({super.key});
+  const EngineerHomeTab({super.key});
 
   @override
   State<EngineerHomeTab> createState() => _EngineerHomeTabState();
@@ -276,583 +276,581 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: FutureBuilder(
-                  // Fetch the username asynchronously
-                  future: data,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FutureBuilder(
+                // Fetch the username asynchronously
+                future: data,
 
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: CircularProgressIndicator(color: Colors.blue));
-                    } else if (!snapshot.hasData) {
-                      return const Center(
-                          child: Text(
-                        'No Data Found',
-                        style: TextStyle(color: Colors.black),
-                      ));
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (snapshot.hasData) {
-                      final userData = snapshot.data![0];
-                      final snapshotData = userData.activities;
-                      List<Activity> activities = snapshotData ?? [];
-                      // Find today's and upcoming activities
-                      Activity? todayActivity = findTodaysActivity(activities);
-                      Activity? upcomingActivity =
-                          findUpcomingActivity(activities);
-                      // overAllPercent = calculatePercentComplete();----------------Causes blunder in Release mode
-                      final projData = snapshot.data[1];
-                      controller.calculateOverallPercent(activities);
-                      return
-                          //   Center(
-                          //   child: Text('Data is Present',style: TextStyle(color: Colors.black),),
-                          // );
-                          Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // User information
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Scaffold.of(context).openDrawer();
-                                },
-                                child: CircleAvatar(
-                                  backgroundImage: snapshot
-                                              .data?[0].profilePicUrl !=
-                                          null
-                                      ? NetworkImage(
-                                          snapshot.data![0].profilePicUrl!)
-                                      : const NetworkImage(
-                                          'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
-                                  radius: 25,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                        child: CircularProgressIndicator(color: Colors.blue));
+                  } else if (!snapshot.hasData) {
+                    return const Center(
+                        child: Text(
+                      'No Data Found',
+                      style: TextStyle(color: Colors.black),
+                    ));
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (snapshot.hasData) {
+                    final userData = snapshot.data![0];
+                    final snapshotData = userData.activities;
+                    List<Activity> activities = snapshotData ?? [];
+                    // Find today's and upcoming activities
+                    Activity? todayActivity = findTodaysActivity(activities);
+                    Activity? upcomingActivity =
+                        findUpcomingActivity(activities);
+                    // overAllPercent = calculatePercentComplete();----------------Causes blunder in Release mode
+                    final projData = snapshot.data[1];
+                    controller.calculateOverallPercent(activities);
+                    return
+                        //   Center(
+                        //   child: Text('Data is Present',style: TextStyle(color: Colors.black),),
+                        // );
+                        Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // User information
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Scaffold.of(context).openDrawer();
+                              },
+                              child: CircleAvatar(
+                                backgroundImage: snapshot
+                                            .data?[0].profilePicUrl !=
+                                        null
+                                    ? NetworkImage(
+                                        snapshot.data![0].profilePicUrl!)
+                                    : const NetworkImage(
+                                        'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
+                                radius: 25,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Welcome Back!",
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.green),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Welcome Back!",
-                                    style: TextStyle(
-                                        fontSize: 14, color: Colors.green),
+                                const SizedBox(height: 0),
+                                Text(
+                                  snapshot.data?[0].username ?? 'Guest',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
+                                    color: Colors.black,
                                   ),
-                                  const SizedBox(height: 0),
-                                  Text(
-                                    snapshot.data?[0].username ?? 'Guest',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22,
-                                      color: Colors.black,
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {});
+                                },
+                                icon: const Icon(
+                                  Icons.refresh,
+                                  color: Colors.black,
+                                )),
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const Scaffold(
+                                              body: NotificationsScreen())));
+                                },
+                                icon: const Icon(
+                                  Icons.notifications,
+                                  color: Colors.black,
+                                ))
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        // Search bar
+                        const SizedBox(height: 10),
+                        // Page view with indicators
+                        StatefulBuilder(
+                          builder:
+                              (BuildContext context, StateSetter setState) {
+                            return SizedBox(
+                              height: 250,
+                              width: double.infinity,
+                              child: Stack(
+                                children: [
+                                  PageView(
+                                    physics: const BouncingScrollPhysics(),
+                                    controller: pageController,
+                                    onPageChanged: (index) {
+                                      setState(() {
+                                        currentPage = index;
+                                      });
+                                    },
+                                    children: [
+                                      Obx(
+                                        () => Card(
+                                          color: Colors.transparent,
+                                          elevation: 10,
+                                          child: PageOne(
+                                              startDate: DateFormat(
+                                                      'dd/MM/yy')
+                                                  .format(
+                                                      projData[3].toDate())
+                                                  .toString(),
+                                              endDate: DateFormat(
+                                                      'dd/MM/yy')
+                                                  .format(
+                                                      projData[4].toDate())
+                                                  .toString(),
+                                              activityProgress: controller
+                                                  .overAllPercent.value,
+                                              title: projData[0]),
+                                        ),
+                                      ),
+                                      Card(
+                                        color: Colors.transparent,
+                                        elevation: 10,
+                                        child: PageTwo(
+                                            total: projData[1],
+                                            retMoney: projData[7]),
+                                      ),
+                                      const Card(
+                                          color: Colors.transparent,
+                                          elevation: 10,
+                                          child: PageThree()),
+                                    ],
+                                  ),
+                                  Positioned(
+                                    bottom: 10,
+                                    left: 0,
+                                    right: 0,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        for (int i = 0; i < 3; i++)
+                                          buildIndicator(i, currentPage),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                              Spacer(),
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {});
-                                  },
-                                  icon: Icon(
-                                    Icons.refresh,
-                                    color: Colors.black,
-                                  )),
-                              IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Scaffold(
-                                                body: NotificationsScreen())));
-                                  },
-                                  icon: Icon(
-                                    Icons.notifications,
-                                    color: Colors.black,
-                                  ))
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 10),
+                        // Today's activity
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const DocumentScreen())),
+                                child: Card(
+                                  elevation: 5,
+                                  color: Colors.transparent,
+                                  child: Container(
+                                    height: 70,
+                                    width: 65,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          const Icon(
+                                            Icons.file_copy,
+                                            color: Colors.black,
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            height: 1.5,
+                                            width: 45,
+                                            color: Colors.black,
+                                          ),
+                                          const SizedBox(
+                                            height: 2.5,
+                                          ),
+                                          const Text(
+                                            'Documents',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                child: Card(
+                                  elevation: 5,
+                                  color: Colors.transparent,
+                                  child: Container(
+                                    height: 70,
+                                    width: 65,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          const Icon(
+                                            Icons.video_call,
+                                            color: Colors.black,
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            height: 1.5,
+                                            width: 45,
+                                            color: Colors.black,
+                                          ),
+                                          const SizedBox(
+                                            height: 2.5,
+                                          ),
+                                          const Text(
+                                            'Site',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ProjectScreen(
+                                              isCnslt: false,
+                                            ))),
+                                child: Card(
+                                  color: Colors.transparent,
+                                  elevation: 5,
+                                  child: Container(
+                                    height: 70,
+                                    width: 65,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          const Icon(
+                                            Icons.calendar_month,
+                                            color: Colors.black,
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            height: 1.5,
+                                            width: 45,
+                                            color: Colors.black,
+                                          ),
+                                          const SizedBox(
+                                            height: 2.5,
+                                          ),
+                                          const Text(
+                                            'Projects',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => TestingScreen(
+                                              projId: projData[8],
+                                              isCnslt: false,
+                                            ))),
+                                child: Card(
+                                  color: Colors.transparent,
+                                  elevation: 5,
+                                  child: Container(
+                                    height: 70,
+                                    width: 65,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          const Icon(Icons.checklist,
+                                              color: Colors.black),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            height: 1.5,
+                                            width: 45,
+                                            color: Colors.black,
+                                          ),
+                                          const SizedBox(
+                                            height: 2.5,
+                                          ),
+                                          const Text(
+                                            'Testing',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          // Search bar
-                          const SizedBox(height: 10),
-                          // Page view with indicators
-                          StatefulBuilder(
-                            builder:
-                                (BuildContext context, StateSetter setState) {
-                              return SizedBox(
-                                height: 250,
-                                width: double.infinity,
-                                child: Stack(
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Today's activity",
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.black)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Card(
+                          elevation: 10,
+                          color: Colors.transparent,
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, top: 10, bottom: 16, right: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    PageView(
-                                      physics: const BouncingScrollPhysics(),
-                                      controller: pageController,
-                                      onPageChanged: (index) {
-                                        setState(() {
-                                          currentPage = index;
-                                        });
-                                      },
-                                      children: [
-                                        Obx(
-                                          () => Card(
-                                            color: Colors.transparent,
-                                            elevation: 10,
-                                            child: PageOne(
-                                                startDate: DateFormat(
-                                                        'dd-MM-yyyy')
-                                                    .format(
-                                                        projData[3].toDate())
-                                                    .toString(),
-                                                endDate: DateFormat(
-                                                        'dd-MM-yyyy')
-                                                    .format(
-                                                        projData[4].toDate())
-                                                    .toString(),
-                                                activityProgress: controller
-                                                    .overAllPercent.value,
-                                                title: projData[0]),
-                                          ),
-                                        ),
-                                        Card(
-                                          color: Colors.transparent,
-                                          elevation: 10,
-                                          child: PageTwo(
-                                              total: projData[1],
-                                              retMoney: projData[7]),
-                                        ),
-                                        Card(
-                                            color: Colors.transparent,
-                                            elevation: 10,
-                                            child: const PageThree()),
-                                      ],
+                                    Text(
+                                      todayActivity?.name ?? 'No Activity',
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
                                     ),
-                                    Positioned(
-                                      bottom: 10,
-                                      left: 0,
-                                      right: 0,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          for (int i = 0; i < 3; i++)
-                                            buildIndicator(i, currentPage),
-                                        ],
+                                    // const SizedBox(width: 80),
+                                    Container(
+                                      width: 80,
+                                      padding: const EdgeInsets.all(3.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          activities.isNotEmpty
+                                              ? (todayActivity != null
+                                                  ? (calculateDaysLeft(
+                                                              todayActivity
+                                                                  .finishDate) ==
+                                                          1
+                                                      ? 'Last Day'
+                                                      : '${calculateDaysLeft(todayActivity.finishDate)} Days left')
+                                                  : 'No Activity')
+                                              : '',
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black),
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
-
-                          const SizedBox(height: 10),
-                          // Today's activity
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                InkWell(
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              DocumentScreen())),
-                                  child: Card(
-                                    elevation: 5,
-                                    color: Colors.transparent,
-                                    child: Container(
-                                      height: 70,
-                                      width: 65,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text(
+                                      activities.isNotEmpty
+                                          ? 'Due: ${todayActivity?.finishDate ?? "No Due Date"}'
+                                          : 'No Due Date',
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.black),
+                                    ),
+                                    const SizedBox(width: 45),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: SizedBox(
+                                        width: 140,
                                         child: Column(
                                           children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    todayActivity
+                                                                ?.finishDate !=
+                                                            null
+                                                        ? "Completed"
+                                                        : "",
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14)),
+                                                Text(
+                                                  todayActivity?.finishDate !=
+                                                          null
+                                                      ? '${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%'
+                                                      : '0%',
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14),
+                                                ),
+                                              ],
+                                            ),
                                             SizedBox(
-                                              height: 10,
-                                            ),
-                                            Icon(
-                                              Icons.file_copy,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Container(
-                                              height: 1.5,
-                                              width: 45,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(
-                                              height: 2.5,
-                                            ),
-                                            Text(
-                                              'Documents',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.black,
+                                              width: 146,
+                                              child: LinearProgressIndicator(
+                                                value: todayActivity
+                                                            ?.finishDate !=
+                                                        null
+                                                    ? (calculatePercentComplete(
+                                                            todayActivity
+                                                                    ?.startDate ??
+                                                                "",
+                                                            todayActivity
+                                                                    ?.finishDate ??
+                                                                "") /
+                                                        100)
+                                                    : 0,
+                                                backgroundColor: Colors.grey,
+                                                valueColor:
+                                                    const AlwaysStoppedAnimation<
+                                                        Color>(Colors.blue),
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                InkWell(
-                                  child: Card(
-                                    elevation: 5,
-                                    color: Colors.transparent,
-                                    child: Container(
-                                      height: 70,
-                                      width: 65,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Icon(
-                                              Icons.video_call,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Container(
-                                              height: 1.5,
-                                              width: 45,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(
-                                              height: 2.5,
-                                            ),
-                                            Text(
-                                              'Site',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.black,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ProjectScreen(
-                                                isCnslt: false,
-                                              ))),
-                                  child: Card(
-                                    color: Colors.transparent,
-                                    elevation: 5,
-                                    child: Container(
-                                      height: 70,
-                                      width: 65,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Icon(
-                                              Icons.calendar_month,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Container(
-                                              height: 1.5,
-                                              width: 45,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(
-                                              height: 2.5,
-                                            ),
-                                            Text(
-                                              'Projects',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.black,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => TestingScreen(
-                                                projId: projData[8],
-                                                isCnslt: false,
-                                              ))),
-                                  child: Card(
-                                    color: Colors.transparent,
-                                    elevation: 5,
-                                    child: Container(
-                                      height: 70,
-                                      width: 65,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Icon(Icons.checklist,
-                                                color: Colors.black),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Container(
-                                              height: 1.5,
-                                              width: 45,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(
-                                              height: 2.5,
-                                            ),
-                                            Text(
-                                              'Testing',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.black,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
                               ],
                             ),
                           ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Today's activity",
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.black)),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Card(
-                            elevation: 10,
-                            color: Colors.transparent,
-                            child: Container(
-                              padding: const EdgeInsets.only(
-                                  left: 8.0, top: 10, bottom: 16, right: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16.0),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        todayActivity?.name ?? 'No Activity',
-                                        style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      // const SizedBox(width: 80),
-                                      Container(
-                                        width: 80,
-                                        padding: const EdgeInsets.all(3.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.green,
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            activities.isNotEmpty
-                                                ? (todayActivity != null
-                                                    ? (calculateDaysLeft(
-                                                                todayActivity
-                                                                    .finishDate) ==
-                                                            1
-                                                        ? 'Last Day'
-                                                        : '${calculateDaysLeft(todayActivity.finishDate)} Days left')
-                                                    : 'No Activity')
-                                                : '',
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        activities.isNotEmpty
-                                            ? 'Due: ${todayActivity?.finishDate ?? "No Due Date"}'
-                                            : 'No Due Date',
-                                        style: const TextStyle(
-                                            fontSize: 14, color: Colors.black),
-                                      ),
-                                      const SizedBox(width: 45),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: SizedBox(
-                                          width: 140,
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      todayActivity
-                                                                  ?.finishDate !=
-                                                              null
-                                                          ? "Completed"
-                                                          : "",
-                                                      style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 14)),
-                                                  Text(
-                                                    todayActivity?.finishDate !=
-                                                            null
-                                                        ? '${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%'
-                                                        : '0%',
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 14),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                width: 146,
-                                                child: LinearProgressIndicator(
-                                                  value: todayActivity
-                                                              ?.finishDate !=
-                                                          null
-                                                      ? (calculatePercentComplete(
-                                                              todayActivity
-                                                                      ?.startDate ??
-                                                                  "",
-                                                              todayActivity
-                                                                      ?.finishDate ??
-                                                                  "") /
-                                                          100)
-                                                      : 0,
-                                                  backgroundColor: Colors.grey,
-                                                  valueColor:
-                                                      const AlwaysStoppedAnimation<
-                                                          Color>(Colors.blue),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Upcoming activity
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Upcoming activity",
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.black)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Card(
+                          color: Colors.transparent,
+                          elevation: 10,
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                                left: 16.0, right: 16, top: 10, bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  upcomingActivity?.name ??
+                                      'No Upcoming Activity',
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text(
+                                      activities.isNotEmpty
+                                          ? 'Starts: ${upcomingActivity?.startDate ?? "No Start Date"}'
+                                          : 'No Start Date',
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          // Upcoming activity
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Upcoming activity",
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.black)),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Card(
-                            color: Colors.transparent,
-                            elevation: 10,
-                            child: Container(
-                              padding: const EdgeInsets.only(
-                                  left: 16.0, right: 16, top: 10, bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16.0),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    upcomingActivity?.name ??
-                                        'No Upcoming Activity',
-                                    style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        activities.isNotEmpty
-                                            ? 'Starts: ${upcomingActivity?.startDate ?? "No Start Date"}'
-                                            : 'No Start Date',
-                                        style: const TextStyle(
-                                            fontSize: 14, color: Colors.black),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Text('Nothing');
-                    }
-                  },
-                ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return const Text('Nothing');
+                  }
+                },
               ),
             ),
           ],
