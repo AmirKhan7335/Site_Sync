@@ -146,6 +146,8 @@ class MyDateFieldState extends State<MyDateField> {
             fontSize: 20.0,
           ),
           decoration: InputDecoration(
+      
+
             border: InputBorder.none,
             hintText: widget.hintText,
             hintStyle: TextStyle(

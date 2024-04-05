@@ -287,6 +287,9 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           fontSize: 20.0,
                         ),
                         decoration: InputDecoration(
+ 
+            
+
                           border: InputBorder.none,
                           hintText: consultantUserName.isEmpty
                               ? 'Select Company'
@@ -345,6 +348,9 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           fontSize: 20.0,
                         ),
                         decoration: InputDecoration(
+         
+            
+
                           border: InputBorder.none,
                           hintText: selectedProject.isEmpty
                               ? 'Select A Project'

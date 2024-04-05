@@ -50,6 +50,8 @@ class MyTextFieldConsultantState extends State<MyTextFieldConsultant> {
           controller: widget.controller,
           keyboardType: widget.keyboardType,
           decoration: InputDecoration(
+
+
             border: InputBorder.none,
             hintText: widget.hintText,
             hintStyle: const TextStyle(

@@ -34,7 +34,7 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         titleSpacing: 0.0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

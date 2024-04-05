@@ -69,32 +69,39 @@ class ChatInputAreaState extends State<ChatInputArea> {
 
   Future<void> startRecording() async {
     if (_isRecording) {
-      return;
+      return; // Do nothing if already recording
     }
     try {
+      // Open the audio recorder
       await _audioRecorder.openRecorder();
+      // Start recording to a file with a unique name (timestamp)
       await _audioRecorder.startRecorder(
-        toFile: DateTime.now().millisecondsSinceEpoch.toString(), 
+        toFile: DateTime.now().millisecondsSinceEpoch.toString(),
         codec: Codec.aacMP4,
       );
       setState(() {
-        _isRecording = true;
+        _isRecording = true; // Update UI to reflect recording state
       });
     } catch (e) {
+      // Handle any errors that occur during recording initialization
       if (kDebugMode) {
         print('Error starting recording: $e');
       }
     }
   }
 
-
   Future<void> stopRecording() async {
+    if (!_isRecording) {
+      return; // Do nothing if not recording
+    }
     try {
+      // Stop recording
       await _audioRecorder.stopRecorder();
       setState(() {
-        _isRecording = false;
+        _isRecording = false; // Update UI to reflect recording state
       });
     } catch (e) {
+      // Handle any errors that occur during recording termination
       if (kDebugMode) {
         print('Error stopping recording: $e');
       }
@@ -102,36 +109,44 @@ class ChatInputAreaState extends State<ChatInputArea> {
   }
 
   Future<void> sendVoiceMessage() async {
-    if (!_isSending) {
+    if (_isRecording) {
+      // If recording is in progress, stop recording before sending
+      await stopRecording();
+    }
+
+    // Ensure that there is a recorded audio file to send
+    if (_audioFilePath != null && _audioFilePath!.isNotEmpty) {
       setState(() {
-        _isSending = true;
+        _isSending = true; // Set sending flag to true
       });
 
       try {
-        if (_isRecording) {
-          await stopRecording();
-
-          // Simulate sending the recorded audio message
-          await Future.delayed(const Duration(seconds: 2));
-
-          // Replace with actual audio file handling and sending logic
-          setState(() {
-            if (kDebugMode) {
-              print('Voice message sent: $_audioFilePath');
-            }
-          });
-        }
+        // Simulate sending the recorded audio message (replace with actual logic)
+        await Future.delayed(const Duration(seconds: 2));
+        // Update UI or perform actions after successful sending
+        setState(() {
+          if (kDebugMode) {
+            print('Voice message sent: $_audioFilePath');
+          }
+        });
       } catch (e) {
+        // Handle any errors that occur during sending
         if (kDebugMode) {
           print('Error sending voice message: $e');
         }
       } finally {
         setState(() {
-          _isSending = false;
+          _isSending = false; // Reset sending flag
         });
+      }
+    } else {
+      // No recorded audio file available to send
+      if (kDebugMode) {
+        print('No recorded audio available to send.');
       }
     }
   }
+
 
   Future<void> pickImageAndSend() async {
     final imagePicker = ImagePicker();
@@ -294,12 +309,13 @@ class ChatInputAreaState extends State<ChatInputArea> {
             icon: _isRecording
                 ? const Icon(Icons.stop, color: Colors.red)
                 : const Icon(Icons.mic, color: Colors.yellow),
-            onPressed: () {
+            onPressed: () async {
               if (_isRecording) {
-                // If recording, stop recording and send voice message
-                sendVoiceMessage();
+                // Stop recording and send voice message
+                await stopRecording();
+                await sendVoiceMessage(); // Send the recorded audio message
               } else {
-                // If not recording, start recording
+                // Start recording
                 startRecording();
               }
             },
