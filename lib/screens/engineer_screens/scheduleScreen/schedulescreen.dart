@@ -174,7 +174,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 // Function to find the index of a column with variations of the expected name
   int findColumnIndex(List<dynamic> row, List<String> expectedVariations) {
     for (var variation in expectedVariations) {
-      var index = row.indexWhere((cell) => cell?.value?.toString()?.toLowerCase()?.contains(variation) ?? false);
+      var index = row.indexWhere((cell) => cell?.value?.toString().toLowerCase().contains(variation) ?? false);
       if (index != -1) {
         return index;
       }
