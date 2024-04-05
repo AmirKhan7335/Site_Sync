@@ -125,7 +125,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               startDateParsed = parseDate(startDate);
               finishDateParsed = parseDate(finishDate);
             } catch (e) {
-              await showErrorDialog('Invalid date format 22: $e');
+              await showErrorDialog('Invalid date format: $e');
               continue;
             }
 
@@ -205,7 +205,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       }
       return DateTime.parse(dateString);
     } catch (e) {
-      throw FormatException('Date not in expected 11 format: $dateString');
+      throw FormatException('Date not in expected format: $dateString');
     }
   }
 
