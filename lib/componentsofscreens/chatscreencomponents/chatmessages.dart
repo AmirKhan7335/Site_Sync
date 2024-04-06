@@ -57,6 +57,7 @@ class ChatMessagesState extends State<ChatMessages> {
           // print("current user id 111 is $currentUserId");
 
           return ChatMessage(
+            voiceMessageUrl: data['audioUrl'] ?? '',
             sender: sender,
             text: text,
             createdAt: createdAt,
@@ -70,6 +71,7 @@ class ChatMessagesState extends State<ChatMessages> {
             ChatMessage message = messages[index];
             bool isSentByMe = message.sender == currentUserId; // Compare with current user's ID
             return MessageTile(
+              voiceMessageUrl: message.voiceMessageUrl,
               message: message.text,
               isSentByMe: isSentByMe,
               timestamp: message.createdAt,

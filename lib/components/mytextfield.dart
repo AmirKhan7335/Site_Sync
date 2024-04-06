@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 
 class MyTextField extends StatefulWidget {
   final String hintText;
@@ -9,13 +7,13 @@ class MyTextField extends StatefulWidget {
   final IconData icon; // Add icon property
   final TextInputType keyboardType;
   MyTextField({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.obscureText,
     required this.controller,
     required this.icon,
     required this.keyboardType, // Required icon parameter in constructor
-  }) : super(key: key);
+  });
 
   @override
   MyTextFieldState createState() => MyTextFieldState();
@@ -36,7 +34,7 @@ class MyTextFieldState extends State<MyTextField> {
         height: 50,
         width: 376,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+          borderRadius: const BorderRadius.all(Radius.circular(15)),
           border: Border.all(
             color: isFocused ? Colors.green : Colors.transparent,
           ),
@@ -106,12 +104,12 @@ class MyDateField extends StatefulWidget {
 
   // Add icon property
 
-  MyDateField({
-    Key? key,
+  const MyDateField({
+    super.key,
     required this.hintText,
     required this.callback,
     // Required icon parameter in constructor
-  }) : super(key: key);
+  });
 
   @override
   MyDateFieldState createState() => MyDateFieldState();
@@ -162,7 +160,7 @@ class MyDateFieldState extends State<MyDateField> {
             filled: false, // Ensure that the fillColor is applied
             fillColor: const Color(
                 0xFFF3F3F3), // Set the fillColor to the same background color
-            prefixIcon: Icon(
+            prefixIcon: const Icon(
               Icons.calendar_month,
               color: Colors.grey, // Set icon color to white
             ),

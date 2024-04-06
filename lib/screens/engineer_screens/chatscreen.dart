@@ -69,6 +69,7 @@ class ChatScreenState extends State<ChatScreen> {
         final List<ChatMessage> messages = snapshot.docs.map((doc) {
           final Map<String, dynamic> data = doc.data();
           return ChatMessage(
+            voiceMessageUrl: data['audioUrl'] ?? '',
             sender: data['senderId'],
             text: data['text'],
             createdAt: (data['timestamp'] as Timestamp).toDate(),
