@@ -234,41 +234,53 @@ class VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
             _isPlaying = !_isPlaying;
           });
         },
-        child: Row(
+        child: Column(
           children: [
-            StreamBuilder<PlayerState>(
-              stream: _audioPlayer.playerStateStream,
-              builder: (context, snapshot) {
-                final playerState = snapshot.data;
-                if (playerState != null && playerState.playing) {
-                  _isPlaying = true;
-                  return const Icon(
-                    Icons.pause,
-                    size: 24,
-                    color: Colors.limeAccent,
-                  );
-                } else {
-                  _isPlaying = false;
-                  return const Icon(
-                    Icons.play_arrow,
-                    size: 24,
-                    color: Colors.limeAccent,
-                  );
-                }
-              },
+            Row(
+              children: [
+                StreamBuilder<PlayerState>(
+                  stream: _audioPlayer.playerStateStream,
+                  builder: (context, snapshot) {
+                    final playerState = snapshot.data;
+                    if (playerState != null && playerState.playing) {
+                      _isPlaying = true;
+                      return const Icon(
+                        Icons.pause,
+                        size: 24,
+                        color: Colors.limeAccent,
+                      );
+                    } else {
+                      _isPlaying = false;
+                      return const Icon(
+                        Icons.play_arrow,
+                        size: 24,
+                        color: Colors.limeAccent,
+                      );
+                    }
+                  },
+                ),
+                Expanded(
+                  child: Slider(
+                    value: _position.inMilliseconds.toDouble().clamp(0.0, _duration.inMilliseconds.toDouble()), // Clamp the value
+                    max: _duration.inMilliseconds.toDouble(),
+                    onChanged: (value) {
+                      _audioPlayer.seek(Duration(milliseconds: value.toInt()));
+                    },
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: Slider(
-                value: _position.inMilliseconds.toDouble().clamp(0.0, _duration.inMilliseconds.toDouble()), // Clamp the value
-                max: _duration.inMilliseconds.toDouble(),
-                onChanged: (value) {
-                  _audioPlayer.seek(Duration(milliseconds: value.toInt()));
-                },
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    _printDuration(_duration),
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
               ),
-            ),
-            Text(
-              _printDuration(_duration),
-              style: const TextStyle(fontSize: 12),
             ),
           ],
         ),
