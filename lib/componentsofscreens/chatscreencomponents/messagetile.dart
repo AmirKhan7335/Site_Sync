@@ -28,6 +28,7 @@ class MessageTile extends StatefulWidget {
 
 class _MessageTileState extends State<MessageTile> {
   MessageStatus _messageStatus = MessageStatus.loading;
+  Duration _voiceMessageDuration = Duration.zero;
 
   @override
   void initState() {
@@ -83,7 +84,15 @@ class _MessageTileState extends State<MessageTile> {
                 children: [
                   // Display voice message player if URL is provided
                   if (widget.voiceMessageUrl != null && widget.voiceMessageUrl!.isNotEmpty)
-                    VoiceMessagePlayer(url: widget.voiceMessageUrl!),
+                    VoiceMessagePlayer(
+                      url: widget.voiceMessageUrl!,
+                      onDurationChanged: (duration) {
+                        setState(() {
+                          _voiceMessageDuration = duration;
+                        });
+                      },
+                    ),
+
                   // Display text message if message is not empty and voice message is not provided
                   if (widget.voiceMessageUrl!.isEmpty)
                     Text(
@@ -94,6 +103,11 @@ class _MessageTileState extends State<MessageTile> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (widget.voiceMessageUrl != null && widget.voiceMessageUrl!.isNotEmpty)
+                          Text(
+                            Utils.printDuration(_voiceMessageDuration),
+                            style: const TextStyle(color: Colors.white54, fontSize: 10),
+                          ),
                         const Expanded(child: SizedBox()),
                         // Display message delivery timestamp
                         Text(
@@ -165,8 +179,9 @@ class _MessageTileState extends State<MessageTile> {
 
 class VoiceMessagePlayer extends StatefulWidget {
   final String url;
+  final Function(Duration) onDurationChanged; // Callback function to pass duration
 
-  const VoiceMessagePlayer({super.key, required this.url});
+  const VoiceMessagePlayer({super.key, required this.url, required this.onDurationChanged});
 
   @override
   VoiceMessagePlayerState createState() => VoiceMessagePlayerState();
@@ -200,6 +215,7 @@ class VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
     _audioPlayer.durationStream.listen((duration) {
       setState(() {
         _duration = duration ?? Duration.zero;
+        widget.onDurationChanged(_duration); // Pass duration to parent widget
       });
     });
 
@@ -210,7 +226,7 @@ class VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
     });
 
     _audioPlayer.playerStateStream.listen((state) {
-      if (_position >= _duration) {
+      if (state.processingState == ProcessingState.completed) {
         _audioPlayer.seek(Duration.zero); // Move cursor to start
         setState(() {
           _isPlaying = false;
@@ -270,29 +286,18 @@ class VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    _printDuration(_duration),
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
     );
   }
-
-  /// Function to format duration as mm:ss
-  String _printDuration(Duration duration) {
+}
+class Utils {
+  static String printDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "$twoDigitMinutes:$twoDigitSeconds";
   }
 }
+
