@@ -69,7 +69,11 @@ class ChatScreenState extends State<ChatScreen> {
         final List<ChatMessage> messages = snapshot.docs.map((doc) {
           final Map<String, dynamic> data = doc.data();
           return ChatMessage(
-            voiceMessageUrl: data['audioUrl'] ?? '',
+            imageUrl: data['imageUrl'] ?? '',
+            audioUrl: data['audioUrl'] ?? '',
+            documentUrl: data['documentUrl'] ?? '',
+            videoUrl: data['videoUrl'] ?? '',
+            documentName: data['documentName'] ?? '',
             sender: data['senderId'],
             text: data['text'],
             createdAt: (data['timestamp'] as Timestamp).toDate(),
@@ -209,186 +213,192 @@ class ChatScreenState extends State<ChatScreen> {
   bool isChat = true;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, top: 42, right: 8),
-          child: Row(
-            children: [
-              const Text(
-                'Messages',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 42, right: 8),
+            child: Row(
+              children: [
+                const Text(
+                  '           Messages',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const Expanded(child: SizedBox()),
-              IconButton(
-                icon: const Icon(Icons.search, color: Colors.black),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.add, color: Colors.black),
-                onPressed: () async {
-                  // Navigate to ChatListScreen
-                  final result = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return ChatListScreen(user: selectedUser,);
-                  }));
-                  if (result != null && result is bool && result) {
-                    // Message sent or some other action completed, update the chat screen
-                    fetchChatData();
-                    fetchChatMessages(selectedUser!.chatRoomId);
-                  }
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.black),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 150,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: isChat ?  const Color(0xFF3EED88): Colors.grey,
-                  borderRadius: BorderRadius.circular(5),
+                const Expanded(child: SizedBox()),
+                IconButton(
+                  icon: const Icon(Icons.search, color: Colors.black),
+                  onPressed: () {},
                 ),
-                child: InkWell(
-                  onTap: () {
-                    if (isChat == false) {
-                      setState(() {
-                        isChat = true;
-                      });
+                IconButton(
+                  icon: const Icon(Icons.add, color: Colors.black),
+                  onPressed: () async {
+                    // Navigate to ChatListScreen
+                    final result = await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ChatListScreen(user: selectedUser,);
+                    }));
+                    if (result != null && result is bool && result) {
+                      // Message sent or some other action completed, update the chat screen
+                      fetchChatData();
+                      fetchChatMessages(selectedUser!.chatRoomId);
                     }
                   },
-                  child: Center(
-                    child: Text(
-                      'Chats',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: isChat ? Colors.black : Colors.white,
-                        fontWeight: FontWeight.bold,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_vert, color: Colors.black),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 150,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: isChat ?  const Color(0xFF3EED88): Colors.grey,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      if (isChat == false) {
+                        setState(() {
+                          isChat = true;
+                        });
+                      }
+                    },
+                    child: Center(
+                      child: Text(
+                        'Chats',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: isChat ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Container(
-                width: 150,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: !isChat ?  const Color(0xFF3EED88): Colors.grey,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: InkWell(
-                  onTap: () {
-                    if (isChat == true) {
-                      setState(() {
-                        isChat = false;
-                      });
-                    }
-                  },
-                  child: Center(
-                    child: Text(
-                      'Groups',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: !isChat ? Colors.black : Colors.white,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(width: 10),
+                Container(
+                  width: 150,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: !isChat ?  const Color(0xFF3EED88): Colors.grey,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      if (isChat == true) {
+                        setState(() {
+                          isChat = false;
+                        });
+                      }
+                    },
+                    child: Center(
+                      child: Text(
+                        'Groups',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: !isChat ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: StreamBuilder<Object>(
-              stream: null,
-              builder: (context, snapshot) {
-                return Column(
-                  children: [
-                    StreamBuilder<List<Map<String, dynamic>>>(
-                      stream: selectedUser != null
-                          ? FirebaseFirestore.instance
-                              .collection('chatRooms')
-                              .doc(selectedUser!.chatRoomId)
-                              .collection('messages')
-                              .snapshots()
-                              .map((snapshot) => snapshot.docs
-                                  .map((doc) => doc.data())
-                                  .toList())
-                          : null,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(
-                            child: Text(
-                              'No Chats yet',
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: 25),
-                            ),
-                          );
-                        } else {
-                          return SizedBox(
-                            height:
-                           // 500,
-                            MediaQuery.of(context).size.height * 0.55,
-                            child: ListView.builder(
-                              itemCount: allChatRooms.length,
-                              itemBuilder: (context, index) {
-                                var chatRoomData = allChatRooms[index];
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0, left: 16.0),
+            child: StreamBuilder<Object>(
+                stream: null,
+                builder: (context, snapshot) {
+                  return Column(
+                    children: [
+                      StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: selectedUser != null
+                            ? FirebaseFirestore.instance
+                                .collection('chatRooms')
+                                .doc(selectedUser!.chatRoomId)
+                                .collection('messages')
+                                .snapshots()
+                                .map((snapshot) => snapshot.docs
+                                    .map((doc) => doc.data())
+                                    .toList())
+                            : null,
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                              child: Text(
+                                'No Chats yet',
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 25),
+                              ),
+                            );
+                          } else {
+                            return Container(
+                              height: MediaQuery.of(context).size.height * 0.9,
+                              padding: const EdgeInsets.only(top: 0),
+                              child: ListView.builder(
+                                padding: const EdgeInsets.only(top: 0),
+                                itemCount: allChatRooms.length,
+                                itemBuilder: (context, index) {
+                                  var chatRoomData = allChatRooms[index];
 
-                                // Create a ChatUser based on the chat room data
-                                var chatUser = ChatUser(
-                                  id: chatRoomData['email'],
-                                  name: chatRoomData['username'],
-                                  chatRoomId: '',
-                                );
+                                  // Create a ChatUser based on the chat room data
+                                  var chatUser = ChatUser(
+                                    id: chatRoomData['email'],
+                                    name: chatRoomData['username'],
+                                    chatRoomId: '',
+                                  );
 
-                                return Align(
-                                  child: Column(
-                                    children: [
-                                      ChatInfoTile(
-                                        key: ValueKey(chatUser.id),
-                                        cUserID: FirebaseAuth
-                                            .instance.currentUser!.email!,
-                                        otherUser: chatUser,
-                                        onTap: () {
-                                          // When the tile is tapped, set the selectedUser
-                                          setState(() {
-                                            selectedUser = chatUser;
-                                          });
-                                        },
-                                      ),
-                                      const Divider(
-                                          color: Colors.grey, height: 0)
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                );
-              }),
-        ),
-      ],
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Column(
+                                      children: [
+                                        ChatInfoTile(
+                                          key: ValueKey(chatUser.id),
+                                          cUserID: FirebaseAuth
+                                              .instance.currentUser!.email!,
+                                          otherUser: chatUser,
+                                          onTap: () {
+                                            // When the tile is tapped, set the selectedUser
+                                            setState(() {
+                                              selectedUser = chatUser;
+                                            });
+                                          },
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.only(top: 4, left: 16.0, right: 16.0),
+                                          child: Divider(
+                                              color: Colors.grey, height: 0),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  );
+                }),
+          ),
+        ],
+      ),
     );
   }
 }

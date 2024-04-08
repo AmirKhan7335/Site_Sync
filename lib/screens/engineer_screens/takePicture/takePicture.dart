@@ -5,14 +5,13 @@ import 'package:amir_khan1/models/activity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class TakePicture extends StatefulWidget {
-  TakePicture({super.key});
+  const TakePicture({super.key});
 
   @override
   State<TakePicture> createState() => _TakePictureState();
@@ -54,66 +53,64 @@ class _TakePictureState extends State<TakePicture> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: SafeArea(
-        child: Column(
-          children: [
-            Padding(
+    return SafeArea(
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('Take Picture',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black)),
+          ),
+          Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text('Take Picture',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black)),
-            ),
-            Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 1.5,
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.white,
-                )),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        _takePicture('camera', context);
-                      },
-                      child: Center(
-                          child: Icon(Icons.camera_alt_rounded,
-                              color: Colors.black, size: 100.0)),
-                    ),
+              child: Container(
+                height: 1.5,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.white,
+              )),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(5),
                   ),
-                  SizedBox(width: 10),
-                  Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.green
-                      ,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        _takePicture('gallery', context);
-                      },
-                      child: Center(
-                          child: Icon(Icons.file_upload,
-                              color: Colors.black, size: 100.0)),
-                    ),
+                  child: InkWell(
+                    onTap: () {
+                      _takePicture('camera', context);
+                    },
+                    child: const Center(
+                        child: Icon(Icons.camera_alt_rounded,
+                            color: Colors.black, size: 100.0)),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.green
+                    ,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      _takePicture('gallery', context);
+                    },
+                    child: const Center(
+                        child: Icon(Icons.file_upload,
+                            color: Colors.black, size: 100.0)),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -181,106 +178,104 @@ class _AddPicState extends State<AddPic> {
     final controller = Get.put(TakePictureController());
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'Choose Activity To Add Pic',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: FutureBuilder<List<Activity>>(
-                    future: fetchActivitiesFromFirebase(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('${snapshot.error}');
-                      } else if (!snapshot.hasData) {
-                        return Text('No Activities Found');
-                      } else if (snapshot.hasData) {
-                        return Obx(()
-                          => Stack(
-                            children: [
-                              Container(
-                                height: MediaQuery.of(context).size.height * 0.7,
-                                child: ListView.builder(
-                                    itemCount: snapshot.data!.length,
-                                    itemBuilder: ((context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[800],
-                                            border:
-                                                Border.all(color: Colors.grey),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: ListTile(
-                                            onTap: () async {
-                                              try {
-                                                controller.isloading.value = true;
-                        
-                                                final url =
-                                                    await uploadImageToStorage(
-                                                        File(widget.image!));
-                                                await addPicture(
-                                                    snapshot.data?[index].id,
-                                                    url);
-                                                Navigator.pop(context);
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                        content:
-                                                            Text('Image Added')));
-                                                controller.isloading.value= false;
-                                              } catch (e) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                        content: Text(
-                                                            '${e.toString()}')));
-                                                Navigator.pop(context);
-                                                controller.isloading.value= false;
-                                              }
-                                            },
-                                            title: Text(
-                                              '${snapshot.data?[index].name}',
-                                              style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(
+              'Choose Activity To Add Pic',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: FutureBuilder<List<Activity>>(
+                  future: fetchActivitiesFromFirebase(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    } else if (!snapshot.hasData) {
+                      return const Text('No Activities Found');
+                    } else if (snapshot.hasData) {
+                      return Obx(()
+                        => Stack(
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.7,
+                              child: ListView.builder(
+                                  itemCount: snapshot.data!.length,
+                                  itemBuilder: ((context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[800],
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: ListTile(
+                                          onTap: () async {
+                                            try {
+                                              controller.isloading.value = true;
+
+                                              final url =
+                                                  await uploadImageToStorage(
+                                                      File(widget.image));
+                                              await addPicture(
+                                                  snapshot.data?[index].id,
+                                                  url);
+                                              Navigator.pop(context);
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content:
+                                                          Text('Image Added')));
+                                              controller.isloading.value= false;
+                                            } catch (e) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          e.toString())));
+                                              Navigator.pop(context);
+                                              controller.isloading.value= false;
+                                            }
+                                          },
+                                          title: Text(
+                                            '${snapshot.data?[index].name}',
+                                            style: const TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ),
-                                      );
-                                    })),
-                              ),
-                              controller.isloading.value
-                                  ? Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(height: 300,),
-                                          CircularProgressIndicator(
-                                              color: Colors.yellow),
-
-                                        ],
                                       ),
-                                    )
-                                  : SizedBox()
-                            ], 
-                          ),
-                        );
-                      } else {
-                        return CircularProgressIndicator();
-                      }
-                    }),
-              )
-            ],
-          ),
+                                    );
+                                  })),
+                            ),
+                            controller.isloading.value
+                                ? const Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(height: 300,),
+                                        CircularProgressIndicator(
+                                            color: Colors.yellow),
+
+                                      ],
+                                    ),
+                                  )
+                                : const SizedBox()
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
+                  }),
+            )
+          ],
         ),
       ),
     );

@@ -69,9 +69,13 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: Card(
                 child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  tileColor: Colors.green,
                   leading: Container(
                     width: 60,
                     height: 60,
@@ -94,6 +98,7 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
+                      color: Colors.white,
                     ),
                   ),
                   subtitle: Row(
@@ -102,14 +107,14 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
                       Text(
                         lastMessageText.length<20?lastMessageText:
                        '${lastMessageText.substring(0, 20)}..',
-                        style: const TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14, color: Colors.white),
                       ),
                       if (messageTime != null) // Only display time if not null
                         Text(
                           '${DateFormat('h:mm').format(messageTime)} $amPm',
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.grey,
+                            color: Colors.white,
                           ),
                         ),
                     ],

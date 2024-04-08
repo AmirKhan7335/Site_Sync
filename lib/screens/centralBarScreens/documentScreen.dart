@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
@@ -141,15 +140,15 @@ class _DocumentScreenState extends State<DocumentScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text('Documents',style: TextStyle(color: Colors.black)),
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Documents',style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
             onPressed: () {
               uploadFile();
               control.isDocumentLoading.value = false;
             },
-            icon: Icon(Icons.upload_file),
+            icon: const Icon(Icons.upload_file),
           ),
         ],
       ),
@@ -160,15 +159,15 @@ class _DocumentScreenState extends State<DocumentScreen> {
               future: getDocuments(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center();
+                  return const Center();
                 } else if (snapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('Error: ${snapshot.error}',style: TextStyle(color: Colors.black)),
+                    child: Text('Error: ${snapshot.error}',style: const TextStyle(color: Colors.black)),
                   );
                 } else {
                   final List data = snapshot.data!;
@@ -180,7 +179,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
                             listString.substring(1, listString.length - 1);
                         final getlist =
                             list.split(',').map((e) => e.trim()).toList();
-
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Card(
@@ -203,11 +201,11 @@ class _DocumentScreenState extends State<DocumentScreen> {
                                   Get.snackbar('Error', e.toString());
                                 }
                               },
-                              leading: ClipOval(
+                              leading: const ClipOval(
                                 child: Icon(Icons.file_copy,color: Colors.black,),
                               ),
-                              title: Text(getlist[0],style: TextStyle(color: Colors.black)),
-                              subtitle: Text('00/00/2000',style: TextStyle(color: Colors.black)),
+                              title: Text(getlist[0],style: const TextStyle(color: Colors.black)),
+                              subtitle: const Text('00/00/2000',style: TextStyle(color: Colors.black)),
                             ),
                           ),
                         );
@@ -216,11 +214,11 @@ class _DocumentScreenState extends State<DocumentScreen> {
               },
             ),
             control.isDocumentLoading.value
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(
                     color: Colors.green,
                   ))
-                : Center()
+                : const Center()
           ],
         ),
       ),

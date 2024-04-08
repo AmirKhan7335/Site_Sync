@@ -4,19 +4,15 @@ import 'package:amir_khan1/controllers/centralTabController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path/path.dart';
 import 'package:open_file/open_file.dart';
 
 class CnsltDocumentScreen extends StatefulWidget {
-  CnsltDocumentScreen({super.key, required String this.projectId});
-  String projectId;
+  const CnsltDocumentScreen({super.key, required this.projectId});
+  final String projectId;
   @override
   State<CnsltDocumentScreen> createState() => _DocumentScreenState();
 }
@@ -26,7 +22,9 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
   uploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xlsx', 'xls', 'pdf', 'mpp'],
+      allowedExtensions: [
+        'xlsx', 'xls', 'pdf', 'mpp', 'docx', 'doc', 'jpg', 'jpeg', 'png', 'gif'
+      ],
     );
 
     if (result != null) {
@@ -34,14 +32,13 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
       // Upload the file to Firebase Storage
       try {
         await uploadFileToFirebase(file);
-
-        controller.isDocumentLoading.value = false;
         Get.snackbar('Success', 'File Uploaded');
       } catch (e) {
         Get.snackbar('Error', e.toString());
       }
     }
   }
+
 
   Future<void> uploadFileToFirebase(File file) async {
     try {
@@ -125,15 +122,15 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-iconTheme: IconThemeData(color: Colors.black),
-        title: Text('Documents', style: TextStyle(color: Colors.black)),
+iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Documents', style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
             onPressed: () {
               uploadFile();
               control.isDocumentLoading.value = false;
             },
-            icon: Icon(Icons.upload_file),
+            icon: const Icon(Icons.upload_file),
           ),
         ],
       ),
@@ -144,15 +141,15 @@ iconTheme: IconThemeData(color: Colors.black),
               future: getDocuments(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center();
+                  return const Center();
                 } else if (snapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('Error: ${snapshot.error}',style: TextStyle(color: Colors.black)),
+                    child: Text('Error: ${snapshot.error}',style: const TextStyle(color: Colors.black)),
                   );
                 } else {
                   final List data = snapshot.data!;
@@ -164,7 +161,6 @@ iconTheme: IconThemeData(color: Colors.black),
                             listString.substring(1, listString.length - 1);
                         final getlist =
                             list.split(',').map((e) => e.trim()).toList();
-
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Card(
@@ -189,11 +185,11 @@ iconTheme: IconThemeData(color: Colors.black),
                                   Get.snackbar('Error', e.toString());
                                 }
                               },
-                              leading: ClipOval(
+                              leading: const ClipOval(
                                 child: Icon(Icons.file_copy,color: Colors.black,),
                               ),
-                              title: Text(getlist[0],style: TextStyle(color: Colors.black)),
-                              subtitle: Text('00/00/2000',style: TextStyle(color: Colors.black)),
+                              title: Text(getlist[0],style: const TextStyle(color: Colors.black)),
+                              subtitle: const Text('00/00/2000',style: TextStyle(color: Colors.black)),
                             ),
                           ),
                         );
@@ -202,11 +198,11 @@ iconTheme: IconThemeData(color: Colors.black),
               },
             ),
             control.isDocumentLoading.value
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(
                     color: Colors.green,
                   ))
-                : Center()
+                : const Center()
           ],
         ),
       ),

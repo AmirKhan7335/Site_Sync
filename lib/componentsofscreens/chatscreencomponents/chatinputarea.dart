@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../screens/engineer_screens/chatscreen.dart';
+import 'package:path/path.dart' as p;
 import 'messagetile.dart';
 import 'dart:io';
 import 'dart:async'; // Add import for Timer
@@ -147,6 +149,10 @@ class ChatInputAreaState extends State<ChatInputArea> {
         'timestamp': FieldValue.serverTimestamp(),
         'messageStatus': 'sent',
         'audioUrl': audioUrl,
+        'documentUrl': '',
+        'imageUrl': '',
+        'videoUrl': '',
+        'documentName': '',
       };
 
       // Add the message to Firestore
@@ -188,16 +194,6 @@ class ChatInputAreaState extends State<ChatInputArea> {
   }
 
 
-
-  Future<void> _pickImageAndSend() async {
-    final imagePicker = ImagePicker();
-    final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      // Send the selected image file
-      // widget.onSendMessage(image.path);
-    }
-  }
-
   Future<String> sendMessage() async {
     if (_messageController.text.isNotEmpty && !_isSending) {
       setState(() {
@@ -212,6 +208,10 @@ class ChatInputAreaState extends State<ChatInputArea> {
           'timestamp': FieldValue.serverTimestamp(),
           'messageStatus': 'sent',
           'audioUrl': '',
+          'documentUrl': '',
+          'imageUrl': '',
+          'videoUrl': '',
+          'documentName': '',
         };
         // print ("sender in chat input area = ${message['senderId']}");
 
@@ -248,11 +248,15 @@ class ChatInputAreaState extends State<ChatInputArea> {
         setState(() {
           _isSending = false;
           MessageTile(
-            voiceMessageUrl: '',
+            documentName: '',
+            imageUrl: '',
+            documentUrl: '',
+            audioUrl: '',
             message: _messageController.text,
             isSentByMe: true,
             timestamp: DateTime.now(),
             chatRoomId: widget.chatRoomId,
+            videoUrl: '',
           );
         });
       }
@@ -268,39 +272,299 @@ class ChatInputAreaState extends State<ChatInputArea> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Photo'),
+              onTap: () async {
+                final XFile? media = await ImagePicker().pickImage(source: ImageSource.camera);
+                if (media != null) {
+                  // Send the captured media file
+                  if (media.path.endsWith('.jpg') || media.path.endsWith('.jpeg') || media.path.endsWith('.png')) {
+                    _sendImageMessage(media.path);
+                  } else {
+                    _sendImageMessage(media.path);
+                  }
+                  Navigator.pop(context); // Close the options
+                }
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.camera),
-              title: const Text('Camera'),
-              onTap: () {
-                // Handle camera option
-                // You can implement capturing photos or videos here
+              title: const Text('Video'),
+              onTap: () async {
+                final XFile? media = await ImagePicker().pickVideo(source: ImageSource.camera);
+                if (media != null) {
+                  // Send the captured media file
+                  if (media.path.endsWith('.jpg') || media.path.endsWith('.jpeg') || media.path.endsWith('.png')) {
+                    _sendImageMessage(media.path);
+                  } else {
+                    _sendVideoMessage(media.path);
+                  }
+                  Navigator.pop(context); // Close the options
+                }
               },
             ),
             ListTile(
               leading: const Icon(Icons.photo_album),
-              title: const Text('Photo & Video Library'),
-              onTap: () {
-                _pickImageAndSend();
+              title: const Text('Photo Library'),
+              onTap: () async {
+                final XFile? media = await ImagePicker().pickImage(source: ImageSource.gallery);
+                if (media != null) {
+                  // Send the selected media file
+                  if (media.path.endsWith('.jpg') || media.path.endsWith('.jpeg') || media.path.endsWith('.png')) {
+                    _sendImageMessage(media.path);
+                  } else {
+                    _sendVideoMessage(media.path);
+                  }
+                  Navigator.pop(context); // Close the options
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_album),
+              title: const Text('Video Library'),
+              onTap: () async {
+                final XFile? media = await ImagePicker().pickVideo(source: ImageSource.gallery);
+                if (media != null) {
+                  // Send the selected media file
+                  if (media.path.endsWith('.jpg') || media.path.endsWith('.jpeg') || media.path.endsWith('.png')) {
+                    _sendImageMessage(media.path);
+                  } else {
+                    _sendVideoMessage(media.path);
+                  }
+                  Navigator.pop(context); // Close the options
+                }
               },
             ),
             ListTile(
               leading: const Icon(Icons.insert_drive_file),
               title: const Text('Document'),
-              onTap: () {
-                // Handle document option
-                // You can implement sending documents here
+              onTap: () async {
+                final result = await FilePicker.platform.pickFiles(type: FileType.any);
+                if (result != null) {
+                  final filePath = result.files.single.path!;
+                  _sendDocumentMessage(filePath);
+                }
+                Navigator.pop(context); // Close the options
               },
             ),
-            // Add more ListTiles here for each option
           ],
         );
       },
     );
   }
 
+  Future<void> _sendVideoMessage(String videoPath) async {
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      // Check if the file exists
+      File videoFile = File(videoPath);
+      if (!await videoFile.exists()) {
+        throw Exception('File does not exist: $videoPath');
+      }
+
+      // Upload the selected video file to Firebase Storage
+      final storageRef = FirebaseStorage.instance.ref().child('videos').child('${DateTime.now().millisecondsSinceEpoch}.mp4');
+      await storageRef.putFile(videoFile);
+
+      // Get the download URL of the uploaded video file
+      final videoUrl = await storageRef.getDownloadURL();
+
+      // Construct the message data
+      var message = {
+        'text': '', // No text for video message
+        'senderId': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
+        'receiverId': widget.user.id,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageStatus': 'sent',
+        'videoUrl': videoUrl,
+        'audioUrl': '',
+        'documentUrl': '',
+        'imageUrl': '',
+        'documentName': '',
+      };
+
+      // Add the message to Firestore
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(widget.chatRoomId)
+          .collection('messages')
+          .add(message);
+
+      // Update latest message timestamp
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(widget.chatRoomId)
+          .update({
+        'latestMessageTimestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Update UI if needed
+      // You can add logic here to update UI when the message is sent
+
+      if (kDebugMode) {
+        print('Video message sent: $videoPath');
+      }
+    } catch (e) {
+      // Handle any errors that occur during sending
+      if (kDebugMode) {
+        print('Error sending video message: $e');
+      }
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+
+
+
+  Future<void> _sendImageMessage(String imagePath) async {
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      // Check if the file exists
+      File imageFile = File(imagePath);
+      if (!await imageFile.exists()) {
+        throw Exception('File does not exist: $imagePath');
+      }
+
+      // Upload the selected image file to Firebase Storage
+      final storageRef = FirebaseStorage.instance.ref().child('images').child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await storageRef.putFile(imageFile);
+
+      // Get the download URL of the uploaded image file
+      final imageUrl = await storageRef.getDownloadURL();
+
+      // Construct the message data
+      var message = {
+        'text': '', // No text for image message
+        'senderId': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
+        'receiverId': widget.user.id,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageStatus': 'sent',
+        'imageUrl': imageUrl,
+        'audioUrl': '',
+        'documentUrl': '',
+        'videoUrl': '',
+        'documentName': '',
+      };
+
+      // Add the message to Firestore
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(widget.chatRoomId)
+          .collection('messages')
+          .add(message);
+
+      // Update latest message timestamp
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(widget.chatRoomId)
+          .update({
+        'latestMessageTimestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Update UI if needed
+      // You can add logic here to update UI when the message is sent
+
+      if (kDebugMode) {
+        print('Image message sent: $imagePath');
+      }
+    } catch (e) {
+      // Handle any errors that occur during sending
+      if (kDebugMode) {
+        print('Error sending image message: $e');
+      }
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+
+  Future<void> _sendDocumentMessage(String documentPath) async {
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      // Check if the file exists
+      File documentFile = File(documentPath);
+      if (!await documentFile.exists()) {
+        throw Exception('File does not exist: $documentPath');
+      }
+
+      // Determine the file name and extension
+      String fileName = p.basename(documentPath);
+      String extension = p.extension(documentPath);
+
+      // Upload the selected document file to Firebase Storage
+      final storageRef = FirebaseStorage.instance.ref().child('documents').child('${DateTime.now().millisecondsSinceEpoch}$extension');
+      await storageRef.putFile(documentFile);
+
+      // Get the download URL of the uploaded document file
+      final documentUrl = await storageRef.getDownloadURL();
+
+      // Construct the message data
+      var message = {
+        'text': '', // No text for document message
+        'senderId': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
+        'receiverId': widget.user.id,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageStatus': 'sent',
+        'documentUrl': documentUrl,
+        'documentName': fileName, // Add the document name to the message data
+        'audioUrl': '',
+        'imageUrl': '',
+        'videoUrl': '',
+      };
+
+      // Add the message to Firestore
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(widget.chatRoomId)
+          .collection('messages')
+          .add(message);
+
+      // Update latest message timestamp
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(widget.chatRoomId)
+          .update({
+        'latestMessageTimestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Update UI if needed
+      // You can add logic here to update UI when the message is sent
+
+      if (kDebugMode) {
+        print('Document message sent: $documentPath');
+      }
+    } catch (e) {
+      // Handle any errors that occur during sending
+      if (kDebugMode) {
+        print('Error sending document message: $e');
+      }
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 202, 193, 193),
+      color: Colors.blueGrey,
+      height: 70.0,
       padding: const EdgeInsets.all(10.0),
       child: Row(
         children: [
@@ -311,7 +575,7 @@ class ChatInputAreaState extends State<ChatInputArea> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: Colors.white12,
                 borderRadius: BorderRadius.circular(20.0),
               ),
               child: TextField(
@@ -335,9 +599,22 @@ class ChatInputAreaState extends State<ChatInputArea> {
           ),
           IconButton(
             icon: const Icon(Icons.camera_alt, color: Colors.yellow),
-            onPressed: () {
-              // Handle camera option
-              // You can implement capturing photos or videos here
+            onPressed: () async {
+              final XFile? image = await ImagePicker().pickImage(source: ImageSource.camera);
+              if (image != null) {
+                // Send the captured image file
+                _sendImageMessage(image.path);
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.camera, color: Colors.yellow),
+            onPressed: () async {
+              final XFile? image = await ImagePicker().pickVideo(source: ImageSource.camera);
+              if (image != null) {
+                // Send the selected image file
+                _sendVideoMessage(image.path);
+              }
             },
           ),
           _isTyping
