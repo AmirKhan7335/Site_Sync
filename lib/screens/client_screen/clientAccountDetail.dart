@@ -188,7 +188,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return const Text('No Consultant');
+                      return const Text('No Consultant'); // Show a message if no data is available
                     } else {
                       final consultantList = snapshot.data;
                       return ListView.builder(
