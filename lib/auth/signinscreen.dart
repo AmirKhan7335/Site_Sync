@@ -1,6 +1,4 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
-import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
-import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
@@ -16,7 +14,6 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import '../components/my_button.dart';
 import '../components/mytextfield.dart';
-import '../main.dart';
 import 'createaccountscreen.dart';
 
 // Google sign in
@@ -41,7 +38,7 @@ Future<User?> signInWithGoogle() async {
 
     return authResult.user;
   } catch (e) {
-    Get.snackbar('Error', '${e}');
+    Get.snackbar('Error', '$e');
     return null;
   }
 }
@@ -144,14 +141,14 @@ class _SigninScreenState extends State<SigninScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EngineerHomePage(),
+                      builder: (context) => const EngineerHomePage(isClient: false,),
                     ),
                   );
                 } else if (requestStatus == false) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WelcomeEngineer(),
+                      builder: (context) => WelcomeEngineer(isClient: false,),
                     ),
                   );
                 }
@@ -189,7 +186,7 @@ class _SigninScreenState extends State<SigninScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ContractorHomePage(),
+                builder: (context) => const ContractorHomePage(),
               ),
             );
             setState(() {
@@ -229,7 +226,7 @@ class _SigninScreenState extends State<SigninScreen> {
           }
         }
       } else {
-        showErrorDialog('${e}');
+        showErrorDialog('$e');
         if (kDebugMode) {
           print('Error: ${e.message}');
         }

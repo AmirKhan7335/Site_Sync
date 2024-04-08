@@ -31,7 +31,8 @@ class Chat {
 }
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final bool isClient;
+  const ChatScreen({super.key, required this.isClient});
 
   @override
   ChatScreenState createState() => ChatScreenState();

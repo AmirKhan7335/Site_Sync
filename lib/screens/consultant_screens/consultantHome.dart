@@ -1,26 +1,12 @@
 import 'package:amir_khan1/components/my_drawer.dart';
 import 'package:amir_khan1/controllers/navigationController.dart';
-import 'package:amir_khan1/main.dart';
-import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
-import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
-import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
-import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
 import 'package:amir_khan1/screens/consultant_screens/addProjectScreen.dart';
 import 'package:amir_khan1/screens/consultant_screens/homeTab.dart';
-import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
-import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/scheduledProjects.dart';
-import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
-import 'package:amir_khan1/models/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class ConsultantHomePage extends StatefulWidget {
   const ConsultantHomePage({super.key});
@@ -38,11 +24,11 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
 
         body: Obx(
           () => controller.cnsltCurrentIndex.value == 1
-              ? ChatScreen()
+              ? const ChatScreen(isClient: false,)
               : controller.cnsltCurrentIndex.value == 2
-                  ? CreateProject()
+                  ? const CreateProject()
                   : controller.cnsltCurrentIndex.value == 0
-                      ? ConsultantHomeTab()
+                      ? const ConsultantHomeTab()
                       : controller.cnsltCurrentIndex.value == 3
                           ? const ScheduleProjects()
                           : const NotificationsScreen(),
@@ -61,11 +47,11 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
             },
 
             selectedIconTheme:
-                IconThemeData(color: Color(0xFF3EED88), size: 30),
+                const IconThemeData(color: Color(0xFF3EED88), size: 30),
             showUnselectedLabels: false,
-            unselectedLabelStyle: TextStyle(color: Colors.black),
+            unselectedLabelStyle: const TextStyle(color: Colors.black),
             showSelectedLabels: false,
-            unselectedIconTheme: IconThemeData(color: Colors.black, size: 22.5),
+            unselectedIconTheme: const IconThemeData(color: Colors.black, size: 22.5),
             selectedFontSize: 0,
             unselectedFontSize: 0,
             items: [

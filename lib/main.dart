@@ -2,12 +2,9 @@ import 'dart:ui';
 
 import 'package:amir_khan1/pages/profile_page.dart';
 import 'package:amir_khan1/pages/users_page.dart';
-import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/auth/createaccountscreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:amir_khan1/screens/rolescreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
 import 'package:amir_khan1/auth/signinscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/splashscreen.dart';
 import 'package:amir_khan1/widgets/colors.dart';
@@ -50,7 +47,6 @@ class MyApp extends ConsumerWidget {
         '/profile_page': (context) => const ProfilePage(),
         '/users_page': (context) => const UsersPage(),
         '/auth': (context) => const AuthPage(),
-        '/engineer_home': (context) => const EngineerHomePage(),
         '/signin': (context) => SigninScreen(
               onTap: () {},
             ),
@@ -58,9 +54,6 @@ class MyApp extends ConsumerWidget {
               onTap: () {},
             ),
         '/role': (context) => const Role(),
-        '/chat': (context) => const ChatScreen(),
-        // '/taskdetails': (context) => const TaskDetailsScreen(),
-        '/schedule': (context) => const ScheduleScreen(),
         '/notifications': (context) => const NotificationsScreen(),
       },
     );

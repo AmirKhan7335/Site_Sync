@@ -18,7 +18,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({super.key});
+  final bool isClient;
+  const ScheduleScreen({super.key, required this.isClient});
 
   @override
   State<ScheduleScreen> createState() => ScheduleScreenState();
@@ -648,7 +649,26 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   Future<void> fetchActivitiesFromFirebase() async {
     try {
       var email = FirebaseAuth.instance.currentUser!.email;
-      var activitiesSnapshot = await FirebaseFirestore.instance
+      //-------------------For Client---------------------------
+      var projIdForClient = await FirebaseFirestore.instance
+          .collection('clients')
+          .doc(email)
+          .get();
+      var clientProjectId = projIdForClient.data()!['projectId'];
+      var sameEngineer = await FirebaseFirestore.instance
+          .collection('engineers')
+          .where('projectId', isEqualTo: clientProjectId)
+          .get();
+      var engEmails = sameEngineer.docs.map((e) => e.id).toList();
+      var activitiesSnapshot = widget.isClient
+          ? await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(engEmails[0])
+          .collection('activities')
+          .orderBy('order')
+          .get()
+      //----------------------------------------------------------------------
+          : await FirebaseFirestore.instance
           .collection('engineers')
           .doc(email)
           .collection('activities')
@@ -762,39 +782,218 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
+  Future<int> calculateDayNo() async {
+    int totalDayCount = 0;
+    try {
+      var email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(email)
+          .collection('activities')
+          .orderBy('order') // Sort by order
+          .get();
+
+      DateTime currentDate = DateTime.now();
+
+      for (var doc in activitiesSnapshot.docs) {
+        DateTime startDate = doc['startDate'].toDate();
+        DateTime finishDate = doc['finishDate'].toDate();
+
+        // Ensure that the activity's finish date is on or before today's date
+        if (finishDate.isBefore(currentDate)) {
+          // Calculate the total days from start date till finish date excluding Sundays
+          int totalDays = finishDate.difference(startDate).inDays + 1;
+          int sundays = 0;
+          for (int i = 0; i < totalDays; i++) {
+            DateTime date = startDate.add(Duration(days: i));
+            if (date.weekday == DateTime.sunday) {
+              sundays++;
+            }
+          }
+          int dayCount = totalDays - sundays;
+
+          // Add the calculated day count to the total
+          totalDayCount += dayCount;
+        }
+      }
+    } catch (e) {
+      Get.snackbar('Error', '$e');
+    }
+
+    // Return the total day count
+    return totalDayCount;
+  }
+
+
+
+
 
   bool isdownloading = false;
+
   @override
   Widget build(BuildContext context) {
+    // Get the current date
+    final currentDate = DateTime.now();
+    // Get the current day of the week (0 for Monday, 1 for Tuesday, ..., 6 for Sunday)
+    final currentDayOfWeek = (currentDate.weekday + 6) % 7;
+    // Convert the day of the week to a string representation
+    final List<String> dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // Format the date in 'Month Year' format
+    final String monthYear = DateFormat('MMMM yyyy').format(currentDate);
+    // Determine if it's a working day (Monday to Thursday)
+    final bool isWorkingDay = currentDate.weekday != 0; // Sunday = 0, Saturday = 6
+
     return SingleChildScrollView(
       child: SizedBox(
-          //height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.only(
+                  top: 20,
+                ),
+                child: Container(
+                  color: const Color(0xFF42F98F),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 30),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                          child: Row(
+                            children: [
+                              Text(
+                                monthYear,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 30.0,
+                                ),
+                              ),
+                              const Expanded(child: SizedBox()),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                child: Text(
+                                  isWorkingDay ? 'Working Day' : 'Off Day',
+                                  style: const TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.0, 
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                          child: Row(
+                            children: [
+                              FutureBuilder<int>(
+                                future: calculateDayNo(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const CircularProgressIndicator(); // Show loading indicator while calculating
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else {
+                                    return Text(
+                                      'Day ${snapshot.data}',
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18.0,
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              const Expanded(child: SizedBox()),
+                              Image.asset(
+                                'assets/images/schedule.png', // Replace with the path to your image asset
+                                width: 75, // Set the width of the image
+                                height: 75, // Set the height of the image
+                              ),
+                              const Expanded(child: SizedBox()),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(7, (index) {
+                              // Calculate the date for each day of the week relative to the current day
+                              final int dayIndex = index - 3;
+                              final day = currentDate.subtract(Duration(days: currentDayOfWeek - dayIndex ));
+                              // Format the date to 'd' (day of the month)
+                              final formattedDate = DateFormat('d').format(day);
+                              // Get the abbreviated day name
+                              final dayOfWeek = dayNames[(currentDayOfWeek + dayIndex) % 7];
+                              // Check if the current day matches today's date
+                              final bool isToday = dayIndex == 0;
+
+                              return Container(
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: isToday ? Colors.black : Colors.white, // Set background color
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      formattedDate,
+                                      style: TextStyle(
+                                        color: isToday ? Colors.white : Colors.black, // Set text color
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                      ),
+                                    ),
+                                    Text(
+                                      dayOfWeek,
+                                      style: TextStyle(
+                                        color: isToday ? Colors.white : Colors.black,
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
                   left: 32,
                   right: 32,
-                  top: 32,
+                  top: 4,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Center(
-                        child: Text(
-                      'Schedule',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                      ),
-                    )),
-                    IconButton(
+                    const Expanded(
+                      child:  Center(
+                          child: Text(
+                        'Activities',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        ),
+                      )),
+                    ),
+                    widget.isClient
+                        ? const Text('')
+                        : IconButton(
                       icon: const Icon(Icons.file_upload),
                       onPressed: isLoading ? null : pickFile,
-                      color: Colors.black,
-                    ),
+                      color: const Color(0xFF2CF07F),
+                    )
                   ],
                 ),
               ),
@@ -825,7 +1024,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                 const Text('No activities to display',
                                     style: TextStyle(fontSize: 18,color: Colors.black)),
                                 const SizedBox(height: 16),
-                                Row(
+                                widget.isClient
+                                    ? const Text('')
+                                    :Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     ElevatedButton(
@@ -876,7 +1077,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                             ),
                           ),
                         if (loadedActivities.isNotEmpty)
-                          Row(
+                          widget.isClient
+                              ? const Text('')
+                              :Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(

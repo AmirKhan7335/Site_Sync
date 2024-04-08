@@ -17,7 +17,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class EngineerHomeTab extends StatefulWidget {
-  const EngineerHomeTab({super.key});
+  final bool isClient;
+  const EngineerHomeTab({super.key, required this.isClient});
 
   @override
   State<EngineerHomeTab> createState() => _EngineerHomeTabState();
@@ -33,7 +34,12 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
   Future<List> fetchProject() async {
 //..
     try {
-      final collectionData = await FirebaseFirestore.instance
+      final collectionData = widget.isClient
+          ? await FirebaseFirestore.instance
+          .collection('clients')
+          .doc(user!.email)
+          .get()
+          : await FirebaseFirestore.instance
           .collection('engineers')
           .doc(user!.email)
           .get();
@@ -108,7 +114,25 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
   Future<List<Activity>> fetchActivities() async {
     try {
       var email = user?.email;
-      var activitiesSnapshot = await FirebaseFirestore.instance
+      //---------------------------------------For Client-------------------------
+      var projIdForClient = await FirebaseFirestore.instance
+          .collection('clients')
+          .doc(email)
+          .get();
+      var clientProjectId = projIdForClient.data()!['projectId'];
+      var sameEngineer = await FirebaseFirestore.instance
+          .collection('engineers')
+          .where('projectId', isEqualTo: clientProjectId)
+          .get();
+      var engEmails = sameEngineer.docs.map((e) => e.id).toList();
+      var activitiesSnapshot = widget.isClient
+          ? await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(engEmails[0])
+          .collection('activities')
+          .get()
+      //----------------------------------------------------------------------
+          : await FirebaseFirestore.instance
           .collection('engineers')
           .doc(email)
           .collection('activities')

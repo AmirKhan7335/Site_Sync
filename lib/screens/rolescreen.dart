@@ -1,10 +1,10 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
-import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:flutter/material.dart';
 
-import '../main.dart';
+import 'engineer_screens/welcome.dart';
+
 
 //Role
 class Role extends StatefulWidget {
@@ -97,8 +97,8 @@ class RoleState extends State<Role> {
                     // Replace the below print statement with your desired action.
                     // print("Button tapped");
                         Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                            return  EngineerHomePage();}));
+                            MaterialPageRoute(
+                                builder: (context) => WelcomeEngineer(isClient: false,)));
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
