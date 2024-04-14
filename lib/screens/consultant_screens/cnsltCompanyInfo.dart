@@ -7,12 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:geolocator/geolocator.dart';
 import 'cnslt office google maps screen/googlemapsscreen.dart';
 import 'cnslt office text field/cnsltofficetxtfield.dart';
-import 'package:geocoding/geocoding.dart';
 
 class CnsltCompanyInfo extends StatefulWidget {
   const CnsltCompanyInfo({super.key});

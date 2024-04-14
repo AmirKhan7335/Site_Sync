@@ -20,9 +20,9 @@ class DetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           mainHeading,
-          style: TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black),
         ),
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.white,
@@ -40,7 +40,7 @@ class DetailsScreen extends StatelessWidget {
                               backgroundColor: Colors.white,
                               body:
                                   Center(child: Image.network(image[index]))))),
-                  child: Container(
+                  child: SizedBox(
                       width: Get.width * 1,
                       height: 350,
                       child: Image.network(image[index])),

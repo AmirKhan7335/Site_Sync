@@ -1,8 +1,6 @@
-import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/consltDocuments.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/doc/contrdoc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class ChooseContrProjectForDocument extends StatefulWidget {

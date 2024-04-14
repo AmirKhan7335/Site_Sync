@@ -1,11 +1,7 @@
 import 'package:amir_khan1/components/my_button.dart';
-import 'package:amir_khan1/components/mytextfield.dart';
-import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
-import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

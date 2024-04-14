@@ -3,11 +3,8 @@ import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/controllers/navigationController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class ContrCreateProject extends StatefulWidget {
   const ContrCreateProject({super.key});
@@ -259,7 +256,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                       ),
                     ),
                     MyTextField(
-                      hintText: 'selge generated',
+                      hintText: 'self generated',
                       obscureText: false,
                       controller: fundingController,
                       icon: Icons.man,

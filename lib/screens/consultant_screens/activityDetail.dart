@@ -1,4 +1,3 @@
-import 'package:amir_khan1/screens/consultant_screens/activityGallery.dart';
 import 'package:flutter/material.dart';
 
 class ActivityDetail extends StatefulWidget {

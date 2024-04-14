@@ -1,5 +1,4 @@
 import 'package:amir_khan1/components/my_button.dart';
-import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -118,8 +117,8 @@ class _AccountDetailsState extends State<AccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Select a Project'),
-            content: Container(
+            title: const Text('Select a Project'),
+            content: SizedBox(
               height: 400,
               child: FutureBuilder(
                   future: fetchProjects(consultantEmail),
@@ -132,7 +131,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return Text('No Projects ');
+                      return const Text('No Projects ');
                     } else {
                       final projectList = snapshot.data;
                       return ListView.builder(
@@ -158,7 +157,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                         });
                                         Navigator.pop(context);
                                       },
-                                      title: Text('${projectList![index][0]}'),
+                                      title: Text('${projectList[index][0]}'),
                                     ),
                                   ),
                                 ),
@@ -175,8 +174,8 @@ class _AccountDetailsState extends State<AccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Select Company'),
-            content: Container(
+            title: const Text('Select Company'),
+            content: SizedBox(
               height: 400,
               child: FutureBuilder(
                   future: _selectedValue=='Consultant'? fetchConsultant():fetchContractor(),
@@ -189,7 +188,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return Text('No Consultant');
+                      return const Text('No Consultant');
                     } else {
                       final consultantList = snapshot.data;
                       return ListView.builder(
@@ -217,7 +216,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                         Navigator.pop(context);
                                       },
                                       title:
-                                          Text('${consultantList![index][0]}'),
+                                          Text('${consultantList[index][0]}'),
                                     ),
                                   ),
                                 ),
@@ -247,7 +246,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                   }
                 }
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.logout,
                 color: Colors.black,
               ))
@@ -269,7 +268,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 60,
                       backgroundImage: AssetImage('assets/images/logo1.png'),
                       backgroundColor: Colors.transparent,
@@ -305,11 +304,11 @@ class _AccountDetailsState extends State<AccountDetails> {
                             });
                           },
                         ),
-                        Text(
+                        const Text(
                           'Consultant',
                           style: TextStyle(color: Colors.black),
                         ), // Label for the Consultant radio button
-                        SizedBox(
+                        const SizedBox(
                             width:
                                 20), // Add some spacing between radio button and label
                         Radio<String>(
@@ -324,7 +323,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                             });
                           },
                         ),
-                        Text('Contractor',
+                        const Text('Contractor',
                             style: TextStyle(
                                 color: Colors
                                     .black)), // Label for the Contractor radio button
@@ -381,7 +380,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                           filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.arrow_drop_down,
                             color: Colors.grey, // Set icon color to white
                           ),
@@ -442,7 +441,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                           filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.arrow_drop_down,
                             color: Colors.grey, // Set icon color to white
                           ),

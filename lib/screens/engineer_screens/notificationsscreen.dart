@@ -1,8 +1,5 @@
-import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
-import 'chatscreen.dart';
 
 //Notifications Screen
 class NotificationsScreen extends StatefulWidget {
@@ -39,8 +36,8 @@ class NotificationsScreenState extends State<NotificationsScreen> {
           .width,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 32,right: 32,top: 45,),
+          const Padding(
+            padding: EdgeInsets.only(left: 32,right: 32,top: 45,),
             child: Row(
               children: [
                 Text(
@@ -54,8 +51,8 @@ class NotificationsScreenState extends State<NotificationsScreen> {
               ],
             ),
           ),
-          SizedBox(height: 15,),
-          Container(
+          const SizedBox(height: 15,),
+          SizedBox(
             height: MediaQuery
                 .of(context)
                 .size
@@ -67,8 +64,8 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                   leading: const CircleAvatar(child: Icon(Icons.person)),
                   // For simplicity, using an icon instead of an image
                   title: Text(
-                      '${notifications[index].name} ${notifications[index].action}',style: TextStyle(color: Colors.black),),
-                  subtitle: Text(notifications[index].task,style: TextStyle(color: Colors.black),),
+                      '${notifications[index].name} ${notifications[index].action}',style: const TextStyle(color: Colors.black),),
+                  subtitle: Text(notifications[index].task,style: const TextStyle(color: Colors.black),),
                 );
               },
             ),
