@@ -18,6 +18,70 @@ class _RequestPageState extends State<RequestPage> {
   }
 
   String _selectedValue = 'Engineer';
+
+  Future<List<List>> getApprovedClientRequests() async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('clients')
+          .where('consultantEmail', isEqualTo: email)
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+      final engineerEmail = activitiesSnapshot.docs.map(
+            (doc) {
+          return [doc.id, doc['projectId']];
+        },
+      ).toList();
+      final nameEmail = [];
+      final project = [];
+
+      for (var i in engineerEmail) {
+        nameEmail.add(i[0]);
+        project.add(i[1]);
+      }
+      final getProject = await getProjectDetail(project);
+      final getNames = await getEngineerUserName(nameEmail);
+
+      return [getProject, getNames, nameEmail];
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [[]];
+    }
+  }
+
+
+  Future<List<List>> getPendingClientRequests() async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('clients')
+          .where('consultantEmail', isEqualTo: email)
+          .where('reqAccepted', isEqualTo: false)
+          .get();
+
+      final engineerEmail = activitiesSnapshot.docs.map(
+            (doc) {
+          return [doc.id, doc['projectId']];
+        },
+      ).toList();
+      final nameEmail = [];
+      final project = [];
+
+      for (var i in engineerEmail) {
+        nameEmail.add(i[0]);
+        project.add(i[1]);
+      }
+
+      final getProject = await getProjectDetail(project);
+      final getNames = await getEngineerUserName(nameEmail);
+
+      return [getProject, getNames, nameEmail];
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [[]];
+    }
+  }
+
   Future<List<List>> getPendingContrRequests() async {
     try {
       final email = FirebaseAuth.instance.currentUser!.email;
@@ -188,10 +252,12 @@ class _RequestPageState extends State<RequestPage> {
     return FutureBuilder(
         future: _selectedValue == 'Contractor'
             ? getPendingContrRequests()
-            : getPendingRequests(),
+            : _selectedValue == 'Engineer'?
+        getPendingRequests():
+        getPendingClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -214,15 +280,15 @@ class _RequestPageState extends State<RequestPage> {
                                       selectedValue:_selectedValue
                                     )));
                       },
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                         radius: 30,
                         child: Icon(Icons.person),
                       ),
                       title: Text('${data[1][index]}',
+                          style: const TextStyle(color: Colors.black)),
+                      subtitle: const Text('Hi, please approve my role',
                           style: TextStyle(color: Colors.black)),
-                      subtitle: Text('Hi, please approve my role',
-                          style: TextStyle(color: Colors.black)),
-                      trailing: Column(
+                      trailing: const Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text('8 Nov'),
@@ -235,7 +301,7 @@ class _RequestPageState extends State<RequestPage> {
                       ),
                     ));
           } else {
-            return Text('No Data');
+            return const Text('No Data');
           }
         });
   }
@@ -244,10 +310,12 @@ class _RequestPageState extends State<RequestPage> {
     return FutureBuilder(
         future: _selectedValue == 'Contractor'
             ? getApprovedContrRequests()
-            : getApprovedRequests(),
+            : _selectedValue == 'Engineer'?
+        getApprovedRequests():
+        getApprovedClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -264,19 +332,19 @@ class _RequestPageState extends State<RequestPage> {
                                     engEmail: data[2][index],
                                     selectedValue: _selectedValue,
                                   ))),
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                         radius: 30,
                         child: Icon(Icons.person),
                       ),
                       title: Text(
                         '${data[1][index]}',
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                       ),
                       subtitle: Text(
                         '${data[0][index][0]}',
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                       ),
-                      trailing: Column(
+                      trailing: const Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
@@ -287,7 +355,7 @@ class _RequestPageState extends State<RequestPage> {
                       ),
                     ));
           } else {
-            return Text(
+            return const Text(
               'No Data',
               style: TextStyle(color: Colors.black),
             );
@@ -299,7 +367,7 @@ class _RequestPageState extends State<RequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Requests',
           style: TextStyle(color: Colors.black),
         ),
@@ -341,7 +409,7 @@ class _RequestPageState extends State<RequestPage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Container(
                     width: 150,
                     height: 50,
@@ -391,11 +459,11 @@ class _RequestPageState extends State<RequestPage> {
                     });
                   },
                 ),
-                Text(
+                const Text(
                   'Engineer',
                   style: TextStyle(color: Colors.black),
                 ), // Label for the Consultant radio button
-                SizedBox(
+                const SizedBox(
                     width:
                         20), // Add some spacing between radio button and label
                 Radio<String>(
@@ -410,14 +478,34 @@ class _RequestPageState extends State<RequestPage> {
                     });
                   },
                 ),
-                Text('Contractor',
+                const Text('Contractor',
                     style: TextStyle(
                         color: Colors
                             .black)), // Label for the Contractor radio button
+                const SizedBox(
+                    width:
+                    20), // Add some spacing between radio button and label
+                Radio<String>(
+                  activeColor: Colors.green,
+                  fillColor: MaterialStateProperty.all(Colors.green),
+                  value:
+                  'Client', // Value associated with the Contractor radio button
+                  groupValue: _selectedValue,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedValue = value!;
+                    });
+                  },
+                ),
+                const Text('Client',
+                    style: TextStyle(
+                        color: Colors
+                            .black)),
+                // Label for the Contractor radio button
               ],
             ),
             Padding(
-              padding: EdgeInsets.only(right: 8, left: 8, bottom: 8),
+              padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.7,

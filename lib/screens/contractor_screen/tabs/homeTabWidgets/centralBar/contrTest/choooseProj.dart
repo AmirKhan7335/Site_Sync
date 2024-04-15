@@ -72,6 +72,7 @@ class _ChooseProjectForTestState extends State<ChooseContrProjectForTest> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => TestingScreen(
+                                        isClient: false,
                                         projId: projId,
                                         isCnslt: true,
                                       )));

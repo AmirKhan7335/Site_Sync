@@ -8,8 +8,8 @@ import 'individualchatscreen.dart'; // Import your IndividualChatScreen
 
 class ChatListScreen extends StatefulWidget {
   final ChatUser? user;
-
-  ChatListScreen({super.key, required this.user});
+  final bool isClient;
+  const ChatListScreen({super.key, required this.user, required this.isClient});
 
   @override
   ChatListScreenState createState() => ChatListScreenState();
@@ -70,6 +70,24 @@ class ChatListScreenState extends State<ChatListScreen> {
             name: data['username'] ?? '',
           );
         }).toList();
+        //-------------------For Client--------------------------
+        final usersClientData = await FirebaseFirestore.instance
+            .collection('users')
+        // .where('email',
+        //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+            .where(FieldPath.documentId, whereIn: docIds)
+            .get();
+
+        var validClientUsers = usersClientData.docs.map((doc) {
+          final Map<String, dynamic> data =
+          doc.data(); // Cast to Map<String, dynamic>
+          return ChatUser(
+            id: doc.id,
+            name: data['username'] ?? '',
+          );
+        }).toList();
+        validUsers.addAll(validClientUsers);
+        //-------------------------------------------------------
       } else if (role == 'Contractor') {
         //For Consultant Valid Users:
         final consltData = await FirebaseFirestore.instance
@@ -124,6 +142,31 @@ class ChatListScreenState extends State<ChatListScreen> {
 //--------------------------------------------------------------------
         final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
 //////////////////////////////////////////////////////////////////
+        ///For Client-----------------------------------------------------
+        final contrClientData = await FirebaseFirestore.instance
+            .collection('clients')
+            .where('projectId', whereIn: contrProjId)
+            .get();
+        final contrClientdocIds = await contrClientData.docs.map((doc) {
+          return doc.id;
+        }).toList();
+        final contrusersClientData = await FirebaseFirestore.instance
+            .collection('users')
+        // .where('email',
+        //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+            .where(FieldPath.documentId, whereIn: contrClientdocIds)
+            .get();
+
+        final validClientContrUsers = contrusersClientData.docs.map((doc) {
+          final Map<String, dynamic> data =
+          doc.data(); // Cast to Map<String, dynamic>
+          return ChatUser(
+            id: doc.id,
+            name: data['username'] ?? '',
+          );
+        }).toList();
+        validUsers.addAll(validClientContrUsers);
+//////////////////////////////////////////////////////////
         final contrData = await FirebaseFirestore.instance
             .collection('engineers')
             .where('projectId', whereIn: contrProjId)
@@ -148,7 +191,7 @@ class ChatListScreenState extends State<ChatListScreen> {
         }).toList();
         validUsers.addAll(validContrUsers);
         //====================================================================
-      } else {
+      } else if (role == 'Engineer') {
         final query = await FirebaseFirestore.instance
             .collection('engineers')
             .doc(userEmail)
@@ -162,7 +205,42 @@ class ChatListScreenState extends State<ChatListScreen> {
         validUsers = [
           ChatUser(id: consltEmail, name: usersData.data()!['username'])
         ];
-      }
+      }  else if (role == 'Client') {
+          //------------------------------------------------
+          var projIdForClient = await FirebaseFirestore.instance
+              .collection('clients')
+              .doc(userEmail)
+              .get();
+          var clientProjectId = projIdForClient.data()!['projectId'];
+          var sameEngineer = await FirebaseFirestore.instance
+              .collection('engineers')
+              .where('projectId', isEqualTo: clientProjectId)
+              .get();
+          var engEmails = sameEngineer.docs.map((e) => e.id).toList();
+          final data = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(engEmails[0])
+              .get();
+          var users = [
+          ChatUser(id: engEmails[0], name: data.data()!['username'])
+          ];
+
+          ///----------------------------------------------------
+          final query = await FirebaseFirestore.instance
+              .collection('clients')
+              .doc(userEmail)
+              .get();
+
+          final consltEmail = query.data()!['consultantEmail'];
+          final usersData = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(consltEmail)
+              .get();
+          validUsers = [
+          ChatUser(id: consltEmail, name: usersData.data()!['username'])
+          ];
+          validUsers.addAll(users);
+          }
     } catch (e) {
       if (kDebugMode) {
         print('Error loading users: $e');

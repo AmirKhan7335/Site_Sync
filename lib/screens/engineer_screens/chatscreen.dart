@@ -240,7 +240,7 @@ class ChatScreenState extends State<ChatScreen> {
                     // Navigate to ChatListScreen
                     final result = await Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return ChatListScreen(user: selectedUser,);
+                      return ChatListScreen(user: selectedUser, isClient:widget.isClient);
                     }));
                     if (result != null && result is bool && result) {
                       // Message sent or some other action completed, update the chat screen

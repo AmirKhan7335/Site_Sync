@@ -9,9 +9,11 @@ class ContrPendingRequest extends StatefulWidget {
       {required this.name,
       required this.projectDataList,
       required this.engEmail,
+        required this.selectedValue,
       super.key});
   String name;
   List projectDataList;
+  String selectedValue;
   String engEmail;
   @override
   State<ContrPendingRequest> createState() => _PendingRequestState();
@@ -22,9 +24,9 @@ class _PendingRequestState extends State<ContrPendingRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
           elevation: 0,
-          title: Text('Pending Requests',style: TextStyle(color: Colors.black)),
+          title: const Text('Pending Requests',style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -33,7 +35,7 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                 name: widget.name,
                 projectDataList: widget.projectDataList,
                 engEmail: widget.engEmail),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -47,17 +49,25 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                     textColor: Colors.black,
                     icon: Icons.cloud_done_rounded,
                     onTap: () async {
-                      var activitiesSnapshot = await FirebaseFirestore.instance
-                          .collection('engineers')
-                          .doc('${widget.engEmail}')
-                          .update({'reqAccepted': true});
+                      if (widget.selectedValue == 'Engineer') {
+                        FirebaseFirestore.instance
+                            .collection('engineers')
+                            .doc(widget.engEmail)
+                            .update({'reqAccepted': true});
+                      } else if (widget.selectedValue == 'Client') {
+                        FirebaseFirestore.instance
+                            .collection('clients')
+                            .doc(widget.engEmail)
+                            .update({'reqAccepted': true});
+                      }
+
                       Navigator.pop(context);
                       setState(() {});
                       Get.snackbar('Request Accepted',
-                          'Engineer has been added to the project');
+                          '${widget.selectedValue} has been added to the project');
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   MyButton(
@@ -66,17 +76,31 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                     textColor: Colors.black,
                     icon: Icons.cancel,
                     onTap: () async {
-                      var activitiesSnapshot = await FirebaseFirestore.instance
-                          .collection('engineers')
-                          .doc('${widget.engEmail}')
-                          .delete(
-                        //FieldPath(['reqAccepted']): FieldValue.delete(),
-                      );
-                       await FirebaseFirestore.instance
-                      .collection('Projects')
-                      .doc(widget.projectDataList[3])
-                      .update({'isSelected': false});
-
+                      if (widget.selectedValue == 'Engineer') {
+                        var activitiesSnapshot = await FirebaseFirestore
+                            .instance
+                            .collection('engineers')
+                            .doc('${widget.engEmail}')
+                            .delete(
+                          //FieldPath(['reqAccepted']): FieldValue.delete(),
+                        );
+                        await FirebaseFirestore.instance
+                            .collection('Projects')
+                            .doc(widget.projectDataList[3])
+                            .update({'isSelected': false});
+                      } else if (widget.selectedValue == 'Client') {
+                        var activitiesSnapshot = await FirebaseFirestore
+                            .instance
+                            .collection('clients')
+                            .doc('${widget.engEmail}')
+                            .delete(
+                          //FieldPath(['reqAccepted']): FieldValue.delete(),
+                        );
+                        await FirebaseFirestore.instance
+                            .collection('Projects')
+                            .doc(widget.projectDataList[3])
+                            .update({'isClient': false});
+                      }
                       Navigator.pop(context);
                       setState(() {});
                       Get.snackbar('Request Rejected', '');
@@ -95,9 +119,11 @@ class ContrApprovedRequest extends StatefulWidget {
       {required this.name,
       required this.projectDataList,
       required this.engEmail,
+        required this.selectedValue,
       super.key});
   String name;
   List projectDataList;
+  String selectedValue;
   String engEmail;
   @override
   State<ContrApprovedRequest> createState() => _ApprovedRequestState();
@@ -108,9 +134,9 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
           elevation: 0,
-          title: Text('Approved Requests',style: TextStyle(color: Colors.black)),
+          title: const Text('Approved Requests',style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -120,7 +146,7 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
               projectDataList: widget.projectDataList,
               engEmail: widget.engEmail,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Padding(
@@ -131,18 +157,29 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
                 textColor: Colors.black,
                 icon: Icons.delete,
                 onTap: () async {
-                  var activitiesSnapshot = await FirebaseFirestore.instance
-                      .collection('engineers')
-                      .doc('${widget.engEmail}')
-                      .delete();
-                  await FirebaseFirestore.instance
-                      .collection('Projects')
-                      .doc(widget.projectDataList[3])
-                      .update({'isSelected': false});
+                  if (widget.selectedValue == 'Engineer') {
+                    var activitiesSnapshot = await FirebaseFirestore.instance
+                        .collection('engineers')
+                        .doc('${widget.engEmail}')
+                        .delete();
+                    await FirebaseFirestore.instance
+                        .collection('Projects')
+                        .doc(widget.projectDataList[3])
+                        .update({'isSelected': false});
+                  } else if (widget.selectedValue == 'Client') {
+                    var activitiesSnapshot = await FirebaseFirestore.instance
+                        .collection('clients')
+                        .doc('${widget.engEmail}')
+                        .delete();
+                    await FirebaseFirestore.instance
+                        .collection('Projects')
+                        .doc(widget.projectDataList[3])
+                        .update({'isClient': false});
+                  }
 
                   Navigator.pop(context);
                   setState(() {});
-                  Get.snackbar('Engineer Deleted', '');
+                  Get.snackbar('${widget.selectedValue} Deleted', '');
                 },
               ),
             ),
@@ -171,7 +208,7 @@ class _RequestBodyState extends State<RequestBody> {
     return Container(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -179,22 +216,22 @@ class _RequestBodyState extends State<RequestBody> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Colors.green,
                   radius: 30,
                   child: Icon(Icons.person,color: Colors.black,),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(
-                  '${widget.name}',
-                  style: TextStyle(fontSize: 20,color: Colors.black, fontWeight: FontWeight.bold),
+                  widget.name,
+                  style: const TextStyle(fontSize: 20,color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -204,7 +241,7 @@ class _RequestBodyState extends State<RequestBody> {
               color: Colors.white,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -223,22 +260,22 @@ class _RequestBodyState extends State<RequestBody> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Email:  ',
                           ),
                           Text(
-                            '${widget.engEmail}',
+                            widget.engEmail,
                             softWrap: true,
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
@@ -252,16 +289,16 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Project :  ',
                           ),
                           Text(
@@ -269,37 +306,37 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Start Date:  ',
                           ),
                           Text(
-                            '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate())}',
+                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate()),
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'End Date:  ',
                           ),
                           Text(
-                            '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate())}',
+                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate()),
                           ),
                         ],
                       ),

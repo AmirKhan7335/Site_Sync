@@ -171,7 +171,53 @@ class _SigninScreenState extends State<SigninScreen> {
             setState(() {
               isloading = false;
             });
-          } else if (getRole == 'Consultant') {
+          } else if (getRole == 'Client') {
+            final user = FirebaseAuth.instance.currentUser;
+
+            var activitiesSnapshot = await FirebaseFirestore.instance
+                .collection('clients')
+                .doc(user!.email)
+                .get();
+            if (activitiesSnapshot.exists) {
+              if (activitiesSnapshot.data()!.containsKey('reqAccepted')) {
+                final requestStatus = await activitiesSnapshot['reqAccepted'];
+
+                if (requestStatus == true) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EngineerHomePage(isClient: true,),
+                    ),
+                  );
+                } else if (requestStatus == false) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WelcomeEngineer(isClient: true,),
+                    ),
+                  );
+                }
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AccountDetails(),
+                  ),
+                );
+              }
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AccountDetails(),
+                ),
+              );
+            }
+            setState(() {
+              isloading = false;
+            });
+          }
+          else if (getRole == 'Consultant') {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(

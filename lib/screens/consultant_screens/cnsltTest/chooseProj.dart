@@ -31,21 +31,21 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          title: Text(
+          title: const Text(
             'Select Project',
             style: TextStyle(color: Colors.black),
           ),
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
         ),
         body: FutureBuilder(
             future: fetchProjects(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData) {
-                return Center();
+                return const Center();
               }
               final data = snapshot.data;
               return ListView.builder(
@@ -62,6 +62,7 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => TestingScreen(
+                                         isClient: false,
                                             projId: projId,
                                             isCnslt: true,
                                           )));
@@ -69,7 +70,7 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
                             leading: ClipOval(
                               child: Text(
                                 '${index + 1}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold),
@@ -77,7 +78,7 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
                             ),
                             title: Text(
                               data[index][0].toString(),
-                              style: TextStyle(color: Colors.black),
+                              style: const TextStyle(color: Colors.black),
                             ),
                             subtitle: Container(
                               height: 1.5,

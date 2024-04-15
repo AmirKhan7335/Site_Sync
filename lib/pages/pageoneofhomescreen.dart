@@ -16,6 +16,7 @@ class PageOne extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("activityProgress: $activityProgress");
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 10.0, bottom: 20.0),

@@ -60,7 +60,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                   }
                 }
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.logout,
                 color: Colors.black,
               ))
@@ -85,13 +85,13 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                     const SizedBox(height: 30),
                     const CircleAvatar(
                       radius: 80,
+                      backgroundColor: Colors.transparent,
                       // backgroundImage: AssetImage('assets/images/logo1.png'),
                       child: Icon(
                         Icons.check_circle_outline_rounded,
                         size: 150,
                         color: Colors.green,
                       ),
-                      backgroundColor: Colors.transparent,
                     ),
                     const SizedBox(height: 20),
                     const SizedBox(

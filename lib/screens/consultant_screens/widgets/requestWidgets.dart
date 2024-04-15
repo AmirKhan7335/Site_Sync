@@ -93,7 +93,7 @@ class _PendingRequestState extends State<PendingRequest> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          title: Text(
+          title: const Text(
             'Pending Requests',
             style: TextStyle(color: Colors.black),
           ),
@@ -107,7 +107,7 @@ class _PendingRequestState extends State<PendingRequest> {
               engEmail: widget.engEmail,
               role: widget.selectedValue,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -124,17 +124,22 @@ class _PendingRequestState extends State<PendingRequest> {
                       var activitiesSnapshot =
                           await widget.selectedValue == 'Contractor'
                               ? confirmContrReq()
-                              : FirebaseFirestore.instance
+                              : widget.selectedValue == 'Engineer'
+                              ? FirebaseFirestore.instance
                                   .collection('engineers')
-                                  .doc('${widget.engEmail}')
-                                  .update({'reqAccepted': true});
+                                  .doc(widget.engEmail)
+                                  .update({'reqAccepted': true})
+                              : FirebaseFirestore.instance
+                              .collection('clients')
+                              .doc(widget.engEmail)
+                              .update({'reqAccepted': true});
                       Navigator.pop(context);
                       setState(() {});
                       Get.snackbar('Request Accepted',
                           '${widget.selectedValue} has been added to the project');
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   MyButton(
@@ -145,11 +150,11 @@ class _PendingRequestState extends State<PendingRequest> {
                     onTap: () async {
                       if (widget.selectedValue == 'Contractor') {
                         rejecContrReq();
-                      } else {
+                      } else if (widget.selectedValue == 'Engineer') {
                         var activitiesSnapshot = await FirebaseFirestore
                             .instance
                             .collection('engineers')
-                            .doc('${widget.engEmail}')
+                            .doc(widget.engEmail)
                             .delete(
                                 //FieldPath(['reqAccepted']): FieldValue.delete(),
                                 );
@@ -157,6 +162,18 @@ class _PendingRequestState extends State<PendingRequest> {
                             .collection('Projects')
                             .doc(widget.projectDataList[3])
                             .update({'isSelected': false});
+                      } else {
+                        var activitiesSnapshot = await FirebaseFirestore
+                            .instance
+                            .collection('clients')
+                            .doc('${widget.engEmail}')
+                            .delete(
+                          //FieldPath(['reqAccepted']): FieldValue.delete(),
+                        );
+                        await FirebaseFirestore.instance
+                            .collection('Projects')
+                            .doc(widget.projectDataList[3])
+                            .update({'isClient': false});
                       }
                       Navigator.pop(context);
                       setState(() {});
@@ -225,7 +242,7 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          title: Text(
+          title: const Text(
             'Approved Requests',
             style: TextStyle(color: Colors.black),
           ),
@@ -240,7 +257,7 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
               engEmail: widget.engEmail,
               role: widget.selectedValue,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Padding(
@@ -253,15 +270,24 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
                 onTap: () async {
                   if (widget.selectedValue == 'Contractor') {
                     rejecContrReq();
-                  } else {
+                  } else if (widget.selectedValue == 'Engineer') {
                     var activitiesSnapshot = await FirebaseFirestore.instance
                         .collection('engineers')
-                        .doc('${widget.engEmail}')
+                        .doc(widget.engEmail)
                         .delete();
                     await FirebaseFirestore.instance
                         .collection('Projects')
                         .doc(widget.projectDataList[3])
                         .update({'isSelected': false});
+                  } else {
+                    var activitiesSnapshot = await FirebaseFirestore.instance
+                        .collection('clients')
+                        .doc('${widget.engEmail}')
+                        .delete();
+                    await FirebaseFirestore.instance
+                        .collection('Projects')
+                        .doc(widget.projectDataList[3])
+                        .update({'isClient': false});
                   }
 
                   Navigator.pop(context);
@@ -297,7 +323,7 @@ class _RequestBodyState extends State<RequestBody> {
     return Container(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -305,7 +331,7 @@ class _RequestBodyState extends State<RequestBody> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Colors.green,
                   radius: 30,
                   child: Icon(
@@ -313,12 +339,12 @@ class _RequestBodyState extends State<RequestBody> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(
-                  '${widget.name}',
-                  style: TextStyle(
+                  widget.name,
+                  style: const TextStyle(
                       fontSize: 20,
                       color: Colors.black,
                       fontWeight: FontWeight.bold),
@@ -326,7 +352,7 @@ class _RequestBodyState extends State<RequestBody> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -336,7 +362,7 @@ class _RequestBodyState extends State<RequestBody> {
               color: Colors.white,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -358,28 +384,28 @@ class _RequestBodyState extends State<RequestBody> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Email:  ',
                           ),
                           Text(
-                            '${widget.engEmail}',
+                            widget.engEmail,
                             softWrap: true,
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Role:  ',
                           ),
                           Text(
@@ -387,16 +413,16 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Project :  ',
                           ),
                           Text(
@@ -404,37 +430,37 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Start Date:  ',
                           ),
                           Text(
-                            '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate())}',
+                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate()),
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'End Date:  ',
                           ),
                           Text(
-                            '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate())}',
+                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate()),
                           ),
                         ],
                       ),

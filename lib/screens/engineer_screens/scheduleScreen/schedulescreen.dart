@@ -648,13 +648,16 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   Future<void> fetchActivitiesFromFirebase() async {
     try {
-      var email = FirebaseAuth.instance.currentUser!.email;
-      //-------------------For Client---------------------------
+      var email = FirebaseAuth.instance.currentUser?.email;
+//-------------------For Client---------------------------
       var projIdForClient = await FirebaseFirestore.instance
           .collection('clients')
           .doc(email)
           .get();
-      var clientProjectId = projIdForClient.data()!['projectId'];
+      var clientProjectId;
+      if (projIdForClient.data() != null) {
+        clientProjectId = projIdForClient.data()!['projectId'];
+      }
       var sameEngineer = await FirebaseFirestore.instance
           .collection('engineers')
           .where('projectId', isEqualTo: clientProjectId)
@@ -682,9 +685,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             id: data['id'], // Use the Firestore document ID as the activity ID
             name: data['name'],
             startDate:
-                DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
+            DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
             finishDate:
-                DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+            DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
             order: data['order'],
             image: data['image']));
       }
@@ -693,7 +696,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         loadedActivities = tempActivities;
       });
     } catch (e) {
-      Get.snackbar('Error', '$e');
+      Get.snackbar('11Error', '${e}');
     }
   }
 

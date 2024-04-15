@@ -73,7 +73,8 @@ class _CreateProjectState extends State<ContrCreateProject> {
           'creationDate': DateTime.now(),
           'isSelected': false,
           'retMoney': retMoneyController.text,
-          'isContrSelected': false
+          'isContrSelected': false,
+          'isClient': false
         },
       );
 
@@ -296,7 +297,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                             endDate == null ||
                             fundingController.text.isEmpty ||
                             locationController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text('Please fill all the fields')));
                         } else {
                           setState(() {

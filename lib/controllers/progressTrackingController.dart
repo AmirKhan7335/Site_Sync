@@ -82,11 +82,19 @@ class ProjectProgressController extends GetxController {
         DateTime parsedFinishDate = parseDate(activities[i].finishDate);
         int activityDuration =
             parsedFinishDate.difference(parsedStartDate).inDays + 1;
+
+        bool continueBothLoops = false; // Flag to control loop continuation
+
         for (var activity in activities) {
           if (activity.name == findTodaysActivity(activities)?.name) {
             todaysactivityduration = activityDuration;
+            continueBothLoops = true; // Set the flag to true if the name matches
             break; // Break out of the loop once a match is found
           }
+        }
+
+        if (continueBothLoops) {
+          continue; // Continue both loops if the flag is true
         }
 
         if (parsedFinishDate.isBefore(today)) {
@@ -95,6 +103,7 @@ class ProjectProgressController extends GetxController {
           completedActivitiesPercentages += percentComplete;
         }
       }
+
 
       // Find today's activity and calculate its percentage
       Activity? todayActivity = findTodaysActivity(activities);
@@ -108,7 +117,7 @@ class ProjectProgressController extends GetxController {
         );
         // Calculate the contribution of today's activity to the overall percentage
         int todayContribution =
-            ((todayActivityPercent/100) * (todaysactivityduration / totalDuration))
+            ((todayActivityPercent) * (todaysactivityduration / totalDuration))
                 .round();
 
         completedActivitiesPercentages += todayContribution.round();
@@ -128,12 +137,18 @@ class ProjectProgressController extends GetxController {
           // If document exists, retrieve the consultantEmail field
           consultantEmail = engineerDoc.get('consultantEmail');
           projectID = engineerDoc.get('projectId');
-          print('Consultant email: $consultantEmail');
+          if (kDebugMode) {
+            print('Consultant email: $consultantEmail');
+          }
         } else {
-          print('Engineer document with email $email does not exist.');
+          if (kDebugMode) {
+            print('Engineer document with email $email does not exist.');
+          }
         }
       } catch (e) {
-        print('Error fetching consultant email: $e');
+        if (kDebugMode) {
+          print('Error fetching consultant email: $e');
+        }
       }
 
       await uploadOverallPercentToProject(projectID, overAllPercent.value);
@@ -153,9 +168,16 @@ class ProjectProgressController extends GetxController {
 
       // Update the overall percent value in the project document
       await projectDocRef.update({'overallPercent': overallPercent});
-      print('Overall percent uploaded successfully to the project document with ID: $projectID');
+      if (kDebugMode) {
+        print('overall progress value = $overallPercent');
+      }
+      if (kDebugMode) {
+        print('Overall percent uploaded successfully to the project document with ID: $projectID');
+      }
     } catch (e) {
-      print('Error uploading overall percent to project document: $e');
+      if (kDebugMode) {
+        print('Error uploading overall percent to project document: $e');
+      }
     }
   }
 

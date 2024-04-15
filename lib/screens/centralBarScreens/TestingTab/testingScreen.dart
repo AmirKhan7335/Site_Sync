@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 
 class TestingScreen extends StatefulWidget {
   TestingScreen(
-      {super.key, required String this.projId, required bool this.isCnslt});
+      {super.key, required String this.projId, required bool this.isCnslt, required this.isClient});
   String projId;
   bool isCnslt;
+  bool isClient;
   @override
   State<TestingScreen> createState() => _TestingScreenState();
 }
@@ -58,12 +59,13 @@ class _TestingScreenState extends State<TestingScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-          title: Text('Testing',style: TextStyle(color:Colors.black),),
+          iconTheme: const IconThemeData(color: Colors.black),
+          title: const Text('Testing',style: TextStyle(color:Colors.black),),
         ),
-        body: NamesList(projId: widget.projId),
+        body: NamesList(projId: widget.projId, isClient: widget.isClient),
         floatingActionButton: widget.isCnslt
-            ? Center()
+            ? const Center() : widget.isClient
+            ? const Center()
             : FloatingActionButton(
                 onPressed: () {
                   showTextInputDialog(context, 'Write Test');
@@ -75,8 +77,9 @@ class _TestingScreenState extends State<TestingScreen> {
 }
 
 class NamesList extends StatefulWidget {
-  NamesList({super.key, required String this.projId});
+  NamesList({super.key, required String this.projId, required this.isClient});
   String projId;
+  bool isClient;
   @override
   State<NamesList> createState() => _NamesListState();
 }
@@ -92,9 +95,9 @@ class _NamesListState extends State<NamesList> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center();
+          return const Center();
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
@@ -116,6 +119,7 @@ class _NamesListState extends State<NamesList> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DetailScreen(
+                                            isClient: widget.isClient,
                                             title: 'Compressive Strength Test',
                                             projId: widget.projId,
                                           )));
@@ -124,6 +128,7 @@ class _NamesListState extends State<NamesList> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => TestDocumentScreen(
+                                             isClient: widget.isClient,
                                             docName: data[index].id,
                                             projId: widget.projId,
                                           )));
@@ -131,12 +136,12 @@ class _NamesListState extends State<NamesList> {
                           },
                           leading: ClipOval(
                               child: Text(
-                            '${index + 1}',style: TextStyle(color:Colors.black,fontSize: 20),
+                            '${index + 1}',style: const TextStyle(color:Colors.black,fontSize: 20),
                             
                           )),
                           title: Text(
                             '${data[index].id}',
-                            style: TextStyle(color:Colors.black,
+                            style: const TextStyle(color:Colors.black,
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -158,9 +163,10 @@ class _NamesListState extends State<NamesList> {
 
 class DetailScreen extends StatefulWidget {
   DetailScreen(
-      {super.key, required String this.title, required String this.projId});
+      {super.key, required String this.title, required String this.projId, required this.isClient});
   String title;
   String projId;
+  bool isClient;
   @override
   State<DetailScreen> createState() => DetailScreenState();
 }
@@ -178,8 +184,8 @@ class DetailScreenState extends State<DetailScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text(widget.title,style: TextStyle(color:Colors.black),),
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: Text(widget.title,style: const TextStyle(color:Colors.black),),
       ),
       body: ListView.builder(
           itemCount: names.length,
@@ -193,6 +199,7 @@ class DetailScreenState extends State<DetailScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => FoundationDocumentScreen(
+                                       isClient:widget.isClient,
                                       docName: names[index],
                                       projId: widget.projId,
                                     )));
@@ -200,7 +207,7 @@ class DetailScreenState extends State<DetailScreen> {
                       leading: ClipOval(child: Icon(icons[index],color:Colors.black,)),
                       title: Text(
                         '${names[index]}',
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 20,color:Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),

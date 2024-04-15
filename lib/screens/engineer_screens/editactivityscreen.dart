@@ -63,7 +63,7 @@ class EditActivityScreenState extends State<EditActivityScreen> {
               const Text(
                 'Activity Name',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,
                 ),
@@ -80,7 +80,7 @@ class EditActivityScreenState extends State<EditActivityScreen> {
               const Text(
                 'Start Date',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,
                 ),
@@ -95,7 +95,7 @@ class EditActivityScreenState extends State<EditActivityScreen> {
               const Text(
                 'Finish Date',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,
                 ),
@@ -109,7 +109,7 @@ class EditActivityScreenState extends State<EditActivityScreen> {
               const Text(
                 'Order',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,
                 ),

@@ -19,13 +19,13 @@ class _OngoingProgressState extends State<OngoingProgress> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Ongoing Progress'),
+          title: const Text('Ongoing Progress'),
           centerTitle: true,
         ),
         body: Column(
           children: [
             RequestBody(index: widget.index,name: widget.name,progressValue: widget.progressValue,),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -47,7 +47,7 @@ class _CompletedProgressState extends State<CompletedProgress> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Completed Progress'),
+          title: const Text('Completed Progress'),
           centerTitle: true,
         ),
         body: 
@@ -72,7 +72,7 @@ class _RequestBodyState extends State<RequestBody> {
     return Container(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -85,20 +85,20 @@ class _RequestBodyState extends State<RequestBody> {
                   backgroundColor: Colors.grey[400],
                   radius: 30,
                   child: Text('${widget.index }',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(
                   '${widget.name}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
           
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -108,15 +108,15 @@ class _RequestBodyState extends State<RequestBody> {
               color: Colors.white,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
-            padding: EdgeInsets.all(32),
+            padding: const EdgeInsets.all(32),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Progress',
+                const Text('Progress',
                 style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),
                 ),
                 Stack(
@@ -147,8 +147,8 @@ class _RequestBodyState extends State<RequestBody> {
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.grey,
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 24, bottom: 24),
+              child: const Padding(
+                padding: EdgeInsets.only(top: 24, bottom: 24),
                 child: Column(
                   children: [
                     Row(

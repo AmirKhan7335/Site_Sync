@@ -12,6 +12,70 @@ class ContrRequestPage extends StatefulWidget {
 }
 
 class _RequestPageState extends State<ContrRequestPage> {
+  String _selectedValue = 'Engineer';
+
+  Future<List<List>> getApprovedClientRequests() async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('clients')
+          .where('consultantEmail', isEqualTo: email)
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+      final engineerEmail = activitiesSnapshot.docs.map(
+            (doc) {
+          return [doc.id, doc['projectId']];
+        },
+      ).toList();
+      final nameEmail = [];
+      final project = [];
+
+      for (var i in engineerEmail) {
+        nameEmail.add(i[0]);
+        project.add(i[1]);
+      }
+      final getProject = await getProjectDetail(project);
+      final getNames = await getEngineerUserName(nameEmail);
+
+      return [getProject, getNames, nameEmail];
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [[]];
+    }
+  }
+
+  Future<List<List>> getPendingClientRequests() async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('clients')
+          .where('consultantEmail', isEqualTo: email)
+          .where('reqAccepted', isEqualTo: false)
+          .get();
+
+      final engineerEmail = activitiesSnapshot.docs.map(
+            (doc) {
+          return [doc.id, doc['projectId']];
+        },
+      ).toList();
+      final nameEmail = [];
+      final project = [];
+
+      for (var i in engineerEmail) {
+        nameEmail.add(i[0]);
+        project.add(i[1]);
+      }
+
+      final getProject = await getProjectDetail(project);
+      final getNames = await getEngineerUserName(nameEmail);
+
+      return [getProject, getNames, nameEmail];
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      return [[]];
+    }
+  }
+
   Future<List<List>> getPendingRequests() async {
     try {
       final email = FirebaseAuth.instance.currentUser!.email;
@@ -111,10 +175,12 @@ class _RequestPageState extends State<ContrRequestPage> {
   bool isPending = true;
   Widget pendingRequests() {
     return FutureBuilder(
-        future: getPendingRequests(),
+        future: _selectedValue == 'Engineer'
+            ? getPendingRequests()
+            : getPendingClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -131,18 +197,19 @@ class _RequestPageState extends State<ContrRequestPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ContrPendingRequest(
+                                  selectedValue: _selectedValue,
                                       name: name,
                                       projectDataList: project,
                                       engEmail: email,
                                     )));
                       },
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                         radius: 30,
                         child: Icon(Icons.person),
                       ),
-                      title: Text('${data[1][index]}',style: TextStyle(color: Colors.black),),
-                      subtitle: Text('Hi, please approve my role',style: TextStyle(color: Colors.black)),
-                      trailing: Column(
+                      title: Text('${data[1][index]}',style: const TextStyle(color: Colors.black),),
+                      subtitle: const Text('Hi, please approve my role',style: TextStyle(color: Colors.black)),
+                      trailing: const Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text('8 Nov',style: TextStyle(color: Colors.black)),
@@ -155,17 +222,19 @@ class _RequestPageState extends State<ContrRequestPage> {
                       ),
                     ));
           } else {
-            return Text('No Data');
+            return const Text('No Data');
           }
         });
   }
 
   Widget approvedRequests() {
     return FutureBuilder(
-        future: getApprovedRequests(),
+        future:  _selectedValue == 'Engineer'
+            ? getApprovedRequests()
+            : getApprovedClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -177,17 +246,18 @@ class _RequestPageState extends State<ContrRequestPage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ContrApprovedRequest(
+                                    selectedValue: _selectedValue,
                                     name: data[1][index],
                                     projectDataList: data[0][index],
                                     engEmail: data[2][index],
                                   ))),
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                         radius: 30,
                         child: Icon(Icons.person),
                       ),
-                      title: Text('${data[1][index]}',style: TextStyle(color: Colors.black)),
-                      subtitle: Text('${data[0][index][0]}',style: TextStyle(color: Colors.black)),
-                      trailing: Column(
+                      title: Text('${data[1][index]}',style: const TextStyle(color: Colors.black)),
+                      subtitle: Text('${data[0][index][0]}',style: const TextStyle(color: Colors.black)),
+                      trailing: const Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text('08/01/2023',style: TextStyle(color: Colors.black)),
@@ -195,7 +265,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                       ),
                     ));
           } else {
-            return Text('No Data');
+            return const Text('No Data');
           }
         });
   }
@@ -204,9 +274,9 @@ class _RequestPageState extends State<ContrRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
-        title: Text('Requests',style: TextStyle(color: Colors.black)),
+        title: const Text('Requests',style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Container(
@@ -244,7 +314,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Container(
                     width: 150,
                     height: 50,
@@ -275,9 +345,51 @@ class _RequestPageState extends State<ContrRequestPage> {
                 ],
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment
+                  .center, // Center the radio buttons horizontally
+              children: [
+                Radio<String>(
+                  activeColor: Colors.green,
+
+                  fillColor: MaterialStateProperty.all(Colors.green),
+                  value:
+                  'Engineer', // Value associated with the Consultant radio button
+                  groupValue:
+                  _selectedValue, // This variable should hold the currently selected value
+                  onChanged: (value) {
+                    setState(() {
+                      // Update the state when the radio button is selected
+                      _selectedValue = value!;
+                    });
+                  },
+                ),
+                const Text(
+                  'Engineer',
+                  style: TextStyle(color: Colors.black),
+                ), // Label for the Consultant radio button
+                const SizedBox(
+                    width:
+                    20), // Add some spacing between radio button and label
+                Radio<String>(
+                  activeColor: Colors.green,
+                  fillColor: MaterialStateProperty.all(Colors.green),
+                  value:
+                  'Client', // Value associated with the Contractor radio button
+                  groupValue: _selectedValue,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedValue = value!;
+                    });
+                  },
+                ),
+                const Text('Client', style: TextStyle(color: Colors.black)),
+                // Label for the Contractor radio button
+              ],
+            ),
             Padding(
-              padding: EdgeInsets.only(right: 8, left: 8, bottom: 8),
-              child: Container(
+              padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.75,
                 child: isPending ? pendingRequests() : approvedRequests(),

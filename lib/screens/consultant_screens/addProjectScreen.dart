@@ -76,7 +76,8 @@ class _CreateProjectState extends State<CreateProject> {
           'creationDate': DateTime.now(),
           'isSelected': false,
           'retMoney': retMoneyController.text,
-          'isContrSelected': false
+          'isContrSelected': false,
+          'isClient': false
         },
       );
 

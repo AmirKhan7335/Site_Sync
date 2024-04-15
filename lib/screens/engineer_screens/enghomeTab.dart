@@ -114,12 +114,15 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
   Future<List<Activity>> fetchActivities() async {
     try {
       var email = user?.email;
+      if (email == null) {
+        return [];
+      }
       //---------------------------------------For Client-------------------------
       var projIdForClient = await FirebaseFirestore.instance
           .collection('clients')
           .doc(email)
           .get();
-      var clientProjectId = projIdForClient.data()!['projectId'];
+      var clientProjectId = projIdForClient.data()?['projectId']; // Add null check here
       var sameEngineer = await FirebaseFirestore.instance
           .collection('engineers')
           .where('projectId', isEqualTo: clientProjectId)
@@ -139,21 +142,25 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
           .get();
 
       // Convert documents to Activity objects
-      return activitiesSnapshot.docs.map((doc) {
+      var activities = activitiesSnapshot.docs.map((doc) {
         return Activity(
           id: doc['id'],
           name: doc['name'],
           startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
-          finishDate:
-              DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+          finishDate: DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
           order: doc['order'],
         );
       }).toList();
+
+      return activities;
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [];
     }
   }
+
+
+
 
   Activity? findTodaysActivity(List<Activity> activities) {
     DateTime today = DateTime.now();
@@ -485,7 +492,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const DocumentScreen())),
+                                             DocumentScreen( isClient:widget.isClient))),
                                 child: Card(
                                   elevation: 5,
                                   color: Colors.transparent,
@@ -634,6 +641,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => TestingScreen(
+                                          isClient:widget.isClient,
                                               projId: projData[8],
                                               isCnslt: false,
                                             ))),

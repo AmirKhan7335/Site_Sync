@@ -12,7 +12,8 @@ import 'package:open_file/open_file.dart';
 
 import 'package:path_provider/path_provider.dart';
 class DocumentScreen extends StatefulWidget {
-  const DocumentScreen({super.key});
+  const DocumentScreen({required this.isClient, super.key});
+  final bool isClient;
 
   @override
   State<DocumentScreen> createState() => _DocumentScreenState();
@@ -143,6 +144,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text('Documents',style: TextStyle(color: Colors.black)),
         actions: [
+          widget.isClient? const Text(''):
           IconButton(
             onPressed: () {
               uploadFile();

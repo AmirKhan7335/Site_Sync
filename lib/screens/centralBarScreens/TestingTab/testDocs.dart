@@ -15,9 +15,10 @@ import 'package:path_provider/path_provider.dart';
 
 class TestDocumentScreen extends StatefulWidget {
   TestDocumentScreen(
-      {super.key, required String this.docName, required String this.projId});
+      {super.key, required String this.docName, required String this.projId, required this.isClient});
   String docName;
   String projId;
+  bool isClient;
   @override
   State<TestDocumentScreen> createState() => _TestDocumentScreenState();
 }
@@ -132,15 +133,17 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text(widget.docName,style: TextStyle(color:Colors.black),),
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: Text(widget.docName,style: const TextStyle(color:Colors.black),),
         actions: [
-          IconButton(
+          widget.isClient
+              ? const Text('')
+              : IconButton(
             onPressed: () {
               uploadFile();
               control.isDocumentLoading.value = false;
             },
-            icon: Icon(Icons.upload_file,color:Colors.black),
+            icon: const Icon(Icons.upload_file,color:Colors.black),
           ),
         ],
       ),
@@ -151,15 +154,15 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
               future: getDocuments(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center();
+                  return const Center();
                 } else if (snapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('Error: ${snapshot.error}',style: TextStyle(color:Colors.black),),
+                    child: Text('Error: ${snapshot.error}',style: const TextStyle(color:Colors.black),),
                   );
                 } else {
                   final List data = snapshot.data!;
@@ -189,22 +192,22 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
                               Get.snackbar('Error', e.toString());
                             }
                           },
-                          leading: ClipOval(
+                          leading: const ClipOval(
                             child: Icon(Icons.file_copy,color:Colors.black,),
                           ),
-                          title: Text(getlist[0],style: TextStyle(color:Colors.black),),
-                          subtitle: Text('00/00/2000',style: TextStyle(color:Colors.black),),
+                          title: Text(getlist[0],style: const TextStyle(color:Colors.black),),
+                          subtitle: const Text('00/00/2000',style: TextStyle(color:Colors.black),),
                         );
                       }));
                 }
               },
             ),
             control.isDocumentLoading.value
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(
                     color: Colors.yellow,
                   ))
-                : Center()
+                : const Center()
           ],
         ),
       ),
