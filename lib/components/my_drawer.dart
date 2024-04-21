@@ -71,17 +71,17 @@ class MyDrawerState extends State<MyDrawer> {
                         accountName: Text(
                           snapshot.data ?? 'Guest',
                           style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black // Set the font weight
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black // Set the font weight
                           ),
                         ),
                         accountEmail: Text(
                           user?.email ?? 'guest@gmail.com',
                           style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color:Colors.black // Set the font weight
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color:Colors.black // Set the font weight
                           ),
                         ),
                       ),

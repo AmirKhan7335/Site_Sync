@@ -1,12 +1,14 @@
 import 'package:amir_khan1/screens/consultant_screens/widgets/projDetail.dart';
-// import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProjectScreen extends StatefulWidget {
-  ProjectScreen({super.key, required bool this.isCnslt});
+  ProjectScreen(
+      {super.key, required bool this.isCnslt, });
   bool isCnslt;
+
   @override
   State<ProjectScreen> createState() => _ProjectScreenState();
 }
@@ -23,18 +25,18 @@ class _ProjectScreenState extends State<ProjectScreen> {
   }
 
   Future<List> fetchProjects() async {
-    
-    final projIdFromEngineer =widget.isCnslt?'': await getprojIdFromEngineer();
-    
+    final projIdFromEngineer =
+    widget.isCnslt ? '' : await getprojIdFromEngineer();
+
     final query = widget.isCnslt
         ? await FirebaseFirestore.instance
-            .collection('Projects')
-            .where('email', isEqualTo: currentUserEmail)
-            .get()
+        .collection('Projects')
+        .where('email', isEqualTo: currentUserEmail)
+        .get()
         : await FirebaseFirestore.instance
-            .collection('Projects')
-            .where(FieldPath.documentId, isEqualTo: projIdFromEngineer)
-            .get();
+        .collection('Projects')
+        .where(FieldPath.documentId, isEqualTo: projIdFromEngineer)
+        .get();
     final result = query.docs.map((doc) {
       return [
         doc['title'],
@@ -71,21 +73,20 @@ class _ProjectScreenState extends State<ProjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text('Projects',style: TextStyle(color: Colors.black)),
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text('Projects', style: TextStyle(color: Colors.black)),
       ),
       body: FutureBuilder(
           future: fetchProjects(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData) {
-              return const Center();
+              return Center();
             }
             final data = snapshot.data;
             return ListView.builder(
@@ -96,33 +97,37 @@ class _ProjectScreenState extends State<ProjectScreen> {
                     elevation: 5,
                     color: Colors.white,
                     child: ListTile(
-                          onTap: () async {
-                            final id = data[index][7];
-                            final getname = await getEngineer(id);
-                            if (widget.isCnslt) {
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) {
-                                  return ProjectDetail(
-                                    projectDataList: data[index],
-                                    engineerName: getname,
-                                  );
-                                },
-                              ));
-                            }
-                          },
-                          leading: ClipOval(
-                            child: Text(
-                              '${index+1}',
-                              style: const TextStyle(
-                                  fontSize: 20, color: Colors.black,fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          title: Text(data[index][0].toString(),style: const TextStyle(color: Colors.black)),
-                          subtitle: Text(
-                              DateTime.now().isAfter(data[index][2].toDate())
-                                  ? 'Completed'
-                                  : 'Ongoing',style: const TextStyle(color: Colors.black)),
+                      onTap: () async {
+                        final id = data[index][7];
+                        final getname = await getEngineer(id);
+                        if (widget.isCnslt) {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return ProjectDetail(
+                                projectDataList: data[index],
+                                engineerName: getname,
+                              );
+                            },
+                          ));
+                        }
+                      },
+                      leading: ClipOval(
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
                         ),
+                      ),
+                      title: Text(data[index][0].toString(),
+                          style: TextStyle(color: Colors.black)),
+                      subtitle: Text(
+                          DateTime.now().isAfter(data[index][2].toDate())
+                              ? 'Completed'
+                              : 'Ongoing',
+                          style: TextStyle(color: Colors.black)),
+                    ),
                   ),
                 )));
           }),

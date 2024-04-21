@@ -1,8 +1,10 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:amir_khan1/components/mytextfield.dart';
+import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,21 +21,21 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
   TextEditingController nameController = TextEditingController();
   TextEditingController ownerController = TextEditingController();
   TextEditingController typeController = TextEditingController();
- // TextEditingController emailController = TextEditingController();
+  // TextEditingController emailController = TextEditingController();
   TextEditingController officeController = TextEditingController();
   @override
   void dispose() {
     nameController.dispose();
     ownerController.dispose();
     typeController.dispose();
-   // emailController.dispose();
+    // emailController.dispose();
     officeController.dispose();
     super.dispose();
   }
   addDatatoDatabase() async {
     try {
       final email = await FirebaseAuth.instance.currentUser!.email;
-      
+
       await FirebaseFirestore.instance.collection("users").doc(email).update({
         'companyName': nameController.text,
         'owner': ownerController.text,
@@ -48,7 +50,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -84,7 +86,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                         child: Text(
                           'Company Name',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -105,7 +107,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                         child: Text(
                           'Owner',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -126,7 +128,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                         child: Text(
                           'Type',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -168,7 +170,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                         child: Text(
                           'Office',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -180,30 +182,30 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                       icon: Icons.location_searching,
                       keyboardType: TextInputType.text,
                     ),
-                    
-                    
+
+
                     const SizedBox(height: 50),
                     MyButton(
                       text: 'Confirm',
                       bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () { if (nameController.text.isNotEmpty &&
-                            typeController.text.isNotEmpty &&
-                            officeController.text.isNotEmpty) {
-                          setState(() {
-                            isloading = true;
-                          });
-                          addDatatoDatabase();
-                          setState(() {
-                            isloading = false;
-                          });
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ContrAccountDetails()));
-                        } else {
-                          Get.snackbar('Sorry', 'Please Fill All the Fields');
-                        }},
+                          typeController.text.isNotEmpty &&
+                          officeController.text.isNotEmpty) {
+                        setState(() {
+                          isloading = true;
+                        });
+                        addDatatoDatabase();
+                        setState(() {
+                          isloading = false;
+                        });
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ContrAccountDetails()));
+                      } else {
+                        Get.snackbar('Sorry', 'Please Fill All the Fields');
+                      }},
                     ),
                     const SizedBox(height: 20),
                   ],

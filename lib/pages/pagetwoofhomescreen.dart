@@ -5,7 +5,7 @@ import '../components/arcpainter.dart';
 class PageTwo extends StatefulWidget {
   String total;
   String retMoney;
-   PageTwo({super.key,required this.total,required this.retMoney});
+  PageTwo({super.key,required this.total,required this.retMoney});
 
   @override
   State<PageTwo> createState() => _PageTwoState();
@@ -52,7 +52,7 @@ class _PageTwoState extends State<PageTwo> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
-                        Text('${widget.total}',style: TextStyle(color: Colors.black),)
+                Text('${widget.total}',style: TextStyle(color: Colors.black),)
               ],
             ),
           ),
@@ -86,7 +86,7 @@ class _PageTwoState extends State<PageTwo> {
                             child: Icon(Icons.arrow_upward)),
                         Text("  Approved\n105,649,534",
                             style:
-                                TextStyle(fontSize: 10, color: Colors.white)),
+                            TextStyle(fontSize: 10, color: Colors.white)),
                       ],
                     ),
                   ),
@@ -113,8 +113,8 @@ class _PageTwoState extends State<PageTwo> {
                           children: [
                             Text("  Retention",
                                 style:
-                                    TextStyle(fontSize: 10, color: Colors.white)),
-                                    Text(widget.retMoney,style:  TextStyle(fontSize: 10, color: Colors.white),)
+                                TextStyle(fontSize: 10, color: Colors.white)),
+                            Text(widget.retMoney,style:  TextStyle(fontSize: 10, color: Colors.white),)
                           ],
                         ),
                       ],

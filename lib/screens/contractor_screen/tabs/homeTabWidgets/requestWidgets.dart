@@ -1,5 +1,6 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -7,14 +8,14 @@ import 'package:intl/intl.dart';
 class ContrPendingRequest extends StatefulWidget {
   ContrPendingRequest(
       {required this.name,
-      required this.projectDataList,
-      required this.engEmail,
+        required this.projectDataList,
+        required this.engEmail,
         required this.selectedValue,
-      super.key});
+        super.key});
   String name;
   List projectDataList;
-  String selectedValue;
   String engEmail;
+  String selectedValue;
   @override
   State<ContrPendingRequest> createState() => _PendingRequestState();
 }
@@ -24,9 +25,10 @@ class _PendingRequestState extends State<ContrPendingRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: IconThemeData(color: Colors.black),
           elevation: 0,
-          title: const Text('Pending Requests',style: TextStyle(color: Colors.black)),
+          title:
+          Text('Pending Requests', style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -35,7 +37,7 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                 name: widget.name,
                 projectDataList: widget.projectDataList,
                 engEmail: widget.engEmail),
-            const SizedBox(
+            SizedBox(
               height: 10,
             ),
             Padding(
@@ -52,12 +54,12 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                       if (widget.selectedValue == 'Engineer') {
                         FirebaseFirestore.instance
                             .collection('engineers')
-                            .doc(widget.engEmail)
+                            .doc('${widget.engEmail}')
                             .update({'reqAccepted': true});
                       } else if (widget.selectedValue == 'Client') {
                         FirebaseFirestore.instance
                             .collection('clients')
-                            .doc(widget.engEmail)
+                            .doc('${widget.engEmail}')
                             .update({'reqAccepted': true});
                       }
 
@@ -67,7 +69,7 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                           '${widget.selectedValue} has been added to the project');
                     },
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 10,
                   ),
                   MyButton(
@@ -117,14 +119,14 @@ class _PendingRequestState extends State<ContrPendingRequest> {
 class ContrApprovedRequest extends StatefulWidget {
   ContrApprovedRequest(
       {required this.name,
-      required this.projectDataList,
-      required this.engEmail,
+        required this.projectDataList,
+        required this.engEmail,
         required this.selectedValue,
-      super.key});
+        super.key});
   String name;
   List projectDataList;
-  String selectedValue;
   String engEmail;
+  String selectedValue;
   @override
   State<ContrApprovedRequest> createState() => _ApprovedRequestState();
 }
@@ -134,9 +136,10 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: IconThemeData(color: Colors.black),
           elevation: 0,
-          title: const Text('Approved Requests',style: TextStyle(color: Colors.black)),
+          title:
+          Text('Approved Requests', style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -146,7 +149,7 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
               projectDataList: widget.projectDataList,
               engEmail: widget.engEmail,
             ),
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
             Padding(
@@ -191,9 +194,9 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
 class RequestBody extends StatefulWidget {
   RequestBody(
       {required this.name,
-      required this.projectDataList,
-      required this.engEmail,
-      super.key});
+        required this.projectDataList,
+        required this.engEmail,
+        super.key});
   String name;
   List projectDataList;
   String engEmail;
@@ -208,7 +211,7 @@ class _RequestBodyState extends State<RequestBody> {
     return Container(
       child: Column(
         children: [
-          const SizedBox(
+          SizedBox(
             height: 10,
           ),
           Padding(
@@ -216,22 +219,28 @@ class _RequestBodyState extends State<RequestBody> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   backgroundColor: Colors.green,
                   radius: 30,
-                  child: Icon(Icons.person,color: Colors.black,),
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.black,
+                  ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 10,
                 ),
                 Text(
-                  widget.name,
-                  style: const TextStyle(fontSize: 20,color: Colors.black, fontWeight: FontWeight.bold),
+                  '${widget.name}',
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 10,
           ),
           Padding(
@@ -241,7 +250,7 @@ class _RequestBodyState extends State<RequestBody> {
               color: Colors.white,
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 10,
           ),
           Padding(
@@ -260,22 +269,22 @@ class _RequestBodyState extends State<RequestBody> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 50,
                           ),
-                          const Text(
+                          Text(
                             'Email:  ',
                           ),
                           Text(
-                            widget.engEmail,
+                            '${widget.engEmail}',
                             softWrap: true,
                           ),
                         ],
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 25,
                       ),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
@@ -289,16 +298,16 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 50,
                           ),
-                          const Text(
+                          Text(
                             'Project :  ',
                           ),
                           Text(
@@ -306,37 +315,37 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 50,
                           ),
-                          const Text(
+                          Text(
                             'Start Date:  ',
                           ),
                           Text(
-                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate()),
+                            '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate())}',
                           ),
                         ],
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 50,
                           ),
-                          const Text(
+                          Text(
                             'End Date:  ',
                           ),
                           Text(
-                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate()),
+                            '${DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate())}',
                           ),
                         ],
                       ),

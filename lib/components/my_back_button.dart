@@ -10,12 +10,12 @@ class MyBackButton extends StatelessWidget {
         Navigator.pop(context);
       },
       child: Container(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-          ),
-          padding: const EdgeInsets.all(10.0),
-          child: const Icon(Icons.arrow_back, color: Colors.red,),
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        padding: const EdgeInsets.all(10.0),
+        child: const Icon(Icons.arrow_back, color: Colors.red,),
       ),
     );
   }

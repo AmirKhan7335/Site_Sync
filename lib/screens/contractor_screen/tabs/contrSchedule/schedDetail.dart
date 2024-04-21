@@ -1,5 +1,7 @@
+import 'package:amir_khan1/screens/consultant_screens/activityDetail.dart';
 import 'package:amir_khan1/screens/consultant_screens/activityGallery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -151,7 +153,7 @@ class _ConsultantScheduleState extends State<ContrScheduleDetail> {
                                                 ActivityGallery(
                                                     engEmail: engEmail,
                                                     activityId: data[index]
-                                                        [5]))),
+                                                    [5]))),
                                     title: Text(
                                       '${data[index][1]}',
                                       style: TextStyle(
@@ -170,13 +172,13 @@ class _ConsultantScheduleState extends State<ContrScheduleDetail> {
                   } else {
                     return Center(
                         child: Column(
-                      children: [
-                        SizedBox(
-                          height: 100,
-                        ),
-                        Text('No Activities Scheduled'),
-                      ],
-                    ));
+                          children: [
+                            SizedBox(
+                              height: 100,
+                            ),
+                            Text('No Activities Scheduled'),
+                          ],
+                        ));
                   }
                 }),
           ],

@@ -57,25 +57,33 @@ class ChatListScreenState extends State<ChatListScreen> {
 
         final usersData = await FirebaseFirestore.instance
             .collection('users')
-            // .where('email',
-            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+        // .where('email',
+        //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
             .where(FieldPath.documentId, whereIn: docIds)
             .get();
 
         validUsers = usersData.docs.map((doc) {
           final Map<String, dynamic> data =
-              doc.data(); // Cast to Map<String, dynamic>
+          doc.data(); // Cast to Map<String, dynamic>
           return ChatUser(
             id: doc.id,
             name: data['username'] ?? '',
           );
         }).toList();
         //-------------------For Client--------------------------
+        final consltClientData = await FirebaseFirestore.instance
+            .collection('clients')
+            .where('consultantEmail', isEqualTo: userEmail)
+            .get();
+        final docClientIds = await consltClientData.docs.map((doc) {
+          return doc.id;
+        }).toList();
+
         final usersClientData = await FirebaseFirestore.instance
             .collection('users')
         // .where('email',
         //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
-            .where(FieldPath.documentId, whereIn: docIds)
+            .where(FieldPath.documentId, whereIn: docClientIds)
             .get();
 
         var validClientUsers = usersClientData.docs.map((doc) {
@@ -88,7 +96,8 @@ class ChatListScreenState extends State<ChatListScreen> {
         }).toList();
         validUsers.addAll(validClientUsers);
         //-------------------------------------------------------
-      } else if (role == 'Contractor') {
+      }
+      else if (role == 'Contractor') {
         //For Consultant Valid Users:
         final consltData = await FirebaseFirestore.instance
             .collection('engineers')
@@ -99,14 +108,14 @@ class ChatListScreenState extends State<ChatListScreen> {
         }).toList();
         final usersData = await FirebaseFirestore.instance
             .collection('users')
-            // .where('email',
-            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+        // .where('email',
+        //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
             .where(FieldPath.documentId, whereIn: docIds)
             .get();
 
         validUsers = usersData.docs.map((doc) {
           final Map<String, dynamic> data =
-              doc.data(); // Cast to Map<String, dynamic>
+          doc.data(); // Cast to Map<String, dynamic>
           return ChatUser(
             id: doc.id,
             name: data['username'] ?? '',
@@ -122,17 +131,17 @@ class ChatListScreenState extends State<ChatListScreen> {
             .get();
 //-----------------------------------------------------------------
         final consultantEmail =
-            contractorQuery.docs.map((e) => e['consultantEmail']);
+        contractorQuery.docs.map((e) => e['consultantEmail']);
         final subData = await FirebaseFirestore.instance
             .collection('users')
-            // .where('email',
-            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+        // .where('email',
+        //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
             .where(FieldPath.documentId, whereIn: consultantEmail)
             .get();
 
         final validConslt = subData.docs.map((doc) {
           final Map<String, dynamic> data =
-              doc.data(); // Cast to Map<String, dynamic>
+          doc.data(); // Cast to Map<String, dynamic>
           return ChatUser(
             id: doc.id,
             name: data['username'] ?? '',
@@ -176,14 +185,14 @@ class ChatListScreenState extends State<ChatListScreen> {
         }).toList();
         final contrusersData = await FirebaseFirestore.instance
             .collection('users')
-            // .where('email',
-            //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
+        // .where('email',
+        //     isNotEqualTo: FirebaseAuth.instance.currentUser?.email)
             .where(FieldPath.documentId, whereIn: contrdocIds)
             .get();
 
         final validContrUsers = contrusersData.docs.map((doc) {
           final Map<String, dynamic> data =
-              doc.data(); // Cast to Map<String, dynamic>
+          doc.data(); // Cast to Map<String, dynamic>
           return ChatUser(
             id: doc.id,
             name: data['username'] ?? '',
@@ -205,24 +214,26 @@ class ChatListScreenState extends State<ChatListScreen> {
         validUsers = [
           ChatUser(id: consltEmail, name: usersData.data()!['username'])
         ];
-      }  else if (role == 'Client') {
-          //------------------------------------------------
-          var projIdForClient = await FirebaseFirestore.instance
-              .collection('clients')
-              .doc(userEmail)
-              .get();
-          var clientProjectId = projIdForClient.data()!['projectId'];
-          var sameEngineer = await FirebaseFirestore.instance
-              .collection('engineers')
-              .where('projectId', isEqualTo: clientProjectId)
-              .get();
+      }
+      else if (role == 'Client') {
+        //------------------------------------------------
+        var projIdForClient = await FirebaseFirestore.instance
+            .collection('clients')
+            .doc(userEmail)
+            .get();
+        var clientProjectId = projIdForClient.data()!['projectId'];
+        var sameEngineer = await FirebaseFirestore.instance
+            .collection('engineers')
+            .where('projectId', isEqualTo: clientProjectId)
+            .get();
+        if (sameEngineer.docs.isNotEmpty) {
           var engEmails = sameEngineer.docs.map((e) => e.id).toList();
           final data = await FirebaseFirestore.instance
               .collection('users')
               .doc(engEmails[0])
               .get();
           var users = [
-          ChatUser(id: engEmails[0], name: data.data()!['username'])
+            ChatUser(id: engEmails[0], name: data.data()!['username'])
           ];
 
           ///----------------------------------------------------
@@ -232,15 +243,32 @@ class ChatListScreenState extends State<ChatListScreen> {
               .get();
 
           final consltEmail = query.data()!['consultantEmail'];
+          print('Consultant Email: $consltEmail');
           final usersData = await FirebaseFirestore.instance
               .collection('users')
               .doc(consltEmail)
               .get();
           validUsers = [
-          ChatUser(id: consltEmail, name: usersData.data()!['username'])
+            ChatUser(id: consltEmail, name: usersData.data()!['username'])
           ];
           validUsers.addAll(users);
-          }
+        } else {
+          final query = await FirebaseFirestore.instance
+              .collection('clients')
+              .doc(userEmail)
+              .get();
+
+          final consltEmail = query.data()!['consultantEmail'];
+          print('Consultant Email: $consltEmail');
+          final usersData = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(consltEmail)
+              .get();
+          validUsers = [
+            ChatUser(id: consltEmail, name: usersData.data()!['username'])
+          ];
+        }
+      }
     } catch (e) {
       if (kDebugMode) {
         print('Error loading users: $e');
@@ -249,6 +277,7 @@ class ChatListScreenState extends State<ChatListScreen> {
       setState(() => isLoading = false);
     }
   }
+
 
   // Function to set chatRoomId when a user is selected
   Future<void> setUserSelected(ChatUser user) async {

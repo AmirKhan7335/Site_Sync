@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:amir_khan1/controllers/centralTabController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -9,8 +8,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
-
 import 'package:path_provider/path_provider.dart';
+
+import 'dailyprogressreport.dart';
+
 class DocumentScreen extends StatefulWidget {
   const DocumentScreen({required this.isClient, super.key});
   final bool isClient;
@@ -21,6 +22,7 @@ class DocumentScreen extends StatefulWidget {
 
 class _DocumentScreenState extends State<DocumentScreen> {
   final controller = Get.put(CentralTabController());
+
   uploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -144,13 +146,36 @@ class _DocumentScreenState extends State<DocumentScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text('Documents',style: TextStyle(color: Colors.black)),
         actions: [
-          widget.isClient? const Text(''):
-          IconButton(
-            onPressed: () {
-              uploadFile();
-              control.isDocumentLoading.value = false;
-            },
-            icon: const Icon(Icons.upload_file),
+          widget.isClient
+              ? const Text('')
+              : Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  uploadFile();
+                  control.isDocumentLoading.value = false;
+                },
+                icon: const Icon(Icons.upload_file),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DailyProgressReportScreen()),
+                  );
+                },
+                icon: const Icon(Icons.assignment),
+                tooltip: 'Progress Report',
+              ),
+              IconButton(
+                onPressed: () {
+                  // Handle Summary icon tap
+                  // Add your logic here
+                },
+                icon: const Icon(Icons.summarize_outlined),
+                tooltip: 'Summary',
+              ),
+            ],
           ),
         ],
       ),
@@ -174,44 +199,58 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 } else {
                   final List data = snapshot.data!;
                   return ListView.builder(
-                      itemCount: data.length,
-                      itemBuilder: ((context, index) {
-                        final listString = data[index];
-                        final list =
-                            listString.substring(1, listString.length - 1);
-                        final getlist =
-                            list.split(',').map((e) => e.trim()).toList();
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Card(
-                            color: Colors.white,
-                            elevation:  5.0,
-                            child: ListTile(
-                              onTap: () async {
+                    itemCount: data.length,
+                    itemBuilder: ((context, index) {
+                      final listString = data[index];
+                      final list = listString.substring(1, listString.length - 1);
+                      final getlist = list.split(',').map((e) => e.trim()).toList();
+                      final fileName = getlist[0];
+                      final fileUrl = getlist[1];
+
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Colors.white,
+                          elevation: 5.0,
+                          child: ListTile(
+                            onTap: () async {
+                              try {
+                                controller.isDocumentLoading.value = true;
+                                _checkFileAndOpen(fileUrl, fileName);
+                                controller.isDocumentLoading.value = false;
+                              } catch (e) {
+                                Get.snackbar('Error', e.toString());
+                              }
+                            },
+                            leading: const ClipOval(
+                              child: Icon(Icons.file_copy, color: Colors.black),
+                            ),
+                            title: Text(fileName, style: const TextStyle(color: Colors.black)),
+                            subtitle: const Text('00/00/2000', style: TextStyle(color: Colors.black)),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
                                 try {
-                                  // final Uri _url = Uri.parse(getlist[1]);
-                                  // if (await canLaunchUrl(_url)) {
-                                  //   // print('object');
-                                  //   await launchUrl(_url);
-                                  // } else {
-                                  //   Get.snackbar('Error', 'Unknown Error');
-                                  // }
-                                    controller.isDocumentLoading.value = true;
-                                  _checkFileAndOpen(getlist[1], getlist[0]);
-                                  controller.isDocumentLoading.value = false;
+                                  // Remove the document from the UI
+                                  setState(() {
+                                    data.removeAt(index);
+                                  });
+
+                                  // Delete the document from the database
+                                  final projId = await projectId();
+                                  FirebaseFirestore.instance.collection('Projects').doc(projId).update({
+                                    'documents': FieldValue.arrayRemove([listString]),
+                                  });
                                 } catch (e) {
                                   Get.snackbar('Error', e.toString());
                                 }
                               },
-                              leading: const ClipOval(
-                                child: Icon(Icons.file_copy,color: Colors.black,),
-                              ),
-                              title: Text(getlist[0],style: const TextStyle(color: Colors.black)),
-                              subtitle: const Text('00/00/2000',style: TextStyle(color: Colors.black)),
                             ),
                           ),
-                        );
-                      }));
+                        ),
+                      );
+                    }),
+                  );
                 }
               },
             ),
@@ -227,3 +266,13 @@ class _DocumentScreenState extends State<DocumentScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+

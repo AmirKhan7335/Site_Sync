@@ -27,7 +27,7 @@ class _PendingRequestState extends State<PendingRequest> {
           .collection('contractorReq')
           .where('projectId', isEqualTo: widget.projectDataList[3])
           .get();
-
+      await FirebaseFirestore.instance.collection('Projects').doc(widget.projectDataList[3]).update({"contractorName":widget.name});
       var list = activitiesSnapshot.docs.map((e) {
         var update = FirebaseFirestore.instance
             .collection('contractorReq')

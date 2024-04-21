@@ -1,9 +1,18 @@
 import 'package:amir_khan1/controllers/projectsCountingController.dart';
+import 'package:amir_khan1/screens/centralBarScreens/documentScreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/TestingTab/testingScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/siteCamera/inputRtsp.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/chooseProject.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/consltDocuments.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltTest/chooseProj.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
+import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
+import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/contrPojectScreen.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/contrTest/choooseProj.dart';
+import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/doc/chooseProject.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/contrProgress.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/contrRequest.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
@@ -110,11 +119,11 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
           .get();
 
       List contractorProjIdList =
-          await contractorQuery.docs.map((e) => e['projectId']).toList();
+      await contractorQuery.docs.map((e) => e['projectId']).toList();
       final contractorProjects = await FirebaseFirestore.instance
           .collection('Projects')
           .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
-          // .where(FieldPath.documentId, whereIn: contractorProjIdList)
+      // .where(FieldPath.documentId, whereIn: contractorProjIdList)
           .get();
 
       final contractorProjectCount = contractorProjects.docs
@@ -147,8 +156,8 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
       final contrProj = await FirebaseFirestore.instance
           .collection('Projects')
           .where('creationDate',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
-          //   .where(FieldPath.documentId, whereIn: contrProjId)
+          isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
+      //   .where(FieldPath.documentId, whereIn: contrProjId)
           .get();
       final contrResult = await contrProj.docs
           .where((doc) => contrProjId.contains(doc.id))
@@ -168,11 +177,11 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
           .where('creationDate',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
+          isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
           .orderBy('creationDate', descending: true)
           .get();
       final userData = collectionData.docs.map(
-        (doc) {
+            (doc) {
           return [
             doc['title'],
             doc['budget'],
@@ -205,14 +214,14 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
           .where('reqAccepted', isEqualTo: true)
           .get();
       List contractorProjIdList =
-          await contractorQuery.docs.map((e) => e['projectId']).toList();
+      await contractorQuery.docs.map((e) => e['projectId']).toList();
       // Get.snackbar('title', contractorProjIdList.toString());
       final contractorProjects = await FirebaseFirestore.instance
           .collection('Projects')
           .where('endDate',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
 
-          // .where(FieldPath.documentId, whereIn: contractorProjIdList)
+      // .where(FieldPath.documentId, whereIn: contractorProjIdList)
           .get();
 
       final contractorProjectCount = contractorProjects.docs
@@ -225,10 +234,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
-          // .where('startDate',
-          //     isLessThanOrEqualTo: Timestamp.fromDate(currentDate))
+      // .where('startDate',
+      //     isLessThanOrEqualTo: Timestamp.fromDate(currentDate))
           .where('endDate',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
           .get();
 
       final userData = collectionData.docs.length;
@@ -297,10 +306,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                           },
                           child: CircleAvatar(
                             backgroundImage: snapshot.data?.profilePicUrl !=
-                                    null
+                                null
                                 ? NetworkImage(snapshot.data!.profilePicUrl!)
                                 : const NetworkImage(
-                                    'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
+                                'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
                             radius: 25,
                           ),
                         ),
@@ -313,7 +322,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                             const Text(
                               "Welcome Back!",
                               style:
-                                  TextStyle(fontSize: 14, color: Colors.green),
+                              TextStyle(fontSize: 14, color: Colors.green),
                             ),
                             const SizedBox(height: 0),
                             Text(
@@ -344,7 +353,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                     const SizedBox(height: 20),
                     // Page view with indicators
                     Obx(
-                      () => Row(
+                          () => Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           StatusContainer(
@@ -394,7 +403,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const ContrProgressPage()));
+                                        const ContrProgressPage()));
                               },
                               child: Text('Progress',
                                   style: TextStyle(
@@ -413,7 +422,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const ContrRequestPage()));
+                                        const ContrRequestPage()));
                               },
                               child: Text(
                                 'Request',
@@ -473,8 +482,8 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             } else if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                   child: CircularProgressIndicator(
-                color: Colors.green,
-              ));
+                    color: Colors.green,
+                  ));
             } else if (snapshot.hasError) {
               return Text('Error');
             } else {
@@ -483,94 +492,94 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
               return ListView.builder(
                   itemCount: projectList!.length,
                   itemBuilder: ((context, index) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Card(
-                          elevation: 10,
-                          color: Colors.transparent,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                              child: ListTile(
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Card(
+                      elevation: 10,
+                      color: Colors.transparent,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Padding(
+                          padding:
+                          const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                          child: ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
+                                    Icon(Icons.calendar_month,
+                                        size: 15, color: Colors.green),
+                                    Text(
+                                      DateFormat('dd-MM-yyyy')
+                                          .format(
+                                        projectList[index][3].toDate(),
+                                      )
+                                          .toString(),
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    Text(' to ',
+                                        style:
+                                        TextStyle(color: Colors.black)),
+                                    Text(
+                                        DateFormat('dd-MM-yyyy')
+                                            .format(projectList[index][4]
+                                            .toDate())
+                                            .toString(),
+                                        style:
+                                        TextStyle(color: Colors.black)),
+                                    Expanded(child: SizedBox()),
                                     Row(
                                       children: [
-                                        Icon(Icons.calendar_month,
+                                        Icon(Icons.location_on_outlined,
                                             size: 15, color: Colors.green),
-                                        Text(
-                                          DateFormat('dd-MM-yyyy')
-                                              .format(
-                                                projectList[index][3].toDate(),
-                                              )
-                                              .toString(),
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        Text(' to ',
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                        Text(
-                                            DateFormat('dd-MM-yyyy')
-                                                .format(projectList[index][4]
-                                                    .toDate())
-                                                .toString(),
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                        Expanded(child: SizedBox()),
-                                        Row(
-                                          children: [
-                                            Icon(Icons.location_on_outlined,
-                                                size: 15, color: Colors.green),
-                                            Text(projectList[index][5],
-                                                style: TextStyle(
-                                                    color: Colors.black)),
-                                          ],
-                                        )
+                                        Text(projectList[index][5],
+                                            style: TextStyle(
+                                                color: Colors.black)),
                                       ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        projectList[index][0],
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 25,
-                                            color: Colors.black),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.person, color: Colors.green),
-                                        Text(projectList[index][2],
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                        Expanded(
-                                          child: SizedBox(),
-                                        ),
-                                        Text(
-                                          'Rs ',
-                                          style: TextStyle(color: Colors.green),
-                                        ),
-                                        Text(projectList[index][1],
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                      ],
-                                    ),
+                                    )
                                   ],
                                 ),
-                              ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    projectList[index][0],
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.person, color: Colors.green),
+                                    Text(projectList[index][2],
+                                        style:
+                                        TextStyle(color: Colors.black)),
+                                    Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                    Text(
+                                      'Rs ',
+                                      style: TextStyle(color: Colors.green),
+                                    ),
+                                    Text(projectList[index][1],
+                                        style:
+                                        TextStyle(color: Colors.black)),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      )));
+                      ),
+                    ),
+                  )));
             }
           }),
     );
@@ -633,46 +642,51 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
               ),
             ),
           ),
-          Card(
-            color: Colors.transparent,
-            elevation: 5,
-            child: Container(
-              height: 70,
-              width: 65,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Icon(
-                      Icons.video_call,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 1.5,
-                      width: 45,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      height: 2.5,
-                    ),
-                    Text(
-                      'Site',
-                      style: TextStyle(
-                        fontSize: 10,
+          InkWell(
+            onTap: () {
+              Dialogue().inputRtsp(context);
+            },
+            child: Card(
+              color: Colors.transparent,
+              elevation: 5,
+              child: Container(
+                height: 70,
+                width: 65,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Icon(
+                        Icons.video_call,
                         color: Colors.black,
                       ),
-                    )
-                  ],
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 1.5,
+                        width: 45,
+                        color: Colors.black,
+                      ),
+                      SizedBox(
+                        height: 2.5,
+                      ),
+                      Text(
+                        'Site',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -682,8 +696,8 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ProjectScreen(
-                          isCnslt: true,
-                        ))),
+                      isCnslt: true,
+                    ))),
             child: Card(
               color: Colors.transparent,
               elevation: 5,
@@ -798,7 +812,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
               return <Widget>[
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
+                        (BuildContext context, int index) {
                       return Column(
                         children: <Widget>[head(data)],
                       );

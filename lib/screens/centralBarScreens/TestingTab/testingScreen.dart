@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 
 class TestingScreen extends StatefulWidget {
   TestingScreen(
-      {super.key, required String this.projId, required bool this.isCnslt, required this.isClient});
+      {super.key,
+        required String this.projId,
+        required bool this.isCnslt,
+        required this.isClient});
   String projId;
   bool isCnslt;
   bool isClient;
@@ -32,7 +35,10 @@ class _TestingScreenState extends State<TestingScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel',style: TextStyle(color:Colors.black),),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -59,26 +65,31 @@ class _TestingScreenState extends State<TestingScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
-          title: const Text('Testing',style: TextStyle(color:Colors.black),),
+          iconTheme: IconThemeData(color: Colors.black),
+          title: Text(
+            'Testing',
+            style: TextStyle(color: Colors.black),
+          ),
         ),
         body: NamesList(projId: widget.projId, isClient: widget.isClient),
         floatingActionButton: widget.isCnslt
-            ? const Center() : widget.isClient
-            ? const Center()
+            ? Center()
+            : widget.isClient
+            ? Center()
             : FloatingActionButton(
-                onPressed: () {
-                  showTextInputDialog(context, 'Write Test');
-                },
-                child: const Icon(Icons.add),
-                backgroundColor: Colors.green,
-              ));
+          onPressed: () {
+            showTextInputDialog(context, 'Write Test');
+          },
+          child: const Icon(Icons.add),
+          backgroundColor: Colors.green,
+        ));
   }
 }
 
 class NamesList extends StatefulWidget {
   NamesList({super.key, required String this.projId, required this.isClient});
   String projId;
+
   bool isClient;
   @override
   State<NamesList> createState() => _NamesListState();
@@ -95,9 +106,9 @@ class _NamesListState extends State<NamesList> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center();
+          return Center();
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
+          return Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
@@ -109,52 +120,54 @@ class _NamesListState extends State<NamesList> {
           return ListView.builder(
               itemCount: data.length,
               itemBuilder: ((context, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          onTap: () {
-                            if (data[index].id == 'Compressive Strength Test') {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DetailScreen(
-                                            isClient: widget.isClient,
-                                            title: 'Compressive Strength Test',
-                                            projId: widget.projId,
-                                          )));
-                            } else {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TestDocumentScreen(
-                                             isClient: widget.isClient,
-                                            docName: data[index].id,
-                                            projId: widget.projId,
-                                          )));
-                            }
-                          },
-                          leading: ClipOval(
-                              child: Text(
-                            '${index + 1}',style: const TextStyle(color:Colors.black,fontSize: 20),
-                            
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    ListTile(
+                      onTap: () {
+                        if (data[index].id == 'Compressive Strength Test') {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailScreen(
+                                    isClient: widget.isClient,
+                                    title: 'Compressive Strength Test',
+                                    projId: widget.projId,
+                                  )));
+                        } else {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TestDocumentScreen(
+                                    isClient: widget.isClient,
+                                    docName: data[index].id,
+                                    projId: widget.projId,
+                                  )));
+                        }
+                      },
+                      leading: ClipOval(
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(color: Colors.black, fontSize: 20),
                           )),
-                          title: Text(
-                            '${data[index].id}',
-                            style: const TextStyle(color:Colors.black,
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 48, right: 16.0),
-                          child: Container(
-                            height: 1,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
+                      title: Text(
+                        '${data[index].id}',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  )));
+                    Padding(
+                      padding: const EdgeInsets.only(left: 48, right: 16.0),
+                      child: Container(
+                        height: 1,
+                        color: Colors.grey,
+                      ),
+                    )
+                  ],
+                ),
+              )));
         }
       },
     );
@@ -163,7 +176,10 @@ class _NamesListState extends State<NamesList> {
 
 class DetailScreen extends StatefulWidget {
   DetailScreen(
-      {super.key, required String this.title, required String this.projId, required this.isClient});
+      {super.key,
+        required String this.title,
+        required String this.projId,
+        required this.isClient});
   String title;
   String projId;
   bool isClient;
@@ -184,43 +200,52 @@ class DetailScreenState extends State<DetailScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: Text(widget.title,style: const TextStyle(color:Colors.black),),
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text(
+          widget.title,
+          style: TextStyle(color: Colors.black),
+        ),
       ),
       body: ListView.builder(
           itemCount: names.length,
           itemBuilder: ((context, index) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    ListTile(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => FoundationDocumentScreen(
-                                       isClient:widget.isClient,
-                                      docName: names[index],
-                                      projId: widget.projId,
-                                    )));
-                      },
-                      leading: ClipOval(child: Icon(icons[index],color:Colors.black,)),
-                      title: Text(
-                        '${names[index]}',
-                        style: const TextStyle(
-                            fontSize: 20,color:Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 48, right: 16.0),
-                      child: Container(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                    )
-                  ],
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FoundationDocumentScreen(
+                              isClient:widget.isClient,
+                              docName: names[index],
+                              projId: widget.projId,
+                            )));
+                  },
+                  leading: ClipOval(
+                      child: Icon(
+                        icons[index],
+                        color: Colors.black,
+                      )),
+                  title: Text(
+                    '${names[index]}',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ))),
+                Padding(
+                  padding: const EdgeInsets.only(left: 48, right: 16.0),
+                  child: Container(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                )
+              ],
+            ),
+          ))),
     );
   }
 }

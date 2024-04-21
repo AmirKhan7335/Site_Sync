@@ -31,63 +31,63 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          title: const Text(
+          title: Text(
             'Select Project',
             style: TextStyle(color: Colors.black),
           ),
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: IconThemeData(color: Colors.black),
         ),
         body: FutureBuilder(
             future: fetchProjects(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData) {
-                return const Center();
+                return Center();
               }
               final data = snapshot.data;
               return ListView.builder(
                   itemCount: data!.length,
                   itemBuilder: ((context, index) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          color: Colors.white,
-                          elevation: 5,
-                          child: ListTile(
-                            onTap: () {
-                              final projId = data[index][1];
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TestingScreen(
-                                         isClient: false,
-                                            projId: projId,
-                                            isCnslt: true,
-                                          )));
-                            },
-                            leading: ClipOval(
-                              child: Text(
-                                '${index + 1}',
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            title: Text(
-                              data[index][0].toString(),
-                              style: const TextStyle(color: Colors.black),
-                            ),
-                            subtitle: Container(
-                              height: 1.5,
-                              width: 500,
-                              color: Colors.grey,
-                            ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 5,
+                      child: ListTile(
+                        onTap: () {
+                          final projId = data[index][1];
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TestingScreen(
+                                    isClient: false,
+                                    projId: projId,
+                                    isCnslt: true,
+                                  )));
+                        },
+                        leading: ClipOval(
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                      )));
+                        title: Text(
+                          data[index][0].toString(),
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        subtitle: Container(
+                          height: 1.5,
+                          width: 500,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  )));
             }));
   }
 }

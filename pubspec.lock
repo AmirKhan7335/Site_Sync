@@ -475,11 +475,35 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_vlc_player:
+    dependency: "direct main"
+    description:
+      name: flutter_vlc_player
+      sha256: b869251c9b186f2e3d21c103734e842c90cb5b2d46af0c35c6ecc4c46cdefce6
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.4.1"
+  flutter_vlc_player_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_vlc_player_platform_interface
+      sha256: b161dde841368d330be82c5ee6f40b29dadc4227167bf2770d949f576ae2d9b1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_word_plugin:
+    dependency: "direct main"
+    description:
+      name: flutter_word_plugin
+      sha256: "9f93c07f6f0d773bfab106eaa08dbdf9525fe433c17288b5b67fef8d4fd6d95b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   flutter_zoom_drawer:
     dependency: "direct main"
     description:
@@ -772,10 +796,18 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
+  jiffy:
+    dependency: transitive
+    description:
+      name: jiffy
+      sha256: b09b6aacc0ebe7d178d2fcbabfd73e7d3340594043fe949bb7e0814093b00201
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.3.0"
   js:
     dependency: transitive
     description:
@@ -1237,6 +1269,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "8e19260d292ed77e1cbd4ee1baafb3c9486079cad856e7891478131d25076039"
+      url: "https://pub.dev"
+    source: hosted
+    version: "25.1.40"
+  syncfusion_flutter_pdf:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_pdf
+      sha256: "388aed513e37eb48e665c466c79dd28b47356260aa7f8d4dbb5015fe4e98a42b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "25.1.40"
+  syncfusion_flutter_xlsio:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_xlsio
+      sha256: c7f3aa6b7a8e5b20c7cb41053970499bd78f5b2de2571d08aaf1a4344ef54673
+      url: "https://pub.dev"
+    source: hosted
+    version: "25.1.40"
+  syncfusion_officecore:
+    dependency: transitive
+    description:
+      name: syncfusion_officecore
+      sha256: "342fbcc10358d12d4e0fe12e57738dedd435662256bd4ac671991509727341d4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "25.1.40"
   synchronized:
     dependency: transitive
     description:
@@ -1405,6 +1469,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "13.0.0"
+  weather:
+    dependency: "direct main"
+    description:
+      name: weather
+      sha256: "4ec18a2c88ab37387d545cb3bf733c7c8b1980bf46376dc44620d6cb2f5a0b1d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   web:
     dependency: transitive
     description:

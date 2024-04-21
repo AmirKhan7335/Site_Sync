@@ -11,14 +11,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+
 class FoundationDocumentScreen extends StatefulWidget {
   FoundationDocumentScreen(
-      {super.key, required String this.docName, required String this.projId,  required this.isClient});
+      {super.key,
+        required String this.docName,
+        required String this.projId,
+        required this.isClient});
   String docName;
   String projId;
   bool isClient;
   @override
-  State<FoundationDocumentScreen> createState() => _FoundationDocumentScreenState();
+  State<FoundationDocumentScreen> createState() =>
+      _FoundationDocumentScreenState();
 }
 
 class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
@@ -74,7 +79,6 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
     // print('File uploaded to: $downloadUrl');
   }
 
-  
   getPath() async {
     final Directory? tempDir = await getExternalStorageDirectory();
     final filePath = Directory("${tempDir!.path}/files");
@@ -115,7 +119,6 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
     }
   }
 
-
   Future<List> getDocuments() async {
     final query = await FirebaseFirestore.instance
         .collection('Projects')
@@ -133,30 +136,34 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text(widget.docName,style: const TextStyle(color:Colors.black),),
-        iconTheme: const IconThemeData(color: Colors.black),
+        title: Text(
+          widget.docName,
+          style: TextStyle(color: Colors.black),
+        ),
+        iconTheme: IconThemeData(color: Colors.black),
         actions: [
-          widget.isClient? const Text(''):
+          widget.isClient?Text(''):
           IconButton(
             onPressed: () {
+
               uploadFile();
               control.isDocumentLoading.value = false;
             },
-            icon: const Icon(Icons.upload_file),
+            icon: Icon(Icons.upload_file),
           ),
         ],
       ),
       body: Obx(
-        () => Stack(
+            () => Stack(
           children: [
             FutureBuilder(
               future: getDocuments(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const Center();
+                  return Center();
                 } else if (snapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(),
                   );
                 } else if (snapshot.hasError) {
@@ -170,37 +177,43 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
                       itemBuilder: ((context, index) {
                         final listString = data[index];
                         final list =
-                            listString.substring(1, listString.length - 1);
+                        listString.substring(1, listString.length - 1);
                         final getlist =
-                            list.split(',').map((e) => e.trim()).toList();
+                        list.split(',').map((e) => e.trim()).toList();
 
                         return ListTile(
                           onTap: () async {
                             try {
-                             
-                               controller.isDocumentLoading.value = true;
+                              controller.isDocumentLoading.value = true;
                               _checkFileAndOpen(getlist[1], getlist[0]);
                               controller.isDocumentLoading.value = false;
                             } catch (e) {
                               Get.snackbar('Error', e.toString());
                             }
                           },
-                          leading: const ClipOval(
-                            child: Icon(Icons.file_copy,color: Colors.black,),
+                          leading: ClipOval(
+                            child: Icon(
+                              Icons.file_copy,
+                              color: Colors.black,
+                            ),
                           ),
-                          title: Text(getlist[0],style: const TextStyle(color: Colors.black),),
-                          subtitle: const Text('00/00/2000',style: TextStyle(color: Colors.black)),
+                          title: Text(
+                            getlist[0],
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          subtitle: Text('00/00/2000',
+                              style: TextStyle(color: Colors.black)),
                         );
                       }));
                 }
               },
             ),
             control.isDocumentLoading.value
-                ? const Center(
-                    child: CircularProgressIndicator(
-                    color: Colors.yellow,
-                  ))
-                : const Center()
+                ? Center(
+                child: CircularProgressIndicator(
+                  color: Colors.yellow,
+                ))
+                : Center()
           ],
         ),
       ),

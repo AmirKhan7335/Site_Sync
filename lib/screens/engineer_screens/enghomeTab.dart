@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../centralBarScreens/siteCamera/inputRtsp.dart';
+
 class EngineerHomeTab extends StatefulWidget {
   final bool isClient;
   const EngineerHomeTab({super.key, required this.isClient});
@@ -539,6 +541,9 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                 ),
                               ),
                               InkWell(
+                                onTap: () {
+                                  Dialogue().inputRtsp(context); // Replace with your actual function call
+                                },
                                 child: Card(
                                   elevation: 5,
                                   color: Colors.transparent,

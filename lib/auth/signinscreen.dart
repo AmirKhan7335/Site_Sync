@@ -1,32 +1,35 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
+import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
-import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import '../components/my_button.dart';
 import '../components/mytextfield.dart';
+import '../main.dart';
 import 'createaccountscreen.dart';
 
 // Google sign in
 Future<User?> signInWithGoogle() async {
   try {
     final GoogleSignInAccount? googleSignInAccount =
-        await GoogleSignIn().signIn();
+    await GoogleSignIn().signIn();
     if (googleSignInAccount == null) {
       return null;
     }
 
     final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+    await googleSignInAccount.authentication;
 
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication.accessToken,
@@ -34,11 +37,11 @@ Future<User?> signInWithGoogle() async {
     );
 
     final UserCredential authResult =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+    await FirebaseAuth.instance.signInWithCredential(credential);
 
     return authResult.user;
   } catch (e) {
-    Get.snackbar('Error', '$e');
+    Get.snackbar('Error', '${e}');
     return null;
   }
 }
@@ -141,7 +144,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const EngineerHomePage(isClient: false,),
+                      builder: (context) => EngineerHomePage(isClient: false,),
                     ),
                   );
                 } else if (requestStatus == false) {
@@ -171,7 +174,8 @@ class _SigninScreenState extends State<SigninScreen> {
             setState(() {
               isloading = false;
             });
-          } else if (getRole == 'Client') {
+          }
+          else if (getRole == 'Client') {
             final user = FirebaseAuth.instance.currentUser;
 
             var activitiesSnapshot = await FirebaseFirestore.instance
@@ -186,7 +190,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const EngineerHomePage(isClient: true,),
+                      builder: (context) => EngineerHomePage(isClient: true,),
                     ),
                   );
                 } else if (requestStatus == false) {
@@ -217,6 +221,7 @@ class _SigninScreenState extends State<SigninScreen> {
               isloading = false;
             });
           }
+
           else if (getRole == 'Consultant') {
             Navigator.pushReplacement(
               context,
@@ -228,11 +233,12 @@ class _SigninScreenState extends State<SigninScreen> {
               isloading = false;
             });
           }
+
           else if (getRole == 'Contractor') {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const ContractorHomePage(),
+                builder: (context) => ContractorHomePage(),
               ),
             );
             setState(() {
@@ -272,7 +278,7 @@ class _SigninScreenState extends State<SigninScreen> {
           }
         }
       } else {
-        showErrorDialog('$e');
+        showErrorDialog('${e}');
         if (kDebugMode) {
           print('Error: ${e.message}');
         }
@@ -345,7 +351,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         child: Text(
                           'Email Address',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -366,7 +372,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         child: Text(
                           'Password',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -445,12 +451,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           await sendEmailToUser(user.email!);
                           // Navigate to home page after Google sign-in
                           if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Role(),
-                              ),
-                            );
+
                             //isloading = false;
                           }
                           //isloading = false;
@@ -473,10 +474,10 @@ class _SigninScreenState extends State<SigninScreen> {
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
-                              return CreateAccountScreen(
-                                onTap: () {},
-                              );
-                            }));
+                                  return CreateAccountScreen(
+                                    onTap: () {},
+                                  );
+                                }));
                           },
                           child: const Text(
                             'Sign up',

@@ -41,12 +41,12 @@ class NotificationsScreenState extends State<NotificationsScreen> {
             child: Row(
               children: [
                 Text(
-                  'Notifications',style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    
-                    )
+                    'Notifications',style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+
+                )
                 ),
               ],
             ),
@@ -64,7 +64,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                   leading: const CircleAvatar(child: Icon(Icons.person)),
                   // For simplicity, using an icon instead of an image
                   title: Text(
-                      '${notifications[index].name} ${notifications[index].action}',style: const TextStyle(color: Colors.black),),
+                    '${notifications[index].name} ${notifications[index].action}',style: const TextStyle(color: Colors.black),),
                   subtitle: Text(notifications[index].task,style: const TextStyle(color: Colors.black),),
                 );
               },

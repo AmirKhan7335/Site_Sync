@@ -16,6 +16,14 @@ import 'package:intl/intl.dart'; // Import the intl package
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:amir_khan1/screens/engineer_screens/notificationCases.dart';
+
+enum ExportFormat {
+  excel,
+  pdf,
+}
 
 class ScheduleScreen extends StatefulWidget {
   final bool isClient;
@@ -638,6 +646,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         .collection('activities')
         .doc(activityId)
         .delete();
+    //------------------------------------------------Sending Notification-------
+    NotificationCases().scheduleNotification(email!, 'Deleted');
   }
 
   @override
@@ -696,7 +706,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         loadedActivities = tempActivities;
       });
     } catch (e) {
-      Get.snackbar('11Error', '${e}');
+      Get.snackbar('11Error', '$e');
     }
   }
 
@@ -747,6 +757,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         'order': activity.order,
         'image': activity.image,
       });
+      //------------------------------------------------Sending Notification-------
+      NotificationCases().scheduleNotification(email!, 'Updated');
       
     } catch (e) {
       if (kDebugMode) {
@@ -826,6 +838,186 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     // Return the total day count
     return totalDayCount;
   }
+
+
+  Future<void> _showExportOptions(BuildContext context) async {
+    final ExportFormat? selectedFormat = await showDialog<ExportFormat>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Export Format'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('Excel'),
+                onTap: () {
+                  Navigator.of(context).pop(ExportFormat.excel);
+                },
+              ),
+              ListTile(
+                title: const Text('PDF'),
+                onTap: () {
+                  Navigator.of(context).pop(ExportFormat.pdf);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selectedFormat != null) {
+      await _exportActivities(selectedFormat);
+    }
+  }
+
+
+  Future<void> _exportActivities(ExportFormat format) async {
+    try {
+      String fileName = 'activities_export.${format.toString().toLowerCase()}';
+      List<Activity> activities = loadedActivities;
+      String filePath;
+
+      switch (format) {
+        case ExportFormat.excel:
+          filePath = await _generateExcelExportData(activities);
+          break;
+        case ExportFormat.pdf:
+          filePath = await _generatePDFExportData(activities);
+          break;
+      }
+
+      if (filePath.isEmpty) {
+        throw Exception('Export data is empty');
+      }
+
+      if (kDebugMode) {
+        print('File saved at: $filePath');
+      }
+      Get.snackbar('Export Successful', 'File downloaded as $fileName');
+    } catch (e, stackTrace) {
+      print('Export Error: $e');
+      print('Stack Trace: $stackTrace');
+      Get.snackbar('Export Error', 'An error occurred during export: $e');
+    }
+  }
+
+
+
+  Future<String> _generateExcelExportData(List<Activity> activities) async {
+    try {
+      final xlsio.Workbook workbook = xlsio.Workbook();
+      final xlsio.Worksheet sheet = workbook.worksheets[0];
+
+      // Add headers
+      sheet.getRangeByIndex(1, 1).setText('Activity Name');
+      sheet.getRangeByIndex(1, 2).setText('Start Date');
+      sheet.getRangeByIndex(1, 3).setText('Finish Date');
+
+      // Add activity data
+      for (int i = 0; i < activities.length; i++) {
+        final activity = activities[i];
+        sheet.getRangeByIndex(i + 2, 1).setText(activity.name);
+        DateTime startDate = DateTime.tryParse(activity.startDate) ?? DateTime.now();
+        DateTime finishDate = DateTime.tryParse(activity.finishDate) ?? DateTime.now();
+        sheet.getRangeByIndex(i + 2, 2).setDateTime(startDate);
+        sheet.getRangeByIndex(i + 2, 3).setDateTime(finishDate);
+      }
+
+      // Construct the file path
+      final String? downloadsDirectory = (await getExternalStorageDirectory())?.path;
+      if (downloadsDirectory != null) {
+        final String filePath = '$downloadsDirectory/activities_export.xlsx';
+
+        // Save the document
+        final List<int> bytes = workbook.saveAsStream();
+        await File(filePath).writeAsBytes(bytes);
+
+        // Dispose the workbook
+        workbook.dispose();
+
+        // Return the file path
+        return filePath;
+      } else {
+        throw Exception('Unable to access the downloads directory.');
+      }
+    } catch (e, stackTrace) {
+      print('Export Error: $e');
+      print('Stack Trace: $stackTrace');
+      throw Exception('An error occurred during export: $e');
+    }
+  }
+
+  Future<String> _generatePDFExportData(List<Activity> activities) async {
+    try {
+      final PdfDocument document = PdfDocument();
+
+      // Add a new page to the document.
+      final PdfPage page = document.pages.add();
+
+      // Create a PDF grid class to add tables.
+      final PdfGrid grid = PdfGrid();
+
+      // Specify the grid column count.
+      grid.columns.add(count: 3);
+
+      // Add a grid header row.
+      final PdfGridRow headerRow = grid.headers.add(1)[0];
+      headerRow.cells[0].value = 'Activity Name';
+      headerRow.cells[1].value = 'Start Date';
+      headerRow.cells[2].value = 'Finish Date';
+
+      // Set header font.
+      headerRow.style.font =
+          PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
+
+      // Add rows to the grid.
+      for (int i = 0; i < activities.length; i++) {
+        final activity = activities[i];
+        PdfGridRow row = grid.rows.add();
+        row.cells[0].value = activity.name;
+        row.cells[1].value = activity.startDate;
+        row.cells[2].value = activity.finishDate;
+      }
+
+      // Set grid format.
+      grid.style.cellPadding = PdfPaddings(left: 5, top: 5);
+
+      // Draw table in the PDF page.
+      grid.draw(
+        page: page,
+        bounds: Rect.fromLTWH(
+          0,
+          0,
+          page.getClientSize().width,
+          page.getClientSize().height,
+        ),
+      );
+
+      // Get the downloads directory path
+      final String? downloadsDirectory = (await getExternalStorageDirectory())?.path;
+      if (downloadsDirectory != null) {
+        final String filePath = '$downloadsDirectory/activities_export.pdf';
+
+        // Save the document.
+        await File(filePath).writeAsBytes(await document.save());
+
+        // Dispose the document.
+        document.dispose();
+
+        // Return the file path
+        return filePath;
+      } else {
+        throw Exception('Unable to access the downloads directory.');
+      }
+    } catch (e, stackTrace) {
+      print('Export Error: $e');
+      print('Stack Trace: $stackTrace');
+      throw Exception('An error occurred during PDF export: $e');
+    }
+  }
+
 
 
 
@@ -981,22 +1173,30 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   children: [
                     const Expanded(
                       child:  Center(
-                          child: Text(
-                        'Activities',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
+                        child: Text(
+                          'Activities',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
                         ),
-                      )),
+                      ),
                     ),
-                    widget.isClient
-                        ? const Text('')
-                        : IconButton(
-                      icon: const Icon(Icons.file_upload),
-                      onPressed: isLoading ? null : pickFile,
-                      color: const Color(0xFF2CF07F),
-                    )
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.file_upload),
+                          onPressed: isLoading ? null : pickFile,
+                          color: const Color(0xFF2CF07F),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.file_download), // Add export icon
+                          onPressed: isLoading ? null : () => _showExportOptions(context),
+                          color: Colors.green,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -1120,3 +1320,4 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 }
+

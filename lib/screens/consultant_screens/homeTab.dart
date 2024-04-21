@@ -1,9 +1,7 @@
 import 'package:amir_khan1/controllers/projectsCountingController.dart';
-// import 'package:amir_khan1/screens/centralBarScreens/documentScreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
-// import 'package:amir_khan1/screens/centralBarScreens/TestingTab/testingScreen.dart';
+import 'package:amir_khan1/screens/centralBarScreens/siteCamera/inputRtsp.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/chooseProject.dart';
-// import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/consltDocuments.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltTest/chooseProj.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
@@ -114,19 +112,18 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
   }
 
   Future<List> fetchRecentProjects() async {
-    print("Fetching recent projects...");
+//..
     try {
-      // Fetch all projects with the same email
+      DateTime fifteenDaysAgo = DateTime.now().subtract(const Duration(days: 15));
+
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
+          .where('creationDate',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(fifteenDaysAgo))
+          .orderBy('creationDate', descending: true)
           .get();
-
-      // Filter projects created within the last 15 days
-      DateTime fifteenDaysAgo = DateTime.now().subtract(const Duration(days: 15));
-      List userData = collectionData.docs
-          .where((doc) => doc['creationDate'].toDate().isAfter(fifteenDaysAgo))
-          .map(
+      final userData = collectionData.docs.map(
             (doc) {
           return [
             doc['title'],
@@ -138,45 +135,32 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
             doc['creationDate']
           ];
         },
-      )
-          .toList();
-
-      // Sort userData by creation date in descending order
-      userData.sort((a, b) => b[6].compareTo(a[6])); // Assuming index 6 represents creation date
-
-      // Print the fetched data for debugging
-      print('Fetched Data: $userData');
+      ).toList();
 
       return userData;
+//..
     } catch (e) {
-      // Handle any errors that occur during the fetch operation
       Get.snackbar('Error', e.toString());
       return [];
     }
   }
 
-
-
-
   Future<int> fetchOngoingProjects() async {
-    try {
-      DateTime currentDate = DateTime.now();
+    DateTime currentDate = DateTime.now();
 
-      final collectionData = await FirebaseFirestore.instance
-          .collection('Projects')
-          .where('email', isEqualTo: user!.email)
-          .where('endDate', isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
-          .get();
+    final collectionData = await FirebaseFirestore.instance
+        .collection('Projects')
+        .where('email', isEqualTo: user!.email)
+    // .where('startDate',
+    //     isLessThanOrEqualTo: Timestamp.fromDate(currentDate))
+        .where('endDate',
+        isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+        .get();
 
-      final userData = collectionData.docs.length;
+    final userData = collectionData.docs.length;
 
-      return userData;
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-      return 0;
-    }
+    return userData;
   }
-
 
   Future<int> fetchMyProjects() async {
     try {
@@ -215,8 +199,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
               } else {
                 final userData = snapshot.data!;
 
-                return 
-                Column(
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // User information
@@ -229,10 +212,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                           },
                           child: CircleAvatar(
                             backgroundImage: snapshot.data?.profilePicUrl !=
-                                    null
+                                null
                                 ? NetworkImage(snapshot.data!.profilePicUrl!)
                                 : const NetworkImage(
-                                    'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
+                                'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
                             radius: 25,
                           ),
                         ),
@@ -245,7 +228,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                             const Text(
                               "Welcome Back!",
                               style:
-                                  TextStyle(fontSize: 14, color: Colors.green),
+                              TextStyle(fontSize: 14, color: Colors.green),
                             ),
                             const SizedBox(height: 0),
                             Text(
@@ -276,7 +259,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                     const SizedBox(height: 20),
                     // Page view with indicators
                     Obx(
-                      () => Row(
+                          () => Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           StatusContainer(
@@ -326,7 +309,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const ProgressPage()));
+                                        const ProgressPage()));
                               },
                               child: const Text('Progress',
                                   style: TextStyle(
@@ -345,7 +328,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const RequestPage()));
+                                        const RequestPage()));
                               },
                               child: const Text(
                                 'Request',
@@ -371,7 +354,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("  Recently Added",
+                        Text("Recently Added",
                             style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.black,
@@ -405,126 +388,104 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
             } else if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                   child: CircularProgressIndicator(
-                color: Colors.green,
-              ));
+                    color: Colors.green,
+                  ));
             } else if (snapshot.hasError) {
-              return const Text('Error ');
+              return const Text('Error');
             } else {
               final projectList = snapshot.data;
 
               return ListView.builder(
                   itemCount: projectList!.length,
                   itemBuilder: ((context, index) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Card(
-                          elevation: 10,
-                          color: Colors.transparent,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                              child: ListTile(
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Card(
+                      elevation: 10,
+                      color: Colors.transparent,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Padding(
+                          padding:
+                          const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                          child: ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        projectList[index][0],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 25,
-                                            color: Colors.black),
-                                      ),
+                                    const Icon(Icons.calendar_month,
+                                        size: 15, color: Colors.green),
+                                    Text(
+                                      DateFormat('dd-MM-yyyy')
+                                          .format(
+                                        projectList[index][3].toDate(),
+                                      )
+                                          .toString(),
+                                      style: const TextStyle(color: Colors.black),
                                     ),
+                                    const Text(' to ',
+                                        style:
+                                        TextStyle(color: Colors.black)),
+                                    Text(
+                                        DateFormat('dd-MM-yyyy')
+                                            .format(projectList[index][4]
+                                            .toDate())
+                                            .toString(),
+                                        style:
+                                        const TextStyle(color: Colors.black)),
+                                    const Expanded(child: SizedBox()),
                                     Row(
                                       children: [
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        const Icon(Icons.calendar_month,
-                                            size: 20, color: Colors.green),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          DateFormat('dd/MM/yy')
-                                              .format(
-                                                projectList[index][3].toDate(),
-                                              )
-                                              .toString(),
-                                          style: const TextStyle(color: Colors.black),
-                                        ),
-                                        const Text(' - ',
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                        Text(
-                                            DateFormat('dd/MM/yy')
-                                                .format(projectList[index][4]
-                                                    .toDate())
-                                                .toString(),
-                                            style:
-                                                const TextStyle(color: Colors.black)),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        const SizedBox(width: 3),
-                                        const Icon(Icons.location_on_outlined, size: 20, color: Colors.green),
-                                        const SizedBox(width: 6),
-                                        Expanded( // Use Expanded to make the Text widget occupy the whole space horizontally
-                                          child: Text(
-                                            projectList[index][5],
+                                        const Icon(Icons.location_on_outlined,
+                                            size: 15, color: Colors.green),
+                                        Text(projectList[index][5],
                                             style: const TextStyle(
-                                              color: Colors.black,
-                                              height: 1.0,
-                                              // Set height to remove vertical spacing
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 3,
-                                          ),
-                                        ),
+                                                color: Colors.black)),
                                       ],
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Row(
-                                      children: [
-                                        const SizedBox(
-                                          width: 3,
-                                        ),
-                                        const Icon(Icons.person, color: Colors.green, size: 20,),
-                                        const SizedBox(
-                                          width: 6,
-                                        ),
-                                        Text(projectList[index][2],
-                                            style:
-                                                const TextStyle(color: Colors.black)),
-                                        const Expanded(
-                                          child: SizedBox(),
-                                        ),
-                                        const Text(
-                                          'Rs ',
-                                          style: TextStyle(color: Colors.green),
-                                        ),
-                                        Text(projectList[index][1],
-                                            style:
-                                                const TextStyle(color: Colors.black)),
-                                        const SizedBox(width: 10),
-                                      ],
-                                    ),
+                                    )
                                   ],
                                 ),
-                              ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    projectList[index][0],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.person, color: Colors.green),
+                                    Text(projectList[index][2],
+                                        style:
+                                        const TextStyle(color: Colors.black)),
+                                    const Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                    const Text(
+                                      'Rs ',
+                                      style: TextStyle(color: Colors.green),
+                                    ),
+                                    Text(projectList[index][1],
+                                        style:
+                                        const TextStyle(color: Colors.black)),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      )));
+                      ),
+                    ),
+                  )));
             }
           }),
     );
@@ -587,46 +548,51 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
               ),
             ),
           ),
-          Card(
-            color: Colors.transparent,
-            elevation: 5,
-            child: Container(
-              height: 70,
-              width: 65,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Icon(
-                      Icons.video_call,
-                      color: Colors.black,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 1.5,
-                      width: 45,
-                      color: Colors.black,
-                    ),
-                    const SizedBox(
-                      height: 2.5,
-                    ),
-                    const Text(
-                      'Site',
-                      style: TextStyle(
-                        fontSize: 10,
+          InkWell(
+            onTap: () {
+              Dialogue().inputRtsp(context);
+            },
+            child: Card(
+              color: Colors.transparent,
+              elevation: 5,
+              child: Container(
+                height: 70,
+                width: 65,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Icon(
+                        Icons.video_call,
                         color: Colors.black,
                       ),
-                    )
-                  ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 1.5,
+                        width: 45,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(
+                        height: 2.5,
+                      ),
+                      const Text(
+                        'Site',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -636,10 +602,9 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ProjectScreen(
-                          isCnslt: true,
-                        ))),
-            child: 
-            Card(
+                      isCnslt: true,
+                    ))),
+            child: Card(
               color: Colors.transparent,
               elevation: 5,
               child: Container(
@@ -689,8 +654,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const ChooseProjectForTest())),
-            child:
-             Card(
+            child: Card(
               color: Colors.transparent,
               elevation: 5,
               child: Container(
@@ -754,7 +718,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
               return <Widget>[
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
+                        (BuildContext context, int index) {
                       return Column(
                         children: <Widget>[head(data)],
                       );

@@ -1,12 +1,29 @@
 import 'package:amir_khan1/components/my_drawer.dart';
 import 'package:amir_khan1/controllers/navigationController.dart';
+import 'package:amir_khan1/main.dart';
+import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
+import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
+import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
+import 'package:amir_khan1/screens/consultant_screens/addProjectScreen.dart';
+import 'package:amir_khan1/screens/consultant_screens/homeTab.dart';
+import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
+import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
+import 'package:amir_khan1/screens/consultant_screens/scheduledProjects.dart';
+import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
+import 'package:amir_khan1/models/activity.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/contrCreateProject.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/contrHomeTab.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/contrSchedule/contrSchedule.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ContractorHomePage extends StatefulWidget {
   const ContractorHomePage({super.key});
@@ -21,20 +38,20 @@ class ConsultantHomePageState extends State<ContractorHomePage> {
     final controller = Get.put(NavigationController());
     return Scaffold(
         drawer: const MyDrawer(),
-        
+
         body: Obx(
-          () => controller.contrCurrentIndex.value == 1
-              ? const ChatScreen(isClient: false,)
+              () => controller.contrCurrentIndex.value == 1
+              ? ChatScreen(isClient: false,)
               : controller.contrCurrentIndex.value == 2
-                  ? const ContrCreateProject()
-                  : controller.contrCurrentIndex.value == 0
-                      ? const ContrHomeTab()
-                      : controller.contrCurrentIndex.value == 3
-                          ? const ContrScheduleProjects()
-                          : const NotificationsScreen(),
+              ? ContrCreateProject()
+              : controller.contrCurrentIndex.value == 0
+              ? ContrHomeTab()
+              : controller.contrCurrentIndex.value == 3
+              ? const ContrScheduleProjects()
+              : const NotificationsScreen(),
         ),
         bottomNavigationBar: Obx(
-          () => BottomNavigationBar(
+              () => BottomNavigationBar(
             backgroundColor: Colors.white,
             type: BottomNavigationBarType.fixed,
             // selectedItemColor:  Color(0xFF3EED88),
@@ -46,11 +63,11 @@ class ConsultantHomePageState extends State<ContractorHomePage> {
             },
 
             selectedIconTheme:
-                const IconThemeData(color: Color(0xFF3EED88), size: 30),
+            IconThemeData(color: Color(0xFF3EED88), size: 30),
             showUnselectedLabels: false,
-            unselectedLabelStyle: const TextStyle(color: Colors.black),
+            unselectedLabelStyle: TextStyle(color: Colors.black),
             showSelectedLabels: false,
-            unselectedIconTheme: const IconThemeData(color: Colors.black, size: 22.5),
+            unselectedIconTheme: IconThemeData(color: Colors.black, size: 22.5),
             selectedFontSize: 0,
             unselectedFontSize: 0,
             items: [

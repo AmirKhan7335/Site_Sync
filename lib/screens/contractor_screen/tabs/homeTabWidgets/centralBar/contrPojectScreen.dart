@@ -1,4 +1,5 @@
 import 'package:amir_khan1/screens/consultant_screens/widgets/projDetail.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -116,32 +117,32 @@ class _ProjectScreenState extends State<ContrProjectScreen> {
             return ListView.builder(
                 itemCount: data!.length,
                 itemBuilder: ((context, index) => ListTile(
-                      onTap: () async {
-                        final id = data[index][7];
-                        final getname = await getEngineer(id);
+                  onTap: () async {
+                    final id = data[index][7];
+                    final getname = await getEngineer(id);
 
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return ProjectDetail(
-                              projectDataList: data[index],
-                              engineerName: getname,
-                            );
-                          },
-                        ));
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return ProjectDetail(
+                          projectDataList: data[index],
+                          engineerName: getname,
+                        );
                       },
-                      leading: ClipOval(
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      title: Text(data[index][0].toString()),
-                      subtitle: Text(
-                          DateTime.now().isAfter(data[index][2].toDate())
-                              ? 'Completed'
-                              : 'Ongoing'),
-                    )));
+                    ));
+                  },
+                  leading: ClipOval(
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  title: Text(data[index][0].toString()),
+                  subtitle: Text(
+                      DateTime.now().isAfter(data[index][2].toDate())
+                          ? 'Completed'
+                          : 'Ongoing'),
+                )));
           }),
     );
   }

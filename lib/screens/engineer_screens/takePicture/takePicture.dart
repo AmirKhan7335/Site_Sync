@@ -11,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class TakePicture extends StatefulWidget {
-  const TakePicture({super.key});
+  TakePicture({super.key});
 
   @override
   State<TakePicture> createState() => _TakePictureState();
@@ -133,7 +133,7 @@ class _AddPicState extends State<AddPic> {
         .doc(id)
         .update({'image': FieldValue.arrayUnion([image]), 'imgApproved': false});
   }
-  
+
 
   Future<List<Activity>> fetchActivitiesFromFirebase() async {
     var email = FirebaseAuth.instance.currentUser!.email;
@@ -178,28 +178,29 @@ class _AddPicState extends State<AddPic> {
     final controller = Get.put(TakePictureController());
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            const Text(
-              'Choose Activity To Add Pic',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: FutureBuilder<List<Activity>>(
-                  future: fetchActivitiesFromFirebase(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    } else if (!snapshot.hasData) {
-                      return const Text('No Activities Found');
-                    } else if (snapshot.hasData) {
-                      return Obx(()
+        child: Container(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                'Choose Activity To Add Pic',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: FutureBuilder<List<Activity>>(
+                    future: fetchActivitiesFromFirebase(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return const Text('No Activities Found');
+                      } else if (snapshot.hasData) {
+                        return Obx(()
                         => Stack(
                           children: [
                             SizedBox(
@@ -213,9 +214,9 @@ class _AddPicState extends State<AddPic> {
                                         decoration: BoxDecoration(
                                           color: Colors.grey[800],
                                           border:
-                                              Border.all(color: Colors.grey),
+                                          Border.all(color: Colors.grey),
                                           borderRadius:
-                                              BorderRadius.circular(10),
+                                          BorderRadius.circular(10),
                                         ),
                                         child: ListTile(
                                           onTap: () async {
@@ -223,22 +224,22 @@ class _AddPicState extends State<AddPic> {
                                               controller.isloading.value = true;
 
                                               final url =
-                                                  await uploadImageToStorage(
-                                                      File(widget.image));
+                                              await uploadImageToStorage(
+                                                  File(widget.image));
                                               await addPicture(
                                                   snapshot.data?[index].id,
                                                   url);
                                               Navigator.pop(context);
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(const SnackBar(
-                                                      content:
-                                                          Text('Image Added')));
+                                                  content:
+                                                  Text('Image Added')));
                                               controller.isloading.value= false;
                                             } catch (e) {
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          e.toString())));
+                                                  content: Text(
+                                                      '${e.toString()}')));
                                               Navigator.pop(context);
                                               controller.isloading.value= false;
                                             }
@@ -256,26 +257,27 @@ class _AddPicState extends State<AddPic> {
                             ),
                             controller.isloading.value
                                 ? const Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        SizedBox(height: 300,),
-                                        CircularProgressIndicator(
-                                            color: Colors.yellow),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: 300,),
+                                  CircularProgressIndicator(
+                                      color: Colors.yellow),
 
-                                      ],
-                                    ),
-                                  )
+                                ],
+                              ),
+                            )
                                 : const SizedBox()
                           ],
                         ),
-                      );
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  }),
-            )
-          ],
+                        );
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
+                    }),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,8 @@
+import 'package:amir_khan1/screens/consultant_screens/widgets/requestWidgets.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/requestWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -86,7 +88,7 @@ class _RequestPageState extends State<ContrRequestPage> {
           .get();
 
       final engineerEmail = activitiesSnapshot.docs.map(
-        (doc) {
+            (doc) {
           return [doc.id, doc['projectId']];
         },
       ).toList();
@@ -118,7 +120,7 @@ class _RequestPageState extends State<ContrRequestPage> {
           .where('reqAccepted', isEqualTo: true)
           .get();
       final engineerEmail = activitiesSnapshot.docs.map(
-        (doc) {
+            (doc) {
           return [doc.id, doc['projectId']];
         },
       ).toList();
@@ -142,7 +144,7 @@ class _RequestPageState extends State<ContrRequestPage> {
   getEngineerUserName(List emails) async {
     try {
       var activitiesSnapshot =
-          await FirebaseFirestore.instance.collection('users');
+      await FirebaseFirestore.instance.collection('users');
       final namesList = await Future.wait(emails.map((mail) async {
         final name = await activitiesSnapshot.doc(mail).get();
 
@@ -159,10 +161,10 @@ class _RequestPageState extends State<ContrRequestPage> {
     try {
       final projects = FirebaseFirestore.instance.collection('Projects');
       final projectDataList = await Future.wait(projectIds.map(
-        (Ids) async {
+            (Ids) async {
           final doc = await projects.doc(Ids).get();
 
-          return [doc['title'], doc['startDate'], doc['endDate'],doc.id];
+          return [doc['title'], doc['startDate'], doc['endDate'], doc.id];
         },
       ).toList());
 
@@ -180,7 +182,7 @@ class _RequestPageState extends State<ContrRequestPage> {
             : getPendingClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -189,52 +191,56 @@ class _RequestPageState extends State<ContrRequestPage> {
             return ListView.builder(
                 itemCount: data![0].length,
                 itemBuilder: (context, index) => ListTile(
-                      onTap: () async {
-                        final name = await data[1][index];
-                        final project = await data[0][index];
-                        final email = await data[2][index];
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ContrPendingRequest(
-                                  selectedValue: _selectedValue,
-                                      name: name,
-                                      projectDataList: project,
-                                      engEmail: email,
-                                    )));
-                      },
-                      leading: const CircleAvatar(
-                        radius: 30,
-                        child: Icon(Icons.person),
+                  onTap: () async {
+                    final name = await data[1][index];
+                    final project = await data[0][index];
+                    final email = await data[2][index];
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ContrPendingRequest(
+                              name: name,
+                              projectDataList: project,
+                              engEmail: email,
+                              selectedValue: _selectedValue,
+                            )));
+                  },
+                  leading: CircleAvatar(
+                    radius: 30,
+                    child: Icon(Icons.person),
+                  ),
+                  title: Text(
+                    '${data[1][index]}',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  subtitle: Text('Hi, please approve my role',
+                      style: TextStyle(color: Colors.black)),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text('8 Nov', style: TextStyle(color: Colors.black)),
+                      Icon(
+                        Icons.star,
+                        color: Colors.green,
+                        size: 10,
                       ),
-                      title: Text('${data[1][index]}',style: const TextStyle(color: Colors.black),),
-                      subtitle: const Text('Hi, please approve my role',style: TextStyle(color: Colors.black)),
-                      trailing: const Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text('8 Nov',style: TextStyle(color: Colors.black)),
-                          Icon(
-                            Icons.star,
-                            color: Colors.green,
-                            size: 10,
-                          ),
-                        ],
-                      ),
-                    ));
+                    ],
+                  ),
+                ));
           } else {
-            return const Text('No Data');
+            return Text('No Data');
           }
         });
   }
 
   Widget approvedRequests() {
     return FutureBuilder(
-        future:  _selectedValue == 'Engineer'
+        future: _selectedValue == 'Engineer'
             ? getApprovedRequests()
             : getApprovedClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -242,30 +248,33 @@ class _RequestPageState extends State<ContrRequestPage> {
             return ListView.builder(
                 itemCount: data![0].length,
                 itemBuilder: (context, index) => ListTile(
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ContrApprovedRequest(
-                                    selectedValue: _selectedValue,
-                                    name: data[1][index],
-                                    projectDataList: data[0][index],
-                                    engEmail: data[2][index],
-                                  ))),
-                      leading: const CircleAvatar(
-                        radius: 30,
-                        child: Icon(Icons.person),
-                      ),
-                      title: Text('${data[1][index]}',style: const TextStyle(color: Colors.black)),
-                      subtitle: Text('${data[0][index][0]}',style: const TextStyle(color: Colors.black)),
-                      trailing: const Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text('08/01/2023',style: TextStyle(color: Colors.black)),
-                        ],
-                      ),
-                    ));
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ContrApprovedRequest(
+                            name: data[1][index],
+                            projectDataList: data[0][index],
+                            engEmail: data[2][index],
+                            selectedValue: _selectedValue,
+                          ))),
+                  leading: CircleAvatar(
+                    radius: 30,
+                    child: Icon(Icons.person),
+                  ),
+                  title: Text('${data[1][index]}',
+                      style: TextStyle(color: Colors.black)),
+                  subtitle: Text('${data[0][index][0]}',
+                      style: TextStyle(color: Colors.black)),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text('08/01/2023',
+                          style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                ));
           } else {
-            return const Text('No Data');
+            return Text('No Data');
           }
         });
   }
@@ -274,9 +283,9 @@ class _RequestPageState extends State<ContrRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
         elevation: 0,
-        title: const Text('Requests',style: TextStyle(color: Colors.black)),
+        title: Text('Requests', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Container(
@@ -314,7 +323,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   Container(
                     width: 150,
                     height: 50,
@@ -364,11 +373,11 @@ class _RequestPageState extends State<ContrRequestPage> {
                     });
                   },
                 ),
-                const Text(
+                Text(
                   'Engineer',
                   style: TextStyle(color: Colors.black),
                 ), // Label for the Consultant radio button
-                const SizedBox(
+                SizedBox(
                     width:
                     20), // Add some spacing between radio button and label
                 Radio<String>(
@@ -383,13 +392,13 @@ class _RequestPageState extends State<ContrRequestPage> {
                     });
                   },
                 ),
-                const Text('Client', style: TextStyle(color: Colors.black)),
+                Text('Client', style: TextStyle(color: Colors.black)),
                 // Label for the Contractor radio button
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
-              child: SizedBox(
+              padding: EdgeInsets.only(right: 8, left: 8, bottom: 8),
+              child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.75,
                 child: isPending ? pendingRequests() : approvedRequests(),

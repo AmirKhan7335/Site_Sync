@@ -1,7 +1,11 @@
 import 'package:amir_khan1/components/my_button.dart';
+import 'package:amir_khan1/components/mytextfield.dart';
+import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
+import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,7 +28,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
   Future<void> sendRequestToConsultant(projectId) async {
     final email = FirebaseAuth.instance.currentUser!.email;
     var requests =
-        await FirebaseFirestore.instance.collection('contractorReq').doc().set({
+    await FirebaseFirestore.instance.collection('contractorReq').doc().set({
       'consultantEmail': consultantEmail,
       'contractorEmail': email,
       'projectId': projectId,
@@ -58,13 +62,13 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
 
       final userData = collectionData.docs
           .map((doc) {
-            if (doc.data().containsKey('companyName')) {
-              return [doc['companyName'], doc['email']];
-            } else {
-              return null;
-              // Return null for documents without the 'companyName' field
-            }
-          })
+        if (doc.data().containsKey('companyName')) {
+          return [doc['companyName'], doc['email']];
+        } else {
+          return null;
+          // Return null for documents without the 'companyName' field
+        }
+      })
           .where((data) => data != null) // Filter out null values
           .toList();
       return userData;
@@ -88,7 +92,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
         .get();
 
     final userData = collectionData.docs.map(
-      (doc) {
+          (doc) {
         return [doc['title'], doc.id];
       },
     ).toList();
@@ -111,8 +115,8 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                           child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      ));
+                            color: Colors.blue,
+                          ));
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
@@ -122,31 +126,31 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                       return ListView.builder(
                           itemCount: projectList!.length,
                           itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Card(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black12,
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      border: Border.all(
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    child: ListTile(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedProject =
-                                              projectList[index][0];
-                                          selectedProjectId =
-                                              projectList[index][1];
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                      title: Text('${projectList![index][0]}'),
-                                    ),
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Card(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black12,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  border: Border.all(
+                                    color: Colors.grey,
                                   ),
                                 ),
-                              ));
+                                child: ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedProject =
+                                      projectList[index][0];
+                                      selectedProjectId =
+                                      projectList[index][1];
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  title: Text('${projectList![index][0]}'),
+                                ),
+                              ),
+                            ),
+                          ));
                     }
                   }),
             ));
@@ -168,8 +172,8 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                           child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      ));
+                            color: Colors.blue,
+                          ));
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
@@ -179,33 +183,33 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                       return ListView.builder(
                           itemCount: consultantList!.length,
                           itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Card(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black12,
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      border: Border.all(
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    child: ListTile(
-                                      onTap: () {
-                                        setState(() {
-                                          consultantUserName =
-                                              consultantList[index][0];
-                                          consultantEmail =
-                                              consultantList[index][1];
-                                        });
-
-                                        Navigator.pop(context);
-                                      },
-                                      title:
-                                          Text('${consultantList![index][0]}'),
-                                    ),
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Card(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black12,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  border: Border.all(
+                                    color: Colors.grey,
                                   ),
                                 ),
-                              ));
+                                child: ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      consultantUserName =
+                                      consultantList[index][0];
+                                      consultantEmail =
+                                      consultantList[index][1];
+                                    });
+
+                                    Navigator.pop(context);
+                                  },
+                                  title:
+                                  Text('${consultantList![index][0]}'),
+                                ),
+                              ),
+                            ),
+                          ));
                     }
                   }),
             ));
@@ -256,7 +260,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                         child: Text(
                           'Company',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -270,7 +274,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           color: Colors.transparent,
                         ),
                         color:
-                            const Color(0xFF6B8D9F), // Set the background color
+                        const Color(0xFF6B8D9F), // Set the background color
                       ),
                       child: TextFormField(
                         readOnly: true,
@@ -283,9 +287,6 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           fontSize: 20.0,
                         ),
                         decoration: InputDecoration(
- 
-            
-
                           border: InputBorder.none,
                           hintText: consultantUserName.isEmpty
                               ? 'Select Company'
@@ -314,7 +315,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                         child: Text(
                           'Project',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -328,7 +329,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           color: Colors.transparent,
                         ),
                         color:
-                            const Color(0xFF6B8D9F), // Set the background color
+                        const Color(0xFF6B8D9F), // Set the background color
                       ),
                       child: TextFormField(
                         readOnly: true,
@@ -344,9 +345,6 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           fontSize: 20.0,
                         ),
                         decoration: InputDecoration(
-         
-            
-
                           border: InputBorder.none,
                           hintText: selectedProject.isEmpty
                               ? 'Select A Project'

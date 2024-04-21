@@ -3,8 +3,11 @@ import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/controllers/navigationController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ContrCreateProject extends StatefulWidget {
   const ContrCreateProject({super.key});
@@ -108,7 +111,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
 
   @override
   Widget build(BuildContext context) {
-   final controller = Get.put(NavigationController());
+    final controller = Get.put(NavigationController());
     return Container(
       child: Stack(
         children: [
@@ -145,7 +148,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         child: Text(
                           'Project Title',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -166,7 +169,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         child: Text(
                           'Total Cost',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -188,7 +191,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         child: Text(
                           'Retention Money',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -210,7 +213,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         child: Text(
                           'Start Date',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -230,7 +233,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         child: Text(
                           'End Date',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -251,13 +254,13 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         child: Text(
                           'Funding',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
                     ),
                     MyTextField(
-                      hintText: 'self generated',
+                      hintText: 'selge generated',
                       obscureText: false,
                       controller: fundingController,
                       icon: Icons.man,
@@ -272,7 +275,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         child: Text(
                           'Location',
                           style:
-                              TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+                          TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -297,7 +300,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                             endDate == null ||
                             fundingController.text.isEmpty ||
                             locationController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Please fill all the fields')));
                         } else {
                           setState(() {

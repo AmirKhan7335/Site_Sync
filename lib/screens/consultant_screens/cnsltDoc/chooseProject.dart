@@ -53,40 +53,40 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
               return ListView.builder(
                   itemCount: data!.length,
                   itemBuilder: ((context, index) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          elevation: 5,
-                          color: Colors.white,
-                          child: ListTile(
-                            onTap: () {
-                              final projId = data[index][1];
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => CnsltDocumentScreen(
-                                          projectId: projId)));
-                            },
-                            leading: ClipOval(
-                              child: Text(
-                                '${index + 1}',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            title: Text(
-                              data[index][0].toString(),
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            subtitle: Container(
-                              height: 1.5,
-                              width: 500,
-                              color: Colors.grey,
-                            ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      elevation: 5,
+                      color: Colors.white,
+                      child: ListTile(
+                        onTap: () {
+                          final projId = data[index][1];
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CnsltDocumentScreen(
+                                      projectId: projId)));
+                        },
+                        leading: ClipOval(
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                      )));
+                        title: Text(
+                          data[index][0].toString(),
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        subtitle: Container(
+                          height: 1.5,
+                          width: 500,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  )));
             }));
   }
 }

@@ -35,7 +35,7 @@ class ConsultantSplash extends StatelessWidget {
                     ),
                     const SizedBox(height: 50),
                     const SizedBox(
-                      
+
                       width: double.infinity,
                       child: Center(
                         child: Text(

@@ -118,8 +118,8 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: const Text('Select a Project'),
-            content: SizedBox(
+            title: Text('Select a Project'),
+            content: Container(
               height: 400,
               child: FutureBuilder(
                   future: fetchProjects(consultantEmail),
@@ -132,7 +132,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return const Text('No Projects ');
+                      return Text('No Projects ');
                     } else {
                       final projectList = snapshot.data;
                       return ListView.builder(
@@ -158,7 +158,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                                     });
                                     Navigator.pop(context);
                                   },
-                                  title: Text('${projectList[index][0]}'),
+                                  title: Text('${projectList![index][0]}'),
                                 ),
                               ),
                             ),
@@ -175,8 +175,8 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: const Text('Select Company'),
-            content: SizedBox(
+            title: Text('Select Company'),
+            content: Container(
               height: 400,
               child: FutureBuilder(
                   future: _selectedValue=='Consultant'? fetchConsultant():fetchContractor(),
@@ -189,7 +189,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return const Text('No Consultant');
+                      return Text('No Consultant');
                     } else {
                       final consultantList = snapshot.data;
                       return ListView.builder(
@@ -217,7 +217,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                                     Navigator.pop(context);
                                   },
                                   title:
-                                  Text('${consultantList[index][0]}'),
+                                  Text('${consultantList![index][0]}'),
                                 ),
                               ),
                             ),
@@ -247,7 +247,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                   }
                 }
               },
-              icon: const Icon(
+              icon: Icon(
                 Icons.logout,
                 color: Colors.black,
               ))
@@ -269,7 +269,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 60,
                       backgroundImage: AssetImage('assets/images/logo1.png'),
                       backgroundColor: Colors.transparent,
@@ -305,11 +305,11 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                             });
                           },
                         ),
-                        const Text(
+                        Text(
                           'Consultant',
                           style: TextStyle(color: Colors.black),
                         ), // Label for the Consultant radio button
-                        const SizedBox(
+                        SizedBox(
                             width:
                             20), // Add some spacing between radio button and label
                         Radio<String>(
@@ -324,7 +324,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                             });
                           },
                         ),
-                        const Text('Contractor',
+                        Text('Contractor',
                             style: TextStyle(
                                 color: Colors
                                     .black)), // Label for the Contractor radio button
@@ -378,7 +378,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                           filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.arrow_drop_down,
                             color: Colors.grey, // Set icon color to white
                           ),
@@ -436,7 +436,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                           filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.arrow_drop_down,
                             color: Colors.grey, // Set icon color to white
                           ),

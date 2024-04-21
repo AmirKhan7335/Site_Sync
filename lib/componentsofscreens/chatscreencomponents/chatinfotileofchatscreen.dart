@@ -69,18 +69,16 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Card(
                 child: ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  tileColor: Colors.green,
+                  tileColor: Colors.white,
                   leading: Container(
                     width: 60,
                     height: 60,
+
                     decoration: const BoxDecoration(
-                      color: Colors.blue,
+                      color: Colors.grey,
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
@@ -97,8 +95,8 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
                     widget.otherUser.name,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: Colors.black,
                       fontSize: 18,
-                      color: Colors.white,
                     ),
                   ),
                   subtitle: Row(
@@ -106,15 +104,15 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
                     children: [
                       Text(
                         lastMessageText.length<20?lastMessageText:
-                       '${lastMessageText.substring(0, 20)}..',
-                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                        '${lastMessageText.substring(0, 20)}..',
+                        style: const TextStyle(fontSize: 14),
                       ),
                       if (messageTime != null) // Only display time if not null
                         Text(
                           '${DateFormat('h:mm').format(messageTime)} $amPm',
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.white,
+                            color: Colors.grey,
                           ),
                         ),
                     ],

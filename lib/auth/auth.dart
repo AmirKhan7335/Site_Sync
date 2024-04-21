@@ -1,12 +1,16 @@
+import 'package:amir_khan1/main.dart';
+import 'package:amir_khan1/screens/client_screen/clientAccountDetail.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
+import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../screens/client_screen/clientAccountDetail.dart';
 import '../screens/engineer_screens/selectorscreen.dart';
 
 class AuthPage extends StatefulWidget {
@@ -17,7 +21,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  var status;
+  var status = null;
   @override
   void initState() {
     super.initState();
@@ -64,15 +68,16 @@ class _AuthPageState extends State<AuthPage> {
                   if (snapshot.hasData) {
                     if (snapshot.data == 'Engineer') {
                       if (status == true) {
-                        return const EngineerHomePage(isClient: false,);
+                        return EngineerHomePage(isClient: false,);
                       } else if (status == false) {
                         return WelcomeEngineer(isClient: false,);
                       } else {
                         return AccountDetails();
                       }
-                    } else if (snapshot.data == 'Client') {
+                    }
+                    else if (snapshot.data == 'Client') {
                       if (status == true) {
-                        return const EngineerHomePage(isClient: true,);
+                        return EngineerHomePage(isClient: true,);
                       } else if (status == false) {
                         return WelcomeEngineer(isClient: true,);
                       } else {
@@ -80,23 +85,23 @@ class _AuthPageState extends State<AuthPage> {
                       }
                     }
                     else if (snapshot.data == 'Consultant') {
-                      return const ConsultantHomePage();
+                      return ConsultantHomePage();
                     }
-                     else if (snapshot.data == 'Contractor') {
-                      return const ContractorHomePage();
+                    else if (snapshot.data == 'Contractor') {
+                      return ContractorHomePage();
                     }
-                     else {
-                      return const Center(child: Text('Nothing To Show'));
+                    else {
+                      return Center(child: Text('Nothing To Show'));
                     }
                   } else if (snapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return const Center(
+                    return Center(
                       child: CircularProgressIndicator(),
                     );
                   } else if (snapshot.hasError) {
                     return Center(child: Text(snapshot.error.toString()));
                   } else {
-                    return const Text('Unknown Error');
+                    return Text('Unknown Error');
                   }
                 });
           } else {

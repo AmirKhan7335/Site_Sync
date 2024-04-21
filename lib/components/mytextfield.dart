@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class MyTextField extends StatefulWidget {
   final String hintText;
@@ -7,13 +9,13 @@ class MyTextField extends StatefulWidget {
   final IconData icon; // Add icon property
   final TextInputType keyboardType;
   MyTextField({
-    super.key,
+    Key? key,
     required this.hintText,
     required this.obscureText,
     required this.controller,
     required this.icon,
     required this.keyboardType, // Required icon parameter in constructor
-  });
+  }) : super(key: key);
 
   @override
   MyTextFieldState createState() => MyTextFieldState();
@@ -34,7 +36,7 @@ class MyTextFieldState extends State<MyTextField> {
         height: 50,
         width: 376,
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(15)),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
           border: Border.all(
             color: isFocused ? Colors.green : Colors.transparent,
           ),
@@ -64,18 +66,18 @@ class MyTextFieldState extends State<MyTextField> {
             ),
             suffixIcon: widget.hintText == 'Enter your password'||widget.hintText == 'Confirm your password'
                 ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        obscure = !obscure;
-                      });
-                    },
-                    icon: Icon(
-                      obscure
-                          ? Icons.visibility_off
-                          : Icons.visibility, // Based on obscure state choose the icon
-                      color: Colors.grey, // Set icon color to white
-                    ),
-                  )
+              onPressed: () {
+                setState(() {
+                  obscure = !obscure;
+                });
+              },
+              icon: Icon(
+                obscure
+                    ? Icons.visibility_off
+                    : Icons.visibility, // Based on obscure state choose the icon
+                color: Colors.grey, // Set icon color to white
+              ),
+            )
                 : null,
           ),
         ),
@@ -104,12 +106,12 @@ class MyDateField extends StatefulWidget {
 
   // Add icon property
 
-  const MyDateField({
-    super.key,
+  MyDateField({
+    Key? key,
     required this.hintText,
     required this.callback,
     // Required icon parameter in constructor
-  });
+  }) : super(key: key);
 
   @override
   MyDateFieldState createState() => MyDateFieldState();
@@ -144,23 +146,21 @@ class MyDateFieldState extends State<MyDateField> {
             fontSize: 20.0,
           ),
           decoration: InputDecoration(
-      
-
             border: InputBorder.none,
             hintText: widget.hintText,
             hintStyle: TextStyle(
               color: widget.hintText == 'Select a date'
                   ? Colors.grey
                   : widget.hintText == 'End Date'
-                      ? Colors.grey
-                      : widget.hintText == 'Start Date'
-                          ? Colors.grey
-                          : Colors.black,
+                  ? Colors.grey
+                  : widget.hintText == 'Start Date'
+                  ? Colors.grey
+                  : Colors.black,
             ),
             filled: false, // Ensure that the fillColor is applied
             fillColor: const Color(
                 0xFFF3F3F3), // Set the fillColor to the same background color
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.calendar_month,
               color: Colors.grey, // Set icon color to white
             ),

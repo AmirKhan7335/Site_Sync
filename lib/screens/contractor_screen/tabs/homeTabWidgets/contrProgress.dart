@@ -1,6 +1,10 @@
 import 'package:amir_khan1/controllers/progressTrackingController.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
+import 'package:amir_khan1/screens/consultant_screens/widgets/progressWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -53,9 +57,9 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
 
       final contrProj = await FirebaseFirestore.instance
           .collection('Projects')
-          // .where(FieldPath.documentId, whereIn: contrProjId)
+      // .where(FieldPath.documentId, whereIn: contrProjId)
           .where('endDate',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
           .get();
 
       final contrResult = await contrProj.docs
@@ -79,10 +83,10 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
           .where('endDate',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
           .get();
       final userData = collectionData.docs.map(
-        (doc) {
+            (doc) {
           return [
             doc['title'],
             doc['budget'],
@@ -124,7 +128,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
 
       final contrProj = await FirebaseFirestore.instance
           .collection('Projects')
-          // .where(FieldPath.documentId, whereIn: contrProjId)
+      // .where(FieldPath.documentId, whereIn: contrProjId)
 
           .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
           .get();
@@ -149,7 +153,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
           .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
           .get();
       final userData = collectionData.docs.map(
-        (doc) {
+            (doc) {
           return [
             doc['title'],
             doc['budget'],
@@ -226,11 +230,11 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                                         minHeight: 7,
                                         borderRadius: BorderRadius.circular(5),
                                         value:  controller.overAllPercent.value
-                                              .toDouble()/100,
+                                            .toDouble()/100,
                                         backgroundColor: Colors.grey,
                                         valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.green),
+                                        AlwaysStoppedAnimation<Color>(
+                                            Colors.green),
                                       ),
                                     ),
                                     SizedBox(width: 5),

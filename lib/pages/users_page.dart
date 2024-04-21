@@ -12,37 +12,37 @@ class UsersPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Users Page'),
       ),
-        backgroundColor: const Color(0xFF212832),
+      backgroundColor: const Color(0xFF212832),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('Users').snapshots(),
-        builder: (context, snapshot) {
-          //loading
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+          stream: FirebaseFirestore.instance.collection('Users').snapshots(),
+          builder: (context, snapshot) {
+            //loading
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            //error
+            if (snapshot.hasError) {
+              displayMessageToUser("Something went wrong", context);
+            }
+            if (snapshot.data == null) {
+              displayMessageToUser("No data found", context);
+            }
+            //data received
+            final users = snapshot.data!.docs;
+            return ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                //get individual user
+                final user = users[index];
+                return ListTile(
+                  title: Text(user[index]['username']),
+                  subtitle: Text(user[index]['email']),
+                );
+              },
             );
           }
-          //error
-          if (snapshot.hasError) {
-            displayMessageToUser("Something went wrong", context);
-          }
-          if (snapshot.data == null) {
-            displayMessageToUser("No data found", context);
-          }
-          //data received
-          final users = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              //get individual user
-              final user = users[index];
-              return ListTile(
-                title: Text(user[index]['username']),
-                subtitle: Text(user[index]['email']),
-              );
-            },
-          );
-        }
       ),
     );
   }

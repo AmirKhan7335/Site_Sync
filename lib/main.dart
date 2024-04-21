@@ -4,37 +4,39 @@ import 'package:amir_khan1/pages/profile_page.dart';
 import 'package:amir_khan1/pages/users_page.dart';
 import 'package:amir_khan1/auth/createaccountscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
-import 'package:amir_khan1/screens/rolescreen.dart';
 import 'package:amir_khan1/auth/signinscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/splashscreen.dart';
 import 'package:amir_khan1/widgets/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth/auth.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-// ctrl+alt+l = format code
-// signin screen = log in page
-// create account screen =  register page
-// signup or createaccount = login or register page
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const MyApp());
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context,) {
     return GetMaterialApp(
-       scrollBehavior: const MaterialScrollBehavior()
+      scrollBehavior: const MaterialScrollBehavior()
           .copyWith(dragDevices: PointerDeviceKind.values.toSet()),
-      
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: backgroundColor,
@@ -47,13 +49,16 @@ class MyApp extends ConsumerWidget {
         '/profile_page': (context) => const ProfilePage(),
         '/users_page': (context) => const UsersPage(),
         '/auth': (context) => const AuthPage(),
+
         '/signin': (context) => SigninScreen(
-              onTap: () {},
-            ),
+          onTap: () {},
+        ),
         '/createaccount': (context) => CreateAccountScreen(
-              onTap: () {},
-            ),
-        '/role': (context) => const Role(),
+          onTap: () {},
+        ),
+
+        // '/taskdetails': (context) => const TaskDetailsScreen(),
+
         '/notifications': (context) => const NotificationsScreen(),
       },
     );
@@ -71,5 +76,3 @@ Widget buildIndicator(int index, int currentPage) {
     ),
   );
 }
-
-

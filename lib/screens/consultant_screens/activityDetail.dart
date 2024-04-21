@@ -1,3 +1,4 @@
+import 'package:amir_khan1/screens/consultant_screens/activityGallery.dart';
 import 'package:flutter/material.dart';
 
 class ActivityDetail extends StatefulWidget {
@@ -31,10 +32,10 @@ class _ActivityDetailState extends State<ActivityDetail> {
                     ),
                     IconButton(
                         onPressed: () {
-    
+
                         },
                         icon: Icon(Icons.add_box_outlined)),
-                    
+
                   ],
                 ),
               ),
@@ -63,61 +64,61 @@ class _ActivityDetailState extends State<ActivityDetail> {
                   color: Colors.white,
                 ),
               ),
-           Padding(
-             padding: const EdgeInsets.all(24.0),
-             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(title: Text('Reinforcement',),
+                    subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
+                    ,
+                    trailing: Text('Tap to view'),),
+                ),
               ),
-               child: ListTile(title: Text('Reinforcement',),
-               subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
-               ,
-               trailing: Text('Tap to view'),),
-             ),
-           ),
-           Padding(
-             padding: const EdgeInsets.only(left: 24,right: 24,top: 0,bottom: 16),
-             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.only(left: 24,right: 24,top: 0,bottom: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(title: Text('Formwork',),
+                      subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
+                      ,
+                      trailing:  Text('Tap to view')),
+                ),
               ),
-               child: ListTile(title: Text('Formwork',),
-               subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
-               ,
-               trailing:  Text('Tap to view')),
-             ),
-           ),
-           
-           Padding(
-             padding: const EdgeInsets.only(left: 24,right: 24,top: 8,bottom: 16),
-             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
+
+              Padding(
+                padding: const EdgeInsets.only(left: 24,right: 24,top: 8,bottom: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(title: Text('Concreting',),onTap:(){}
+                    ,subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
+                    ,
+                    trailing:  Text('Tap to view'),),
+                ),
               ),
-               child: ListTile(title: Text('Concreting',),onTap:(){}
-               ,subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12))
-               ,
-               trailing:  Text('Tap to view'),),
-             ),
-           ),
-             Padding(
-             padding: const EdgeInsets.only(left: 24,right: 24,top: 8,bottom: 16),
-             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.only(left: 24,right: 24,top: 8,bottom: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(title: Text('Curing',),
+                    subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12),)
+                    ,
+                    trailing:  Text('Tap to view'),),
+                ),
               ),
-               child: ListTile(title: Text('Curing',),
-               subtitle: Text('10/10/2021 - 10/11/2021',style: TextStyle(fontSize: 12),)
-               ,
-               trailing:  Text('Tap to view'),),
-             ),
-           ),
-            
-    
+
+
             ]
             ,
           ),
