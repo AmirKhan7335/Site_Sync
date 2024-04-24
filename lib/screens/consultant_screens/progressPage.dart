@@ -121,51 +121,54 @@
         itemBuilder: (context, index) {
           final projectId = projectsData[index][7];
           final progress = projectProgress[projectId] ?? 0.0;
-          return Card(
-            elevation: 5,
-            color: Colors.white,
-            child: ListTile(
-              onTap: () => {},
-              leading: CircleAvatar(
-                backgroundColor: Colors.white,
-                radius: 30,
-                child: Text(
-                  '${index + 1}',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black),
+          return Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 5.0),
+            child: Card(
+              elevation: 5,
+              color: Colors.white,
+              child: ListTile(
+                onTap: () => {},
+                leading: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 30,
+                  child: Text(
+                    '${index + 1}',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black, fontSize: 25),
+                  ),
                 ),
-              ),
-              title: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text('${projectsData[index][0]}',
-                          style: const TextStyle(color: Colors.black)),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              minHeight: 7,
-                              borderRadius: BorderRadius.circular(5),
-                              value: progress/100,
-                              backgroundColor: Colors.grey,
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                  Colors.green),
+                title: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('${projectsData[index][0]}',
+                            style: const TextStyle(color: Colors.black)),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: LinearProgressIndicator(
+                                minHeight: 7,
+                                borderRadius: BorderRadius.circular(5),
+                                value: progress/100,
+                                backgroundColor: Colors.grey,
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                    Colors.green),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text('$progress%',
-                              style: const TextStyle(color: Colors.black)),
-                        ],
-                      )
-                    ],
+                            const SizedBox(width: 10),
+                            Text('$progress%',
+                                style: const TextStyle(color: Colors.black)),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -252,119 +255,122 @@
     @override
     Widget build(BuildContext context) {
       return Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 25.0, bottom: 8.0, right: 8.0, left: 8.0),
-                    child: Text(
-                      'Progress',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 150,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: isOngoing ? Colors.green : Colors.grey,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          if (isOngoing == false) {
-                            setState(() {
-                              isOngoing = true;
-                            });
-                          }
-                        },
-                        child: Center(
-                          child: Text(
-                            'Ongoing',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: isOngoing ? Colors.black : Colors.white,
-                              fontWeight: FontWeight.bold,
+        appBar: AppBar(
+          title: const Text('Progress', style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: Container(
+          color: const Color(0xFFFBFBFB),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Card(
+                        elevation: 10,
+                        child: Container(
+                          width: 150,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: isOngoing ? const Color(0xFF3EED88) : Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              if (isOngoing == false) {
+                                setState(() {
+                                  isOngoing = true;
+                                });
+                              }
+                            },
+                            child: const Center(
+                              child: Text(
+                                'Ongoing',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black ,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 150,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: !isOngoing ? Colors.green : Colors.grey,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          if (isOngoing == true) {
-                            setState(() {
-                              isOngoing = false;
-                            });
-                          }
-                        },
-                        child: Center(
-                          child: Text(
-                            'Completed',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: !isOngoing ? Colors.black : Colors.white,
-                              fontWeight: FontWeight.bold,
+                      const SizedBox(width: 10),
+                      Card(
+                        elevation: 10,
+                        child: Container(
+                          width: 150,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: !isOngoing ? const Color(0xFF3EED88) : Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              if (isOngoing == true) {
+                                setState(() {
+                                  isOngoing = false;
+                                });
+                              }
+                            },
+                            child: const Center(
+                              child: Text(
+                                'Completed',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 8, left: 8, bottom: 0),
-                child: SingleChildScrollView(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.68,
-                    child: FutureBuilder(
-                      future: fetchOngoingProjects(),
-                      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text(snapshot.error.toString()),
-                          );
-                        } else {
-                          final projectsData = snapshot.data!;
-                          return isOngoing ? Ongoing(projectsData) : Completed();
-                        }
-                      },
-                    ),
+                    ],
                   ),
                 ),
-              )
+                const SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8, left: 8, bottom: 0),
+                  child: SingleChildScrollView(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.68,
+                      child: FutureBuilder(
+                        future: fetchOngoingProjects(),
+                        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text(snapshot.error.toString()),
+                            );
+                          } else {
+                            final projectsData = snapshot.data!;
+                            return isOngoing ? Ongoing(projectsData) : Completed();
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                )
 
-            ],
+              ],
+            ),
           ),
         ),
       );

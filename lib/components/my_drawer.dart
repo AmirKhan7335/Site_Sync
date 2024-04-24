@@ -48,7 +48,7 @@ class MyDrawerState extends State<MyDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Color.fromARGB(255, 177, 178, 179), // Set the overall background color
+        color: const Color.fromARGB(255, 177, 178, 179), // Set the overall background color
         child: FutureBuilder<String>(
           // Fetch the username asynchronously
           future: fetchUsername(),
@@ -58,89 +58,108 @@ class MyDrawerState extends State<MyDrawer> {
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      // Drawer header
-                      UserAccountsDrawerHeader(
-                        decoration: const BoxDecoration(
-                          color: Colors.white, // Set the background color
-                        ),
-                        accountName: Text(
-                          snapshot.data ?? 'Guest',
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black // Set the font weight
+              return Container(
+                color: const Color(0xFFF3F3F3),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        // Drawer header
+                        UserAccountsDrawerHeader(
+                          decoration: const BoxDecoration(
+                            color: Colors.white, // Set the background color
+                          ),
+                          accountName: Text(
+                            snapshot.data ?? 'Guest',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black // Set the font weight
+                            ),
+                          ),
+                          accountEmail: Text(
+                            user?.email ?? 'guest@gmail.com',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color:Colors.black // Set the font weight
+                            ),
                           ),
                         ),
-                        accountEmail: Text(
-                          user?.email ?? 'guest@gmail.com',
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color:Colors.black // Set the font weight
+                        const SizedBox(height: 25,),
+                        // Home tile
+                        Padding(
+                          padding: const EdgeInsets.only(left: 25, right: 25),
+                          child: Card(
+                            elevation: 10,
+                            color: Colors.white,
+                            child: ListTile(
+                              leading: const Icon(Icons.home,color: Colors.black,),
+                              title: const Text('HOME',style: TextStyle(color: Colors.black)),
+                              onTap: () {
+                                // this is already the home screen so just pop drawer
+                                Navigator.pop(context);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 25,),
-                      // Home tile
-                      Padding(
-                        padding: const EdgeInsets.only(left: 25,),
-                        child: ListTile(
-                          leading: const Icon(Icons.home,color: Colors.black,),
-                          title: const Text('HOME',style: TextStyle(color: Colors.black)),
-                          onTap: () {
-                            // this is already the home screen so just pop drawer
-                            Navigator.pop(context);
-                          },
+                        // Profile tile
+                        Padding(
+                          padding: const EdgeInsets.only(left: 25, right: 25),
+                          child: Card(
+                            elevation: 10,
+                            color: Colors.white,
+                            child: ListTile(
+                              leading: const Icon(Icons.person,color: Colors.black,),
+                              title: const Text('PROFILE',style: TextStyle(color: Colors.black)),
+                              onTap: () {
+                                // this is already the home screen so just pop drawer
+                                Navigator.pop(context);
+                                // navigate to profile page
+                                Navigator.pushNamed(context, '/profile_page');
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                      // Profile tile
-                      Padding(
-                        padding: const EdgeInsets.only(left: 25,),
-                        child: ListTile(
-                          leading: const Icon(Icons.person,color: Colors.black,),
-                          title: const Text('PROFILE',style: TextStyle(color: Colors.black)),
-                          onTap: () {
-                            // this is already the home screen so just pop drawer
-                            Navigator.pop(context);
-                            // navigate to profile page
-                            Navigator.pushNamed(context, '/profile_page');
-                          },
+                        // Users tile
+                        Padding(
+                          padding: const EdgeInsets.only(left: 25, right: 25),
+                          child: Card(
+                            elevation: 10,
+                            color: Colors.white,
+                            child: ListTile(
+                              leading: const Icon(Icons.group,color:Colors.black),
+                              title: const Text('USERS',style: TextStyle(color: Colors.black)),
+                              onTap: () {
+                                // this is already the home screen so just pop drawer
+                                Navigator.pop(context);
+                                // navigate to users page
+                                Navigator.pushNamed(context, '/users_page');
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                      // Users tile
-                      Padding(
-                        padding: const EdgeInsets.only(left: 25,),
-                        child: ListTile(
-                          leading: const Icon(Icons.group,color:Colors.black),
-                          title: const Text('USERS',style: TextStyle(color: Colors.black)),
-                          onTap: () {
-                            // this is already the home screen so just pop drawer
-                            Navigator.pop(context);
-                            // navigate to users page
-                            Navigator.pushNamed(context, '/users_page');
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Logout tile
-                  Padding(
-                    padding: const EdgeInsets.only(left: 25, bottom: 25,),
-                    child: ListTile(
-                      leading: const Icon(Icons.group,color: Colors.black,),
-                      title: const Text('LOGOUT',style: TextStyle(color: Colors.black)),
-                      onTap: () {
-                        Navigator.pop(context);
-                        logout(context);
-                      },
+                      ],
                     ),
-                  ),
-                ],
+                    // Logout tile
+                    Padding(
+                      padding: const EdgeInsets.only(left: 25, bottom: 25, right: 25),
+                      child: Card(
+                        elevation: 10,
+                        color: Colors.white,
+                        child: ListTile(
+                          leading: const Icon(Icons.group,color: Colors.black,),
+                          title: const Text('LOGOUT',style: TextStyle(color: Colors.black)),
+                          onTap: () {
+                            Navigator.pop(context);
+                            logout(context);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
           },

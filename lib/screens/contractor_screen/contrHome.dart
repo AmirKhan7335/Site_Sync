@@ -1,38 +1,33 @@
 import 'package:amir_khan1/components/my_drawer.dart';
 import 'package:amir_khan1/controllers/navigationController.dart';
-import 'package:amir_khan1/main.dart';
-import 'package:amir_khan1/pages/pageoneofhomescreen.dart';
-import 'package:amir_khan1/pages/pagethreeofhomescreen.dart';
-import 'package:amir_khan1/pages/pagetwoofhomescreen.dart';
-import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
-import 'package:amir_khan1/screens/consultant_screens/addProjectScreen.dart';
-import 'package:amir_khan1/screens/consultant_screens/homeTab.dart';
-import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
-import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
-import 'package:amir_khan1/screens/consultant_screens/scheduledProjects.dart';
-import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
-import 'package:amir_khan1/models/activity.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/contrCreateProject.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/contrHomeTab.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/contrSchedule/contrSchedule.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
-import 'package:amir_khan1/screens/engineer_screens/scheduleScreen/schedulescreen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:amir_khan1/notifications/notification_services.dart';
 
 class ContractorHomePage extends StatefulWidget {
   const ContractorHomePage({super.key});
 
   @override
-  ConsultantHomePageState createState() => ConsultantHomePageState();
+  ContractorHomePageState createState() => ContractorHomePageState();
 }
 
-class ConsultantHomePageState extends State<ContractorHomePage> {
+class ContractorHomePageState extends State<ContractorHomePage> {
+  NotificationServices notificationServices = NotificationServices();
+  // Index of the selected tab
+  @override
+  void initState() {
+    super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupToken();
+    notificationServices.setupInteractMessage(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
@@ -41,11 +36,11 @@ class ConsultantHomePageState extends State<ContractorHomePage> {
 
         body: Obx(
               () => controller.contrCurrentIndex.value == 1
-              ? ChatScreen(isClient: false,)
+              ? const ChatScreen(isClient: false,)
               : controller.contrCurrentIndex.value == 2
-              ? ContrCreateProject()
+              ? const ContrCreateProject()
               : controller.contrCurrentIndex.value == 0
-              ? ContrHomeTab()
+              ? const ContrHomeTab()
               : controller.contrCurrentIndex.value == 3
               ? const ContrScheduleProjects()
               : const NotificationsScreen(),
@@ -63,11 +58,11 @@ class ConsultantHomePageState extends State<ContractorHomePage> {
             },
 
             selectedIconTheme:
-            IconThemeData(color: Color(0xFF3EED88), size: 30),
+            const IconThemeData(color: Color(0xFF3EED88), size: 30),
             showUnselectedLabels: false,
-            unselectedLabelStyle: TextStyle(color: Colors.black),
+            unselectedLabelStyle: const TextStyle(color: Colors.black),
             showSelectedLabels: false,
-            unselectedIconTheme: IconThemeData(color: Colors.black, size: 22.5),
+            unselectedIconTheme: const IconThemeData(color: Colors.black, size: 22.5),
             selectedFontSize: 0,
             unselectedFontSize: 0,
             items: [
@@ -77,8 +72,21 @@ class ConsultantHomePageState extends State<ContractorHomePage> {
                 ),
                 label: 'Home',
               ),
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.chat),
+              BottomNavigationBarItem(
+                icon: controller.seen.value
+                    ? const Icon(
+                  Icons.chat,
+                )
+                    : const Stack(children: <Widget>[
+                  Icon(Icons.chat),
+                  Positioned(
+                    // draw a red marble
+                    top: 0.0,
+                    right: 0.0,
+                    child: Icon(Icons.brightness_1,
+                        size: 12.0, color: Colors.redAccent),
+                  ),
+                ]),
                 label: 'Chat',
               ),
               BottomNavigationBarItem(
@@ -105,8 +113,8 @@ class ConsultantHomePageState extends State<ContractorHomePage> {
                 label: 'Schedule',
               ),
               const BottomNavigationBarItem(
-                icon: Icon(Icons.notifications),
-                label: 'Notifications',
+                icon: Icon(Icons.currency_bitcoin),
+                label: 'Finance',
               ),
             ],
             iconSize: 20.0,

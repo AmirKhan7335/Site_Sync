@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:amir_khan1/notifications/notificationCases.dart';
 import 'package:amir_khan1/controllers/takePictureController.dart';
 import 'package:amir_khan1/models/activity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -132,6 +132,8 @@ class _AddPicState extends State<AddPic> {
         .collection('activities')
         .doc(id)
         .update({'image': FieldValue.arrayUnion([image]), 'imgApproved': false});
+    //-----------------Send notification
+    NotificationCases().scheduleNotification(email!, 'Uploaded the Picture');
   }
 
 

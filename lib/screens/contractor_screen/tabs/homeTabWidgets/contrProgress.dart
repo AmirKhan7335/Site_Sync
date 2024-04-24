@@ -229,7 +229,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                                       child: LinearProgressIndicator(
                                         minHeight: 7,
                                         borderRadius: BorderRadius.circular(5),
-                                        value:  controller.overAllPercent.value
+                                        value:  controller.overAllPercent1
                                             .toDouble()/100,
                                         backgroundColor: Colors.grey,
                                         valueColor:
@@ -239,7 +239,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                                     ),
                                     SizedBox(width: 5),
                                     Text(
-                                      '${controller.overAllPercent.value}%',
+                                      '${controller.overAllPercent1}%',
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ],

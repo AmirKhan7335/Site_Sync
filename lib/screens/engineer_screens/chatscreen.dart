@@ -8,6 +8,9 @@ import '../../componentsofscreens/chatscreencomponents/chatinputarea.dart';
 import '../../componentsofscreens/chatscreencomponents/chatlistscreen.dart';
 import '../../componentsofscreens/chatscreencomponents/chatmessage.dart';
 import '../../componentsofscreens/chatscreencomponents/chatmessages.dart';
+import 'package:get/get.dart';
+
+import '../../controllers/navigationController.dart';
 
 enum MessageStatus { sent, delivered, read, loading }
 
@@ -45,6 +48,17 @@ class ChatScreenState extends State<ChatScreen> {
   List<ChatMessage> chatMessages = [];
   List allChatRooms = [];
   late final String chatRoomId;
+  String currentUserId = FirebaseAuth.instance.currentUser?.email ?? '';
+
+  MessageStatus getMessageStatus(String sender, String deliveryStatus) {
+    if (deliveryStatus == 'read' || sender == currentUserId) {
+      return MessageStatus.read;
+    } else if (deliveryStatus == 'delivered') {
+      return MessageStatus.delivered;
+    } else {
+      return MessageStatus.sent;
+    }
+  }
 
   // Define a stream controller for chat rooms
   final StreamController<List<Map<String, dynamic>>> chatRoomsStreamController =
@@ -78,7 +92,7 @@ class ChatScreenState extends State<ChatScreen> {
             sender: data['senderId'],
             text: data['text'],
             createdAt: (data['timestamp'] as Timestamp).toDate(),
-            messageStatus: data['messageStatus'],
+            messageStatus: getMessageStatus(data['senderId'], data['messageStatus']),
           );
         }).toList();
 
@@ -135,7 +149,7 @@ class ChatScreenState extends State<ChatScreen> {
     // Call getAllChatRooms in initState to fetch chat data only once
     super.initState();
     getAllChatRooms();
-
+    changeSeenStatus();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // await getAllChatRooms();
       if (selectedUser != null) {
@@ -143,6 +157,23 @@ class ChatScreenState extends State<ChatScreen> {
       }
       setState(() {});
     });
+  }
+
+  changeSeenStatus() async {
+    try {
+      final email = await FirebaseAuth.instance.currentUser!.email;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .update({'seen': true});
+      debugPrint('seen status changed');
+
+
+      final controller = Get.put(NavigationController());
+      controller.getSeenStatus();
+    } catch (e) {
+      print(e.toString() + 'error in changeSeenStatus');
+    }
   }
 
   Future getAllChatRooms() async {

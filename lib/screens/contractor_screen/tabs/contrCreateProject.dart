@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../consultant_screens/cnslt office google maps screen/googlemapsscreen.dart';
+import '../../consultant_screens/cnslt office text field/cnsltofficetxtfield.dart';
+
 class ContrCreateProject extends StatefulWidget {
   const ContrCreateProject({super.key});
 
@@ -260,7 +263,7 @@ class _CreateProjectState extends State<ContrCreateProject> {
                       ),
                     ),
                     MyTextField(
-                      hintText: 'selge generated',
+                      hintText: 'self generated',
                       obscureText: false,
                       controller: fundingController,
                       icon: Icons.man,
@@ -280,11 +283,22 @@ class _CreateProjectState extends State<ContrCreateProject> {
                         ),
                       ),
                     ),
-                    MyTextField(
-                      hintText: 'NUST',
-                      obscureText: false,
+                    MyTextFieldConsultant(
+                      hintText: 'F7 Islamabad',
                       controller: locationController,
                       icon: Icons.location_searching,
+                      onTapIcon: () async {
+                        final String? selectedLocation =
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GoogleMapsScreen(),
+                          ),
+                        );
+                        if (selectedLocation != null) {
+                          locationController.text = selectedLocation;
+                        }
+                      },
                       keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 50),

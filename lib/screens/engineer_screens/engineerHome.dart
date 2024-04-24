@@ -8,6 +8,8 @@ import 'package:amir_khan1/screens/engineer_screens/takePicture/takePicture.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../notifications/notification_services.dart';
+
 class EngineerHomePage extends StatefulWidget {
   const EngineerHomePage({required this.isClient, super.key});
   final bool isClient;
@@ -16,10 +18,16 @@ class EngineerHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<EngineerHomePage> {
+  NotificationServices notificationServices = NotificationServices();
   // Index of the selected tab
   @override
   void initState() {
     super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupToken();
+    notificationServices.setupInteractMessage(context);
+
   }
 
   @override
@@ -70,8 +78,24 @@ class MyHomePageState extends State<EngineerHomePage> {
               icon: Icon(Icons.home),
               label: 'Home',
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
+            //--------------------------
+
+            //--------------------------
+            BottomNavigationBarItem(
+              icon: controller.seen.value
+                  ? const Icon(
+                Icons.chat,
+              )
+                  : const Stack(children: <Widget>[
+                Icon(Icons.chat),
+                Positioned(
+                  // draw a red marble
+                  top: 0.0,
+                  right: 0.0,
+                  child: Icon(Icons.brightness_1,
+                      size: 12.0, color: Colors.redAccent),
+                ),
+              ]),
               label: 'Chat',
             ),
             BottomNavigationBarItem(

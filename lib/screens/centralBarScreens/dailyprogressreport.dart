@@ -84,76 +84,11 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
               fetchWeather(projectDoc.data()!['location']);
             });
 
-            // Fetch contractor's name
-            // String contractorEmail;
-            // QuerySnapshot<Map<String, dynamic>> myResult = await FirebaseFirestore.instance
-            //   .collection('contractor').doc().collection('projects').get();
-            //   contractorEmail = myResult.docs[0].id;
-            //   print('$contractorEmail is the email of the contractor');
-            // // String contractorEmail = projectDoc.data()!['contractor'];
-            // fetchContractorName(contractorEmail);
           }
         }
       }
     }
   }
-
-  // Future<void> fetchContractorName(String contractorEmail) async {
-  //   try {
-  //     // Query Firestore to get the contractor's document based on the email
-  //     QuerySnapshot contractorSnapshot = await FirebaseFirestore.instance
-  //         .collection('contractor')
-  //         .where('email', isEqualTo: contractorEmail)
-  //         .get();
-
-  //     if (contractorSnapshot.docs.isNotEmpty) {
-  //       String contractorId = contractorSnapshot.docs.first.id;
-
-  //       // Query Firestore to get projects where the contractor is assigned
-  //       QuerySnapshot projectsSnapshot = await FirebaseFirestore.instance
-  //           .collection('Projects')
-  //           .where('contractor', isEqualTo: contractorId)
-  //           .get();
-
-  //       if (projectsSnapshot.docs.isNotEmpty) {
-  //         String userId = projectsSnapshot.docs.first.get('engineer');
-
-  //         // Query Firestore to get user document based on user ID
-  //         DocumentSnapshot userDoc = await FirebaseFirestore.instance
-  //             .collection('users')
-  //             .doc(userId)
-  //             .get();
-
-  //         if (userDoc.exists) {
-  //           String contractorName = userDoc.get('username');
-  //           setState(() {
-  //             contractorController.text = contractorName;
-  //           });
-  //         } else {
-  //           setState(() {
-  //             contractorController.text = 'Contractor user not found';
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           contractorController.text = 'No projects found for contractor';
-  //         });
-  //       }
-  //     } else {
-  //       setState(() {
-  //         contractorController.text = 'Contractor not found';
-  //       });
-  //     }
-  //   } catch (e) {
-  //     if (kDebugMode) {
-  //       print('Error fetching contractor data: $e');
-  //     }
-  //     setState(() {
-  //       contractorController.text = 'Failed to fetch contractor data';
-  //     });
-  //   }
-  // }
-
 
 
   Future<void> fetchWeather(String location) async {
@@ -503,7 +438,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
     details.writeln('- The activity progress was ${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%.');
     details.writeln('- After the execution of the work, the activity progress is ${calculatePercentComplete1(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%.');
     details.writeln('- The activity is estimated to complete in ${activities.isNotEmpty ? (todayActivity != null ? (calculateDaysLeft(todayActivity.finishDate) == 1 ? '1 day.' : '${calculateDaysLeft(todayActivity.finishDate)} days.') : 'No Activity') : '.'}');
-    details.writeln('- The overall progress of the project is ${controller.overAllPercent.value}%');
+    details.writeln('- The overall progress of the project is ${controller.overAllPercent1.value}%');
 
 
 
@@ -527,8 +462,10 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       final String? downloadsDirectory =
           (await getExternalStorageDirectory())?.path;
       if (downloadsDirectory != null) {
-        // Define the file path
-        final String filePath = '$downloadsDirectory/daily_progress_report.pdf';
+        // Define the file path with dynamic file name based on current date
+        final String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+        final String filePath = '$downloadsDirectory/$currentDate.pdf';
+
 
         // Save the PDF to the downloads directory
         final file = File(filePath);
@@ -680,10 +617,17 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
 
   Future<void> saveDownloadUrlToFirestore(String downloadUrl) async {
     try {
+      final String todayDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+
+      // Get the project ID
       final projId = projectId; // Assuming you have a function to get the project ID
-      await FirebaseFirestore.instance.collection('Projects').doc(projId).update({
-        'summary': downloadUrl,
+
+      // Save download URL, project ID, and today's date inside a document in the summary collection
+      await FirebaseFirestore.instance.collection(projId!).doc(todayDate).set({
+        todayDate: downloadUrl,
+        'today-date': todayDate,
       });
+
     } catch (e) {
       if (kDebugMode) {
         print('Error saving download URL to Firestore: $e');
@@ -691,6 +635,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       throw Exception('Failed to save download URL to Firestore');
     }
   }
+
 
 
 
@@ -795,7 +740,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
                           : '${calculateDaysLeft(todayActivity.finishDate)} days.')
                           : 'No Activity')
                           : '.'}  The overall progress of the project is ${controller
-                          .overAllPercent.value}%',
+                          .overAllPercent1.value}%',
                       overallProgressController,
                     ),
                   ],

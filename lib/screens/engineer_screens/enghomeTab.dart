@@ -216,7 +216,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       DateTime today = DateTime.now();
 
       // Calculate the difference in days
-      int daysDifference = parsedFinishDate.difference(today).inDays;
+      int daysDifference = parsedFinishDate.difference(today).inDays+1;
 
       if (today.hour < 12) {
         daysDifference += 1;
@@ -286,8 +286,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
           .collection('users')
           .doc(user?.email)
           .get();
-
-      if (userSnapshot['profilePic'].exists) {
+      if (userSnapshot['profilePic'] != null && userSnapshot['profilePic'].isNotEmpty) {
+        print("profile pic url = " + userSnapshot['profilePic']);
         return userSnapshot['profilePic'];
       } else {
         return null;
@@ -446,7 +446,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                                       projData[4].toDate())
                                                   .toString(),
                                               activityProgress: controller
-                                                  .overAllPercent.value,
+                                                  .overAllPercent1.value,
                                               title: projData[0]),
                                         ),
                                       ),

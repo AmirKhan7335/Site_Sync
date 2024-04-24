@@ -1,8 +1,6 @@
-import 'package:amir_khan1/screens/consultant_screens/widgets/requestWidgets.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/requestWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -182,7 +180,7 @@ class _RequestPageState extends State<ContrRequestPage> {
             : getPendingClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -205,17 +203,17 @@ class _RequestPageState extends State<ContrRequestPage> {
                               selectedValue: _selectedValue,
                             )));
                   },
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     radius: 30,
                     child: Icon(Icons.person),
                   ),
                   title: Text(
                     '${data[1][index]}',
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                   ),
-                  subtitle: Text('Hi, please approve my role',
+                  subtitle: const Text('Hi, please approve my role',
                       style: TextStyle(color: Colors.black)),
-                  trailing: Column(
+                  trailing: const Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text('8 Nov', style: TextStyle(color: Colors.black)),
@@ -228,7 +226,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                   ),
                 ));
           } else {
-            return Text('No Data');
+            return const Text('No Data');
           }
         });
   }
@@ -240,7 +238,7 @@ class _RequestPageState extends State<ContrRequestPage> {
             : getApprovedClientRequests(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else if (snapshot.hasData) {
@@ -257,15 +255,15 @@ class _RequestPageState extends State<ContrRequestPage> {
                             engEmail: data[2][index],
                             selectedValue: _selectedValue,
                           ))),
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     radius: 30,
                     child: Icon(Icons.person),
                   ),
                   title: Text('${data[1][index]}',
-                      style: TextStyle(color: Colors.black)),
+                      style: const TextStyle(color: Colors.black)),
                   subtitle: Text('${data[0][index][0]}',
-                      style: TextStyle(color: Colors.black)),
-                  trailing: Column(
+                      style: const TextStyle(color: Colors.black)),
+                  trailing: const Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text('08/01/2023',
@@ -274,7 +272,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                   ),
                 ));
           } else {
-            return Text('No Data');
+            return const Text('No Data');
           }
         });
   }
@@ -283,9 +281,9 @@ class _RequestPageState extends State<ContrRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
-        title: Text('Requests', style: TextStyle(color: Colors.black)),
+        title: const Text('Requests', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Container(
@@ -323,7 +321,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Container(
                     width: 150,
                     height: 50,
@@ -373,11 +371,11 @@ class _RequestPageState extends State<ContrRequestPage> {
                     });
                   },
                 ),
-                Text(
+                const Text(
                   'Engineer',
                   style: TextStyle(color: Colors.black),
                 ), // Label for the Consultant radio button
-                SizedBox(
+                const SizedBox(
                     width:
                     20), // Add some spacing between radio button and label
                 Radio<String>(
@@ -392,12 +390,12 @@ class _RequestPageState extends State<ContrRequestPage> {
                     });
                   },
                 ),
-                Text('Client', style: TextStyle(color: Colors.black)),
+                const Text('Client', style: TextStyle(color: Colors.black)),
                 // Label for the Contractor radio button
               ],
             ),
             Padding(
-              padding: EdgeInsets.only(right: 8, left: 8, bottom: 8),
+              padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.75,

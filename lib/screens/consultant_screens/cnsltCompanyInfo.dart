@@ -130,7 +130,7 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
                       child: Center(
                         child: Text(
                           'Company Info',
-                          style: TextStyle(fontSize: 21.0, color: Colors.white),
+                          style: TextStyle(fontSize: 21.0, color: Colors.black),
                           textAlign: TextAlign.left,
                         ),
                       ),

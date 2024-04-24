@@ -1,7 +1,5 @@
-import 'package:amir_khan1/screens/consultant_screens/activityDetail.dart';
 import 'package:amir_khan1/screens/consultant_screens/activityGallery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -67,17 +65,18 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.arrow_back_ios_outlined,color: Colors.black,)),
-                  Text(
+                      icon: const Icon(Icons.arrow_back_ios_outlined,color: Colors.black,)),
+                  const Text(
                     'Activities',
                     style: TextStyle(fontSize: 20,color: Colors.black, fontWeight: FontWeight.bold),
                   ),
-                  IconButton(
-                      onPressed: () {}, icon: Icon(Icons.add_box_outlined,color: Colors.black,)),
+                  const SizedBox(
+                    width: 50,
+                  ),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -87,12 +86,12 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                 children: [
                   Text(
                     '${widget.title}',
-                    style: TextStyle(fontSize: 25,color: Colors.black, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 25,color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -106,7 +105,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                 future: getActivities(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Column(
+                    return const Column(
                       children: [
                         SizedBox(
                           height: 100,
@@ -118,7 +117,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                     return Center(
                       child: Column(
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 100,
                           ),
                           Text(snapshot.error.toString()),
@@ -156,13 +155,13 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                                                         [5]))),
                                     title: Text(
                                       '${data[index][1]}',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                     ),
                                     subtitle: Text(
                                         '${DateFormat('dd/MM/yyyy').format(data[index][3].toDate())} - ${DateFormat('dd/MM/yyyy').format(data[index][4].toDate())}',
-                                        style: TextStyle(fontSize: 12)),
+                                        style: const TextStyle(fontSize: 12)),
                                   ),
                                 ),
                               );
@@ -170,7 +169,7 @@ class _ConsultantScheduleState extends State<ConsultantSchedule> {
                       ),
                     );
                   } else {
-                    return Center(
+                    return const Center(
                         child: Column(
                       children: [
                         SizedBox(

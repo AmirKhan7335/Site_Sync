@@ -50,10 +50,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: const Text('Profile'),
-        backgroundColor: const Color(0xFF212832),
+        title: const Text('Profile', style: TextStyle(color: Colors.black)),
+        backgroundColor: const Color(0xFFFFFFFF),
+        iconTheme: const IconThemeData(color: Colors.black),
+        centerTitle: true,
       ),
-      backgroundColor: const Color(0xFF212832),
+      backgroundColor: const Color(0xFFFFFFFF),
       body: ListView(
         children: <Widget>[
           UserHeader(username: username, userEmail: userEmail, user: user),
@@ -170,7 +172,7 @@ class _UserHeaderState extends State<UserHeader> {
                 bottom: -10,
                 left: 80,
                 child: IconButton(
-                  icon: const Icon(Icons.add_a_photo, color: Colors.white),
+                  icon: const Icon(Icons.add_a_photo, color: Colors.black),
                   onPressed: selectImage,
                 ),
               ),
@@ -179,11 +181,11 @@ class _UserHeaderState extends State<UserHeader> {
           const SizedBox(height: 10),
           Text(
             widget.username,
-            style: const TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
           ),
           Text(
             widget.userEmail,
-            style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.7)),
+            style: const TextStyle(fontSize: 16, color: Colors.black),
           ),
         ],
       ),
@@ -203,13 +205,13 @@ class UserInfoTile extends StatelessWidget {
     return ListTile(
       title: Text(
         label,
-        style: const TextStyle(color: Colors.white, fontSize: 18),
+        style: const TextStyle(color: Colors.black, fontSize: 18),
       ),
       subtitle: Text(
         value,
-        style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 16),
+        style: const TextStyle(color: Colors.black, fontSize: 16),
       ),
-      trailing: Icon(icon, color: Colors.white),
+      trailing: Icon(icon, color: Colors.black),
       onTap: () {},
     );
   }
@@ -226,9 +228,9 @@ class SettingsTile extends StatelessWidget {
     return ListTile(
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white, fontSize: 18),
+        style: const TextStyle(color: Colors.black, fontSize: 18),
       ),
-      leading: Icon(icon, color: Colors.white),
+      leading: Icon(icon, color: Colors.black),
       onTap: () {},
     );
   }
@@ -240,10 +242,10 @@ class LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 24.0),
       child: ElevatedButton.icon(
-        icon: const Icon(Icons.exit_to_app, color: Colors.white),
-        label: const Text('Logout', style: TextStyle(color: Colors.white)),
+        icon: const Icon(Icons.exit_to_app, color: Colors.black),
+        label: const Text('Logout', style: TextStyle(color: Colors.black)),
         onPressed: () async {
           try {
             await FirebaseAuth.instance.signOut();
@@ -262,7 +264,7 @@ class LogoutButton extends StatelessWidget {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.yellow,
+          backgroundColor: const Color(0xFF2CF07F),
           minimumSize: const Size(double.infinity, 50), // Set the button's size
         ),
       ),

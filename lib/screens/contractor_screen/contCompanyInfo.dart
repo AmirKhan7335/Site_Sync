@@ -8,6 +8,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../consultant_screens/cnslt office google maps screen/googlemapsscreen.dart';
+import '../consultant_screens/cnslt office text field/cnsltofficetxtfield.dart';
+
 class ContractorCompanyInfo extends StatefulWidget {
   const ContractorCompanyInfo({super.key});
 
@@ -175,11 +178,22 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                         ),
                       ),
                     ),
-                    MyTextField(
+                    MyTextFieldConsultant(
                       hintText: 'F7 Islamabad',
-                      obscureText: false,
                       controller: officeController,
                       icon: Icons.location_searching,
+                      onTapIcon: () async {
+                        final String? selectedLocation =
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GoogleMapsScreen(),
+                          ),
+                        );
+                        if (selectedLocation != null) {
+                          officeController.text = selectedLocation;
+                        }
+                      },
                       keyboardType: TextInputType.text,
                     ),
 

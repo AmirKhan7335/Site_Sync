@@ -1,8 +1,8 @@
-import 'package:amir_khan1/components/my_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:amir_khan1/notifications/notificationCases.dart';
 
 class PendingRequest extends StatefulWidget {
   PendingRequest(
@@ -10,11 +10,15 @@ class PendingRequest extends StatefulWidget {
       required this.projectDataList,
       required this.engEmail,
       required this.selectedValue,
+        required this.profilePic,
       super.key});
+
   String name;
+  String profilePic;
   List projectDataList;
   String engEmail;
   String selectedValue;
+
   @override
   State<PendingRequest> createState() => _PendingRequestState();
 }
@@ -27,11 +31,18 @@ class _PendingRequestState extends State<PendingRequest> {
           .collection('contractorReq')
           .where('projectId', isEqualTo: widget.projectDataList[3])
           .get();
-      await FirebaseFirestore.instance.collection('Projects').doc(widget.projectDataList[3]).update({"contractorName":widget.name});
+      await FirebaseFirestore.instance
+          .collection('Projects')
+          .doc(widget.projectDataList[3])
+          .update({"contractorName": widget.name});
       var list = activitiesSnapshot.docs.map((e) {
         var update = FirebaseFirestore.instance
             .collection('contractorReq')
             .doc(e.id)
+            .update({'reqAccepted': true});
+        var update1 = FirebaseFirestore.instance
+            .collection('contractors')
+            .doc(widget.projectDataList[3])
             .update({'reqAccepted': true});
 
         return update;
@@ -52,6 +63,9 @@ class _PendingRequestState extends State<PendingRequest> {
             .update({'reqAccepted': true});
         return accept_req;
       }).toList();
+      //-----------------Send notification
+      NotificationCases()
+          .requestAcceptanceorDecline(widget.engEmail, 'Accepted');
     } catch (e) {}
   }
 
@@ -86,18 +100,39 @@ class _PendingRequestState extends State<PendingRequest> {
         .collection('Projects')
         .doc(widget.projectDataList[3])
         .update({'isContrSelected': false});
+    //-----------------Send notification
+    NotificationCases().requestAcceptanceorDecline(widget.engEmail, 'Rejected');
+  }
+
+  approveclientreq() async {
+    FirebaseFirestore.instance
+        .collection('clients')
+        .doc(widget.engEmail)
+        .update({'reqAccepted': true});
+    await FirebaseFirestore.instance
+        .collection("Projects")
+        .doc(widget.projectDataList[3])
+        .update({"clientName": widget.name});
+    //-----------------Send notification
+    NotificationCases().requestAcceptanceorDecline(
+        widget.engEmail, 'Accepted');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xFF2CF07F),
+          // Set the background color to light green
           elevation: 0,
           title: const Text(
             'Pending Requests',
             style: TextStyle(color: Colors.black),
           ),
           centerTitle: true,
+          iconTheme: const IconThemeData(
+            color: Colors.black, // Set the color of icons to black
+          ),
         ),
         body: Column(
           children: [
@@ -106,81 +141,111 @@ class _PendingRequestState extends State<PendingRequest> {
               projectDataList: widget.projectDataList,
               engEmail: widget.engEmail,
               role: widget.selectedValue,
+              profilePic: widget.profilePic,
             ),
             const SizedBox(
               height: 10,
             ),
             Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MyButton(
-                    text: 'Confirm',
-                    bgColor: Colors.green,
-                    textColor: Colors.black,
-                    icon: Icons.cloud_done_rounded,
-                    onTap: () async {
-                      var activitiesSnapshot =
-                          await widget.selectedValue == 'Contractor'
-                              ? confirmContrReq()
-                              : widget.selectedValue == 'Engineer'
-                              ? FirebaseFirestore.instance
-                                  .collection('engineers')
-                                  .doc(widget.engEmail)
-                                  .update({'reqAccepted': true})
-                              : FirebaseFirestore.instance
-                              .collection('clients')
-                              .doc(widget.engEmail)
-                              .update({'reqAccepted': true});
-                      Navigator.pop(context);
-                      setState(() {});
-                      Get.snackbar('Request Accepted',
-                          '${widget.selectedValue} has been added to the project');
-                    },
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  MyButton(
-                    text: ' Reject   ',
-                    bgColor: Colors.red,
-                    textColor: Colors.black,
-                    icon: Icons.cancel,
-                    onTap: () async {
-                      if (widget.selectedValue == 'Contractor') {
-                        rejecContrReq();
-                      } else if (widget.selectedValue == 'Engineer') {
-                        var activitiesSnapshot = await FirebaseFirestore
-                            .instance
-                            .collection('engineers')
-                            .doc(widget.engEmail)
-                            .delete(
-                                //FieldPath(['reqAccepted']): FieldValue.delete(),
-                                );
-                        await FirebaseFirestore.instance
-                            .collection('Projects')
-                            .doc(widget.projectDataList[3])
-                            .update({'isSelected': false});
-                      } else {
-                        var activitiesSnapshot = await FirebaseFirestore
-                            .instance
-                            .collection('clients')
-                            .doc('${widget.engEmail}')
-                            .delete(
-                          //FieldPath(['reqAccepted']): FieldValue.delete(),
-                        );
-                        await FirebaseFirestore.instance
-                            .collection('Projects')
-                            .doc(widget.projectDataList[3])
-                            .update({'isClient': false});
-                      }
-                      Navigator.pop(context);
-                      setState(() {});
-                      Get.snackbar('Request Rejected', '');
-                    },
-                  ),
-                ],
+              padding: const EdgeInsets.only(left: 80.0, right: 80, bottom: 20),
+              child: ElevatedButton(
+                onPressed: () async {
+                   if (widget.selectedValue == 'Contractor'){
+                     var activitiesSnapshot = await confirmContrReq();
+                  } else if (widget.selectedValue == 'Engineer'){
+                     var activitiesSnapshot = await FirebaseFirestore.instance
+                        .collection('engineers')
+                        .doc(widget.engEmail)
+                        .update({'reqAccepted': true});
+                    //-----------------Send notification
+                    NotificationCases().requestAcceptanceorDecline(
+                        widget.engEmail, 'Accepted');
+                  } else {approveclientreq();}
+                  Navigator.pop(context);
+                  setState(() {});
+                  Get.snackbar('Request Accepted',
+                      '${widget.selectedValue} has been added to the project');
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF2CF07F)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/Frame.png',
+                      width: 30, // Adjust width as needed
+                      height: 30, // Adjust height as needed
+                    ),
+                    const SizedBox(width: 10), // Add spacing between image and text
+                    const Text(
+                      'Confirm',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 80.0, right: 80, bottom: 20),
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (widget.selectedValue == 'Contractor') {
+                    rejecContrReq();
+                  } else if (widget.selectedValue == 'Engineer') {
+                    var activitiesSnapshot = await FirebaseFirestore.instance
+                        .collection('engineers')
+                        .doc(widget.engEmail)
+                        .delete(
+                      //FieldPath(['reqAccepted']): FieldValue.delete(),
+                    );
+                    await FirebaseFirestore.instance
+                        .collection('Projects')
+                        .doc(widget.projectDataList[3])
+                        .update({'isSelected': false});
+                    //-----------------Send notification
+                    NotificationCases().requestAcceptanceorDecline(
+                        widget.engEmail, 'Rejected');
+                  } else {
+                    var activitiesSnapshot = await FirebaseFirestore.instance
+                        .collection('clients')
+                        .doc('${widget.engEmail}')
+                        .delete(
+                      //FieldPath(['reqAccepted']): FieldValue.delete(),
+                    );
+                    await FirebaseFirestore.instance
+                        .collection('Projects')
+                        .doc(widget.projectDataList[3])
+                        .update({'isClient': false});
+                    //-----------------Send notification
+                    NotificationCases().requestAcceptanceorDecline(
+                        widget.engEmail, 'Rejected');
+                  }
+                  Navigator.pop(context);
+                  setState(() {});
+                  Get.snackbar('Request Rejected', '');
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF2CF07F)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/Vector.png',
+                      width: 30, // Adjust width as needed
+                      height: 30, // Adjust height as needed
+                    ),
+                    const SizedBox(width: 10), // Add spacing between image and text
+                    const Text(
+                      'Reject',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -194,11 +259,15 @@ class ApprovedRequest extends StatefulWidget {
       required this.projectDataList,
       required this.engEmail,
       required this.selectedValue,
+        required this.profilePic,
       super.key});
+
   String name;
+  String profilePic;
   List projectDataList;
   String engEmail;
   String selectedValue;
+
   @override
   State<ApprovedRequest> createState() => _ApprovedRequestState();
 }
@@ -241,6 +310,10 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xFF2CF07F),
+          iconTheme: const IconThemeData(
+            color: Colors.black, // Set the color of icons to black
+          ),
           elevation: 0,
           title: const Text(
             'Approved Requests',
@@ -256,18 +329,15 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
               projectDataList: widget.projectDataList,
               engEmail: widget.engEmail,
               role: widget.selectedValue,
+              profilePic: widget.profilePic,
             ),
             const SizedBox(
               height: 20,
             ),
             Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: MyButton(
-                text: 'Delete',
-                bgColor: Colors.red,
-                textColor: Colors.black,
-                icon: Icons.delete,
-                onTap: () async {
+              padding: const EdgeInsets.only(left: 80.0, right: 80, bottom: 20),
+              child: ElevatedButton(
+                onPressed: () async {
                   if (widget.selectedValue == 'Contractor') {
                     rejecContrReq();
                   } else if (widget.selectedValue == 'Engineer') {
@@ -294,6 +364,24 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
                   setState(() {});
                   Get.snackbar('${widget.selectedValue} Deleted', '');
                 },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF2CF07F)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/Vector1.png',
+                      width: 30, // Adjust width as needed
+                      height: 30, // Adjust height as needed
+                    ),
+                    const SizedBox(width: 10), // Add spacing between image and text
+                    const Text(
+                      'Remove',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -307,8 +395,11 @@ class RequestBody extends StatefulWidget {
       required this.projectDataList,
       required this.engEmail,
       required this.role,
+        required this.profilePic,
       super.key});
+
   String name;
+  String profilePic;
   List projectDataList;
   String engEmail;
   String role;
@@ -320,78 +411,79 @@ class RequestBody extends StatefulWidget {
 class _RequestBodyState extends State<RequestBody> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
       child: Column(
         children: [
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircleAvatar(
-                  backgroundColor: Colors.green,
-                  radius: 30,
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.black,
+          Stack(
+            alignment: Alignment.topCenter,
+            clipBehavior: Clip.none, // Allow the CircleAvatar to overflow
+            children: [
+              Container(
+                width: double.infinity,
+                color: const Color(0xFF2CF07F),
+                height: 90, // Adjust height as needed
+              ),
+              Positioned(
+                top: 20,
+                // Position half of the CircleAvatar above the green container
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10), // Radius to create a circle
+                  child: widget.profilePic != null && widget.profilePic != ""
+                      ? ClipOval(
+                    child: Image.network(
+                      widget.profilePic ,
+                      fit: BoxFit.cover, // Adjust the image fitting as needed
+                      width: 120, // Adjust width and height as needed
+                      height: 120,
+                    ),
+                  )
+                      : ClipOval(
+                    child: Image.asset(
+                      'assets/images/Ellipse.png',
+                      fit: BoxFit.cover, // Adjust the image fitting as needed
+                      width: 120, // Adjust width and height as needed
+                      height: 120,
+                    ),
                   ),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  widget.name,
-                  style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 32, left: 32),
-            child: Container(
-              height: 1.5,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Container(
-              width: 270,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.grey,
               ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+            ],
+          ),
+          const SizedBox(height: 45),
+          Text(
+            widget.name,
+            style: const TextStyle(
+                fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 32.0, right: 32, top: 16),
+            child: Card(
+              elevation: 10,
+              child: Container(
+                width: 270,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 24, bottom: 24),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const SizedBox(
-                            width: 50,
+                            width: 30,
                           ),
                           const Text(
                             'Email:  ',
+                            style: TextStyle(color: Colors.black),
                           ),
                           Text(
                             widget.engEmail,
+                            style: const TextStyle(color: Colors.black),
                             softWrap: true,
                           ),
                         ],
@@ -403,13 +495,15 @@ class _RequestBodyState extends State<RequestBody> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const SizedBox(
-                            width: 50,
+                            width: 30,
                           ),
                           const Text(
                             'Role:  ',
+                            style: TextStyle(color: Colors.black),
                           ),
                           Text(
                             widget.role,
+                            style: const TextStyle(color: Colors.black),
                           ),
                         ],
                       ),
@@ -420,13 +514,15 @@ class _RequestBodyState extends State<RequestBody> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const SizedBox(
-                            width: 50,
+                            width: 30,
                           ),
                           const Text(
                             'Project :  ',
+                            style: TextStyle(color: Colors.black),
                           ),
                           Text(
                             '${widget.projectDataList[0]}',
+                            style: const TextStyle(color: Colors.black),
                           ),
                         ],
                       ),
@@ -437,13 +533,16 @@ class _RequestBodyState extends State<RequestBody> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const SizedBox(
-                            width: 50,
+                            width: 30,
                           ),
                           const Text(
                             'Start Date:  ',
+                            style: TextStyle(color: Colors.black),
                           ),
                           Text(
-                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate()),
+                            DateFormat('dd-MM-yyyy')
+                                .format(widget.projectDataList[1].toDate()),
+                            style: const TextStyle(color: Colors.black),
                           ),
                         ],
                       ),
@@ -454,13 +553,16 @@ class _RequestBodyState extends State<RequestBody> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const SizedBox(
-                            width: 50,
+                            width: 30,
                           ),
                           const Text(
                             'End Date:  ',
+                            style: TextStyle(color: Colors.black),
                           ),
                           Text(
-                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate()),
+                            DateFormat('dd-MM-yyyy')
+                                .format(widget.projectDataList[2].toDate()),
+                            style: const TextStyle(color: Colors.black),
                           ),
                         ],
                       ),

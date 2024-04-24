@@ -1,9 +1,9 @@
 import 'package:amir_khan1/components/my_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:amir_khan1/notifications/notificationCases.dart';
 
 class ContrPendingRequest extends StatefulWidget {
   ContrPendingRequest(
@@ -25,10 +25,10 @@ class _PendingRequestState extends State<ContrPendingRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
           elevation: 0,
           title:
-          Text('Pending Requests', style: TextStyle(color: Colors.black)),
+          const Text('Pending Requests', style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -37,7 +37,7 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                 name: widget.name,
                 projectDataList: widget.projectDataList,
                 engEmail: widget.engEmail),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -56,11 +56,17 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                             .collection('engineers')
                             .doc('${widget.engEmail}')
                             .update({'reqAccepted': true});
+                        //-----------------Send notification
+                        NotificationCases().requestAcceptanceorDecline(
+                            widget.engEmail, 'Accepted');
                       } else if (widget.selectedValue == 'Client') {
                         FirebaseFirestore.instance
                             .collection('clients')
                             .doc('${widget.engEmail}')
                             .update({'reqAccepted': true});
+                        //-----------------Send notification
+                        NotificationCases().requestAcceptanceorDecline(
+                            widget.engEmail, 'Accepted');
                       }
 
                       Navigator.pop(context);
@@ -69,7 +75,7 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                           '${widget.selectedValue} has been added to the project');
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   MyButton(
@@ -90,6 +96,9 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                             .collection('Projects')
                             .doc(widget.projectDataList[3])
                             .update({'isSelected': false});
+                        //-----------------Send notification
+                        NotificationCases().requestAcceptanceorDecline(
+                            widget.engEmail, 'Rejected');
                       } else if (widget.selectedValue == 'Client') {
                         var activitiesSnapshot = await FirebaseFirestore
                             .instance
@@ -102,6 +111,9 @@ class _PendingRequestState extends State<ContrPendingRequest> {
                             .collection('Projects')
                             .doc(widget.projectDataList[3])
                             .update({'isClient': false});
+                        //-----------------Send notification
+                        NotificationCases().requestAcceptanceorDecline(
+                            widget.engEmail, 'Rejected');
                       }
                       Navigator.pop(context);
                       setState(() {});
@@ -136,10 +148,10 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
           elevation: 0,
           title:
-          Text('Approved Requests', style: TextStyle(color: Colors.black)),
+          const Text('Approved Requests', style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
         body: Column(
@@ -149,7 +161,7 @@ class _ApprovedRequestState extends State<ContrApprovedRequest> {
               projectDataList: widget.projectDataList,
               engEmail: widget.engEmail,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Padding(
@@ -211,7 +223,7 @@ class _RequestBodyState extends State<RequestBody> {
     return Container(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -219,7 +231,7 @@ class _RequestBodyState extends State<RequestBody> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Colors.green,
                   radius: 30,
                   child: Icon(
@@ -227,12 +239,12 @@ class _RequestBodyState extends State<RequestBody> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(
                   '${widget.name}',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 20,
                       color: Colors.black,
                       fontWeight: FontWeight.bold),
@@ -240,7 +252,7 @@ class _RequestBodyState extends State<RequestBody> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -250,7 +262,7 @@ class _RequestBodyState extends State<RequestBody> {
               color: Colors.white,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Padding(
@@ -269,10 +281,10 @@ class _RequestBodyState extends State<RequestBody> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Email:  ',
                           ),
                           Text(
@@ -281,10 +293,10 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
@@ -298,16 +310,16 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Project :  ',
                           ),
                           Text(
@@ -315,16 +327,16 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'Start Date:  ',
                           ),
                           Text(
@@ -332,16 +344,16 @@ class _RequestBodyState extends State<RequestBody> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
-                          Text(
+                          const Text(
                             'End Date:  ',
                           ),
                           Text(

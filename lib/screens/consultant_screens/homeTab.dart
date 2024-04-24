@@ -409,57 +409,60 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                         ),
                         child: Padding(
                           padding:
-                          const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                          const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 8.0),
                           child: ListTile(
                             title: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  projectList[index][0],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: Colors.black),
+                                ),
                                 Row(
                                   children: [
                                     const Icon(Icons.calendar_month,
-                                        size: 15, color: Colors.green),
+                                        size: 20, color: Colors.green),
+                                    const SizedBox(width: 6),
                                     Text(
-                                      DateFormat('dd-MM-yyyy')
+                                      DateFormat('dd/MM/yyyy')
                                           .format(
                                         projectList[index][3].toDate(),
                                       )
                                           .toString(),
                                       style: const TextStyle(color: Colors.black),
                                     ),
-                                    const Text(' to ',
+                                    const Text('  -  ',
                                         style:
                                         TextStyle(color: Colors.black)),
                                     Text(
-                                        DateFormat('dd-MM-yyyy')
+                                        DateFormat('dd/MM/yyyy')
                                             .format(projectList[index][4]
                                             .toDate())
                                             .toString(),
                                         style:
                                         const TextStyle(color: Colors.black)),
-                                    const Expanded(child: SizedBox()),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.location_on_outlined,
-                                            size: 15, color: Colors.green),
-                                        Text(projectList[index][5],
-                                            style: const TextStyle(
-                                                color: Colors.black)),
-                                      ],
-                                    )
                                   ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    projectList[index][0],
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 25,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 10,
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on_outlined, size: 20, color: Colors.green),
+                                    const SizedBox(width: 6),
+                                    Expanded( // Use Expanded to make the Text widget occupy the whole space horizontally
+                                      child: Text(
+                                        projectList[index][5],
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          height: 1.0,
+                                          // Set height to remove vertical spacing
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 3,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Row(
                                   children: [

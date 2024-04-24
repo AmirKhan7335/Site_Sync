@@ -1,11 +1,12 @@
 import 'package:amir_khan1/components/my_button.dart';
-import 'package:amir_khan1/components/mytextfield.dart';
 import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:amir_khan1/notifications/notificationCases.dart';
+import 'package:amir_khan1/notifications/notification_services.dart';
 
 class ClientAccountDetails extends StatefulWidget {
   ClientAccountDetails({super.key});
@@ -23,6 +24,17 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
   String selectedProjectId = '';
   TextEditingController consultantController = TextEditingController();
   String selectedProject = ''; // Store the selected option
+  NotificationServices notificationServices = NotificationServices();
+
+  @override
+  void initState() {
+    super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupToken();
+    notificationServices.setupInteractMessage(context);
+  }
+
   Future<void> sendRequestToConsultant(projectId) async {
     final email = FirebaseAuth.instance.currentUser!.email;
     var activitiesSnapshot = await FirebaseFirestore.instance
@@ -38,6 +50,8 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
         .collection('Projects')
         .doc(projectId)
         .update({'isClient': true});
+    //----------------------------------------------------------Send Nitification-----
+    NotificationCases().requestToConsultantNotification('client',consultantEmail,email!);
   }
 
   Future<List> fetchConsultant() async {
@@ -118,8 +132,9 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Select a Project'),
-            content: Container(
+          backgroundColor: Colors.white,
+            title: const Text('Select a Project', style: TextStyle(color: Colors.black)),
+            content: SizedBox(
               height: 400,
               child: FutureBuilder(
                   future: fetchProjects(consultantEmail),
@@ -132,7 +147,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return Text('No Projects ');
+                      return const Text('No Projects ');
                     } else {
                       final projectList = snapshot.data;
                       return ListView.builder(
@@ -142,7 +157,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                             child: Card(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black12,
+                                  color: Colors.grey,
                                   borderRadius: BorderRadius.circular(5.0),
                                   border: Border.all(
                                     color: Colors.grey,
@@ -158,7 +173,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                                     });
                                     Navigator.pop(context);
                                   },
-                                  title: Text('${projectList![index][0]}'),
+                                  title: Text('${projectList![index][0]}', style: const TextStyle(color: Colors.white)),
                                 ),
                               ),
                             ),
@@ -175,8 +190,9 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Select Company'),
-            content: Container(
+          backgroundColor: Colors.white,
+            title: const Text('Select Company', style: TextStyle(color: Colors.black)),
+            content: SizedBox(
               height: 400,
               child: FutureBuilder(
                   future: _selectedValue=='Consultant'? fetchConsultant():fetchContractor(),
@@ -189,7 +205,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return Text('No Consultant');
+                      return const Text('No Consultant', style: TextStyle(color: Colors.black));
                     } else {
                       final consultantList = snapshot.data;
                       return ListView.builder(
@@ -199,7 +215,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                             child: Card(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black12,
+                                  color: Colors.grey,
                                   borderRadius: BorderRadius.circular(5.0),
                                   border: Border.all(
                                     color: Colors.grey,
@@ -217,7 +233,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                                     Navigator.pop(context);
                                   },
                                   title:
-                                  Text('${consultantList![index][0]}'),
+                                  Text('${consultantList![index][0]}', style: const TextStyle(color: Colors.white)),
                                 ),
                               ),
                             ),
@@ -247,7 +263,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                   }
                 }
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.logout,
                 color: Colors.black,
               ))
@@ -269,9 +285,9 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 60,
-                      backgroundImage: AssetImage('assets/images/logo1.png'),
+                      backgroundImage: const AssetImage('assets/images/logo1.png'),
                       backgroundColor: Colors.transparent,
                     ),
                     const SizedBox(
@@ -305,11 +321,11 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                             });
                           },
                         ),
-                        Text(
+                        const Text(
                           'Consultant',
                           style: TextStyle(color: Colors.black),
                         ), // Label for the Consultant radio button
-                        SizedBox(
+                        const SizedBox(
                             width:
                             20), // Add some spacing between radio button and label
                         Radio<String>(
@@ -324,7 +340,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                             });
                           },
                         ),
-                        Text('Contractor',
+                        const Text('Contractor',
                             style: TextStyle(
                                 color: Colors
                                     .black)), // Label for the Contractor radio button
@@ -378,7 +394,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                           filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.arrow_drop_down,
                             color: Colors.grey, // Set icon color to white
                           ),
@@ -436,7 +452,7 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
                           filled: false, // Ensure that the fillColor is applied
                           fillColor: const Color(
                               0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.arrow_drop_down,
                             color: Colors.grey, // Set icon color to white
                           ),

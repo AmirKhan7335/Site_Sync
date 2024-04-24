@@ -272,16 +272,18 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
       );
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        String street = place.street ?? place.thoroughfare ?? place.subLocality ?? place.locality ?? 'Unknown Road';
-        if (street == 'Unnamed Road') {
-          street = place.name ?? place.subThoroughfare ?? 'Unknown Road';
+
+        // Filter out plus codes and prioritize more common address components
+        String street = place.street ?? place.thoroughfare ?? place.subLocality ?? place.locality ?? '';
+        if (street.contains('+')) { // Check if street contains a plus code
+          street = ''; // Clear the street if it has a plus code
         }
 
         String address = '${street.isNotEmpty ? '$street, ' : ''}'
             '${place.subLocality ?? ''}${place.subLocality != null ? ', ' : ''}'
             '${place.locality ?? ''}${place.locality != null ? ', ' : ''}'
-            '${place.administrativeArea ?? ''}${place.administrativeArea != null ? ', ' : ''}'
             '${place.country ?? ''}';
+
         return address.trim();
       }
     } catch (e) {

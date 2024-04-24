@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:amir_khan1/notifications/notificationCases.dart';
 import 'cnslt office google maps screen/googlemapsscreen.dart';
 import 'cnslt office text field/cnsltofficetxtfield.dart';
 
@@ -88,6 +88,7 @@ class _CreateProjectState extends State<CreateProject> {
       await testing.doc('Tensile Strength Test').set({});
       await testing.doc('Brick Strength Test').set({});
       await testing.doc('Compressive Strength Test').set({});
+
 
       Get.snackbar('Success', 'Project created Successfully');
       titleController.clear();

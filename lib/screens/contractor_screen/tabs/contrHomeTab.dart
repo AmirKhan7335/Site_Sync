@@ -1,18 +1,10 @@
 import 'package:amir_khan1/controllers/projectsCountingController.dart';
-import 'package:amir_khan1/screens/centralBarScreens/documentScreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
-import 'package:amir_khan1/screens/centralBarScreens/TestingTab/testingScreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/siteCamera/inputRtsp.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/chooseProject.dart';
-import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/consltDocuments.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltTest/chooseProj.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
-import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
-import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
-import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/contrPojectScreen.dart';
-import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/contrTest/choooseProj.dart';
-import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/centralBar/doc/chooseProject.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/contrProgress.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/homeTabWidgets/contrRequest.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
@@ -144,7 +136,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
   Future<List> fetchRecentProjects() async {
 //..
     try {
-      DateTime fifteenDaysAgo = DateTime.now().subtract(Duration(days: 15));
+      DateTime fifteenDaysAgo = DateTime.now().subtract(const Duration(days: 15));
 //Contr Contributions--------------------------------------------
       final contractorQuery = await FirebaseFirestore.instance
           .collection('contractor')
@@ -313,7 +305,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                             radius: 25,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         Column(
@@ -342,10 +334,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Scaffold(
+                                      builder: (context) => const Scaffold(
                                           body: NotificationsScreen())));
                             },
-                            icon: Icon(Icons.notifications)),
+                            icon: const Icon(Icons.notifications)),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -394,7 +386,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             InkWell(
@@ -405,7 +397,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                                         builder: (context) =>
                                         const ContrProgressPage()));
                               },
-                              child: Text('Progress',
+                              child: const Text('Progress',
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -424,7 +416,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                                         builder: (context) =>
                                         const ContrRequestPage()));
                               },
-                              child: Text(
+                              child: const Text(
                                 'Request',
                                 style: TextStyle(
                                     color: Colors.black,
@@ -432,7 +424,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                                     fontSize: 20),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                           ],
@@ -473,7 +465,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
           future: fetchRecentProjects(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Text(
+              return const Text(
                 'No Projects Added',
                 style: TextStyle(
                   color: Colors.black,
@@ -485,7 +477,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                     color: Colors.green,
                   ));
             } else if (snapshot.hasError) {
-              return Text('Error');
+              return const Text('Error');
             } else {
               final projectList = snapshot.data;
 
@@ -503,74 +495,77 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                         ),
                         child: Padding(
                           padding:
-                          const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                          const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 8.0),
                           child: ListTile(
                             title: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  projectList[index][0],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: Colors.black),
+                                ),
                                 Row(
                                   children: [
-                                    Icon(Icons.calendar_month,
-                                        size: 15, color: Colors.green),
+                                    const Icon(Icons.calendar_month,
+                                        size: 20, color: Colors.green),
+                                    const SizedBox(width: 6),
                                     Text(
-                                      DateFormat('dd-MM-yyyy')
+                                      DateFormat('dd/MM/yyyy')
                                           .format(
                                         projectList[index][3].toDate(),
                                       )
                                           .toString(),
-                                      style: TextStyle(color: Colors.black),
+                                      style: const TextStyle(color: Colors.black),
                                     ),
-                                    Text(' to ',
+                                    const Text('  -  ',
                                         style:
                                         TextStyle(color: Colors.black)),
                                     Text(
-                                        DateFormat('dd-MM-yyyy')
+                                        DateFormat('dd/MM/yyyy')
                                             .format(projectList[index][4]
                                             .toDate())
                                             .toString(),
                                         style:
-                                        TextStyle(color: Colors.black)),
-                                    Expanded(child: SizedBox()),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.location_on_outlined,
-                                            size: 15, color: Colors.green),
-                                        Text(projectList[index][5],
-                                            style: TextStyle(
-                                                color: Colors.black)),
-                                      ],
-                                    )
+                                        const TextStyle(color: Colors.black)),
                                   ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    projectList[index][0],
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 25,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Icons.person, color: Colors.green),
+                                    const Icon(Icons.location_on_outlined, size: 20, color: Colors.green),
+                                    const SizedBox(width: 6),
+                                    Expanded( // Use Expanded to make the Text widget occupy the whole space horizontally
+                                      child: Text(
+                                        projectList[index][5],
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          height: 1.0,
+                                          // Set height to remove vertical spacing
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.person, color: Colors.green),
                                     Text(projectList[index][2],
                                         style:
-                                        TextStyle(color: Colors.black)),
-                                    Expanded(
+                                        const TextStyle(color: Colors.black)),
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
-                                    Text(
+                                    const Text(
                                       'Rs ',
                                       style: TextStyle(color: Colors.green),
                                     ),
                                     Text(projectList[index][1],
                                         style:
-                                        TextStyle(color: Colors.black)),
+                                        const TextStyle(color: Colors.black)),
                                   ],
                                 ),
                               ],
@@ -595,7 +590,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ChooseProjectForDocument())),
+                    builder: (context) => const ChooseProjectForDocument())),
             child: Card(
               color: Colors.transparent,
               elevation: 5,
@@ -611,14 +606,14 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Icon(
+                      const Icon(
                         Icons.file_copy,
                         color: Colors.black,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Container(
@@ -626,10 +621,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                         width: 45,
                         color: Colors.black,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 2.5,
                       ),
-                      Text(
+                      const Text(
                         'Documents',
                         style: TextStyle(
                           fontSize: 10,
@@ -660,14 +655,14 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Icon(
+                      const Icon(
                         Icons.video_call,
                         color: Colors.black,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Container(
@@ -675,10 +670,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                         width: 45,
                         color: Colors.black,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 2.5,
                       ),
-                      Text(
+                      const Text(
                         'Site',
                         style: TextStyle(
                           fontSize: 10,
@@ -712,14 +707,14 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Icon(
+                      const Icon(
                         Icons.calendar_month,
                         color: Colors.black,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Container(
@@ -727,10 +722,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                         width: 45,
                         color: Colors.black,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 2.5,
                       ),
-                      Text(
+                      const Text(
                         'Projects',
                         style: TextStyle(
                           fontSize: 10,
@@ -747,7 +742,7 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ChooseProjectForTest())),
+                    builder: (context) => const ChooseProjectForTest())),
             child: Card(
               color: Colors.transparent,
               elevation: 5,
@@ -762,11 +757,11 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                   padding: const EdgeInsets.all(4.0),
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Icon(Icons.checklist, color: Colors.black),
-                      SizedBox(
+                      const Icon(Icons.checklist, color: Colors.black),
+                      const SizedBox(
                         height: 10,
                       ),
                       Container(
@@ -774,10 +769,10 @@ class _ConsultantHomeTabState extends State<ContrHomeTab> {
                         width: 45,
                         color: Colors.black,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 2.5,
                       ),
-                      Text(
+                      const Text(
                         'Testing',
                         style: TextStyle(
                           fontSize: 10,

@@ -1,10 +1,6 @@
-import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
-import 'package:amir_khan1/screens/consultant_screens/widgets/progressWidgets.dart';
 import 'package:amir_khan1/screens/contractor_screen/tabs/contrSchedule/schedDetail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:excel/excel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -114,7 +110,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
         future: fetchOngoingProjects(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
@@ -135,7 +131,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
                   radius: 30,
                   child: Text(
                     '${index + 1}',
-                    style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
                   ),
                 ),
                 title: Container(
@@ -148,15 +144,15 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${data[index][0]}',style: TextStyle(color: Colors.black),),
-                          SizedBox(height: 10),
+                          Text('${data[index][0]}',style: const TextStyle(color: Colors.black),),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     )),
               ),
             );
           } else {
-            return Center(
+            return const Center(
               child: Text('No Ongoing Projects'),
             );
           }
@@ -168,11 +164,11 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
     return SafeArea(
       child: Column(
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: Text(
                   'Schedule',
                   style: TextStyle(
@@ -198,7 +194,7 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
                   ),
                   child: InkWell(
                     onTap: () {},
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         'Ongoing',
                         style: TextStyle(
@@ -210,17 +206,17 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           Padding(
-            padding: EdgeInsets.only(right: 8, left: 8, bottom: 0),
+            padding: const EdgeInsets.only(right: 8, left: 8, bottom: 0),
             child: SingleChildScrollView(
-              child: Container(
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.68,
                 child: Ongoing(),

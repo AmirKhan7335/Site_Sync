@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../auth/auth.dart';
-
+import 'package:amir_khan1/notifications/notification_services.dart';
 // splash screen
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -41,10 +41,12 @@ class _RequestPageState extends State<RequestPage> {
       }
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
+      final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
 
-      return [getProject, getNames, nameEmail];
+      return [getProject, getNames, nameEmail, getProfilePic];
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error11', e.toString());
+      print("Error11: $e");
       return [[]];
     }
   }
@@ -74,8 +76,9 @@ class _RequestPageState extends State<RequestPage> {
 
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
+      final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
 
-      return [getProject, getNames, nameEmail];
+      return [getProject, getNames, nameEmail, getProfilePic];
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [[]];
@@ -110,8 +113,9 @@ class _RequestPageState extends State<RequestPage> {
 
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
+      final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
 
-      return [getProject, getNames, nameEmail];
+      return [getProject, getNames, nameEmail, getProfilePic];
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [[]];
@@ -145,8 +149,9 @@ class _RequestPageState extends State<RequestPage> {
 
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
+      final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
 
-      return [getProject, getNames, nameEmail];
+      return [getProject, getNames, nameEmail, getProfilePic];
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [[]];
@@ -177,8 +182,9 @@ class _RequestPageState extends State<RequestPage> {
 
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
+      final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
 
-      return [getProject, getNames, nameEmail];
+      return [getProject, getNames, nameEmail, getProfilePic];
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [[]];
@@ -207,8 +213,9 @@ class _RequestPageState extends State<RequestPage> {
       }
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
+      final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
 
-      return [getProject, getNames, nameEmail];
+      return [getProject, getNames, nameEmail, getProfilePic];
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return [[]];
@@ -230,6 +237,24 @@ class _RequestPageState extends State<RequestPage> {
       Get.snackbar('Error', e.toString());
     }
   }
+  getEngineerProfilePicUrl(List emails) async {
+    try {
+      var activitiesSnapshot = await FirebaseFirestore.instance.collection('users');
+      final profilepicList = await Future.wait(emails.map((mail) async {
+        final profilepicDoc = await activitiesSnapshot.doc(mail).get();
+        // Check if the document exists and has the 'profilePic' field
+        if (profilepicDoc.exists && profilepicDoc.data()!.containsKey('profilePic')) {
+          return profilepicDoc['profilePic'];
+        } else {
+          return ""; // Return null for missing profilePic
+        }
+      }).toList());
+
+      return profilepicList;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
 
   getProjectDetail(List projectIds) async {
     try {
@@ -238,13 +263,18 @@ class _RequestPageState extends State<RequestPage> {
             (Ids) async {
           final doc = await projects.doc(Ids).get();
 
-          return [doc['title'], doc['startDate'], doc['endDate'], doc.id];
+          if (doc.exists) { // Check if the document exists
+            return [doc['title'], doc['startDate'], doc['endDate'], doc.id];
+          } else {
+            return ["","","",""]; // Or handle the missing document case as needed
+          }
         },
       ).toList());
 
       return projectDataList;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error222', e.toString());
+      print("Error222: $e");
     }
   }
 
@@ -272,6 +302,7 @@ class _RequestPageState extends State<RequestPage> {
                     final name = await data[1][index];
                     final project = await data[0][index];
                     final email = await data[2][index];
+                    final profilePic = await data[3][index];
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -279,12 +310,15 @@ class _RequestPageState extends State<RequestPage> {
                                 name: name,
                                 projectDataList: project,
                                 engEmail: email,
+                                profilePic: profilePic,
                                 selectedValue:_selectedValue
                             )));
                   },
-                  leading: const CircleAvatar(
+                  leading: CircleAvatar(
                     radius: 30,
-                    child: Icon(Icons.person),
+                    child: data[3][index] != null && data[3][index] != ""  // Check if profilePic is not null
+                        ? Image.network(data[3][index]) // Display network image if available
+                        : Image.asset('assets/images/Ellipse.png'),
                   ),
                   title: Text('${data[1][index]}',
                       style: const TextStyle(color: Colors.black)),
@@ -333,11 +367,28 @@ class _RequestPageState extends State<RequestPage> {
                             name: data[1][index],
                             projectDataList: data[0][index],
                             engEmail: data[2][index],
+                            profilePic: data[3][index],
                             selectedValue: _selectedValue,
                           ))),
-                  leading: const CircleAvatar(
-                    radius: 30,
-                    child: Icon(Icons.person),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(10), // Radius to create a circle
+                    child: data[3][index] != null && data[3][index] != ""
+                        ? ClipOval(
+                      child: Image.network(
+                        data[3][index] as String,
+                        fit: BoxFit.cover, // Adjust the image fitting as needed
+                        width: 60, // Adjust width and height as needed
+                        height: 60,
+                      ),
+                    )
+                        : ClipOval(
+                      child: Image.asset(
+                        'assets/images/Ellipse.png',
+                        fit: BoxFit.cover, // Adjust the image fitting as needed
+                        width: 60, // Adjust width and height as needed
+                        height: 60,
+                      ),
+                    ),
                   ),
                   title: Text(
                     '${data[1][index]}',
@@ -376,145 +427,156 @@ class _RequestPageState extends State<RequestPage> {
         ),
         centerTitle: true,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color(0xffFBFBFB),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        color: const Color(0xffFBFBFB),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Card(
+                    elevation: 10,
+                    child: Container(
+                      width: 150,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: isPending ? const Color(0xff3EED88) : Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          if (isPending == false) {
+                            setState(() {
+                              isPending = true;
+                            });
+                          }
+                        },
+                        child: const Center(
+                          child: Text(
+                            'Pending',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Card(
+                    elevation: 10,
+                    child: Container(
+                      width: 150,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: !isPending ? const Color(0xff3EED88) : Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          if (isPending == true) {
+                            setState(() {
+                              isPending = false;
+                            });
+                          }
+                        },
+                        child: const Center(
+                          child: Text(
+                            'Approved',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment
+                  .center, // Center the radio buttons horizontally
               children: [
-                Container(
-                  width: 150,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: isPending ? Colors.green : Colors.grey,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      if (isPending == false) {
-                        setState(() {
-                          isPending = true;
-                        });
-                      }
-                    },
-                    child: Center(
-                      child: Text(
-                        'Pending',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: isPending ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                Radio<String>(
+                  activeColor: Colors.green,
+
+                  fillColor: MaterialStateProperty.all(Colors.green),
+                  value:
+                  'Engineer', // Value associated with the Consultant radio button
+                  groupValue:
+                  _selectedValue, // This variable should hold the currently selected value
+                  onChanged: (value) {
+                    setState(() {
+                      // Update the state when the radio button is selected
+                      _selectedValue = value!;
+                    });
+                  },
                 ),
-                const SizedBox(width: 10),
-                Container(
-                  width: 150,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: !isPending ? Colors.green : Colors.grey,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      if (isPending == true) {
-                        setState(() {
-                          isPending = false;
-                        });
-                      }
-                    },
-                    child: Center(
-                      child: Text(
-                        'Approved',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: !isPending ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                const Text(
+                  'Engineer',
+                  style: TextStyle(color: Colors.black),
+                ), // Label for the Consultant radio button
+                const SizedBox(
+                    width:
+                    20), // Add some spacing between radio button and label
+                Radio<String>(
+                  activeColor: Colors.green,
+                  fillColor: MaterialStateProperty.all(Colors.green),
+                  value:
+                  'Contractor', // Value associated with the Contractor radio button
+                  groupValue: _selectedValue,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedValue = value!;
+                    });
+                  },
                 ),
+                const Text('Contractor',
+                    style: TextStyle(
+                        color: Colors
+                            .black)),
+                const SizedBox(
+                    width:
+                    20), // Add some spacing between radio button and label
+                Radio<String>(
+                  activeColor: Colors.green,
+                  fillColor: MaterialStateProperty.all(Colors.green),
+                  value:
+                  'Client', // Value associated with the Contractor radio button
+                  groupValue: _selectedValue,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedValue = value!;
+                    });
+                  },
+                ),
+                const Text('Client',
+                    style: TextStyle(
+                        color: Colors
+                            .black)),
+                // Label for the Contractor radio button
               ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment
-                .center, // Center the radio buttons horizontally
-            children: [
-              Radio<String>(
-                activeColor: Colors.green,
-
-                fillColor: MaterialStateProperty.all(Colors.green),
-                value:
-                'Engineer', // Value associated with the Consultant radio button
-                groupValue:
-                _selectedValue, // This variable should hold the currently selected value
-                onChanged: (value) {
-                  setState(() {
-                    // Update the state when the radio button is selected
-                    _selectedValue = value!;
-                  });
-                },
+            Padding(
+              padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: isPending ? pendingRequests() : approvedRequests(),
               ),
-              const Text(
-                'Engineer',
-                style: TextStyle(color: Colors.black),
-              ), // Label for the Consultant radio button
-              const SizedBox(
-                  width:
-                  20), // Add some spacing between radio button and label
-              Radio<String>(
-                activeColor: Colors.green,
-                fillColor: MaterialStateProperty.all(Colors.green),
-                value:
-                'Contractor', // Value associated with the Contractor radio button
-                groupValue: _selectedValue,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedValue = value!;
-                  });
-                },
-              ),
-              const Text('Contractor',
-                  style: TextStyle(
-                      color: Colors
-                          .black)),
-              const SizedBox(
-                  width:
-                  20), // Add some spacing between radio button and label
-              Radio<String>(
-                activeColor: Colors.green,
-                fillColor: MaterialStateProperty.all(Colors.green),
-                value:
-                'Client', // Value associated with the Contractor radio button
-                groupValue: _selectedValue,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedValue = value!;
-                  });
-                },
-              ),
-              const Text('Client',
-                  style: TextStyle(
-                      color: Colors
-                          .black)),
-              // Label for the Contractor radio button
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.7,
-              child: isPending ? pendingRequests() : approvedRequests(),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

@@ -22,7 +22,10 @@ class ChatListItem extends StatelessWidget {
         color: Colors.white,
         child: ListTile(
           leading:
-          CircleAvatar(child: Text(user.name.isNotEmpty ? user.name[0] : '?')),
+          CircleAvatar(
+            radius: 30,
+            child: Image.asset('assets/images/Ellipse.png'),
+          ),
           title: Text(user.name,style: TextStyle(color: Colors.black)),
           onTap: onTap,
         ),

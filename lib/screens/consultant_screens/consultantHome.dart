@@ -7,6 +7,7 @@ import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:amir_khan1/notifications/notification_services.dart';
 
 class ConsultantHomePage extends StatefulWidget {
   const ConsultantHomePage({super.key});
@@ -16,6 +17,18 @@ class ConsultantHomePage extends StatefulWidget {
 }
 
 class ConsultantHomePageState extends State<ConsultantHomePage> {
+  NotificationServices notificationServices = NotificationServices();
+
+  // Index of the selected tab
+  @override
+  void initState() {
+    super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupToken();
+    notificationServices.setupInteractMessage(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
@@ -61,8 +74,21 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
                 ),
                 label: 'Home',
               ),
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.chat),
+              BottomNavigationBarItem(
+                icon: controller.seen.value
+                    ? const Icon(
+                  Icons.chat,
+                )
+                    : const Stack(children: <Widget>[
+                  Icon(Icons.chat),
+                  Positioned(
+                    // draw a red marble
+                    top: 0.0,
+                    right: 0.0,
+                    child: Icon(Icons.brightness_1,
+                        size: 12.0, color: Colors.redAccent),
+                  ),
+                ]),
                 label: 'Chat',
               ),
               BottomNavigationBarItem(
@@ -89,8 +115,8 @@ class ConsultantHomePageState extends State<ConsultantHomePage> {
                 label: 'Schedule',
               ),
               const BottomNavigationBarItem(
-                icon: Icon(Icons.notifications),
-                label: 'Notifications',
+                icon: Icon(Icons.currency_bitcoin),
+                label: 'Finance',
               ),
             ],
             iconSize: 20.0,

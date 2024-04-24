@@ -1,6 +1,7 @@
 import 'dart:io';
-
+import 'package:amir_khan1/notifications/notificationCases.dart';
 import 'package:amir_khan1/controllers/centralTabController.dart';
+import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/summaryscreensconsultant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -59,6 +60,8 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
           ].toString()
         ]),
       });
+      //---------Send Notification-----------
+      NotificationCases().docUploadedByConsultantNotification('Document',projId);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
@@ -125,12 +128,26 @@ class _DocumentScreenState extends State<CnsltDocumentScreen> {
 iconTheme: const IconThemeData(color: Colors.black),
         title: const Text('Documents', style: TextStyle(color: Colors.black)),
         actions: [
-          IconButton(
-            onPressed: () {
-              uploadFile();
-              control.isDocumentLoading.value = false;
-            },
-            icon: const Icon(Icons.upload_file),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  uploadFile();
+                  control.isDocumentLoading.value = false;
+                },
+                icon: const Icon(Icons.upload_file),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SummaryScreenCons(projectId: widget.projectId)),
+                  );
+                },
+                icon: const Icon(Icons.summarize_outlined),
+                tooltip: 'Summary',
+              ),
+            ]
           ),
         ],
       ),

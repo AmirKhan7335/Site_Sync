@@ -1,6 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:weather/weather.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-
+import '../screens/centralBarScreens/const.dart';
 
 class PageThree extends StatefulWidget {
   const PageThree({super.key});
@@ -10,91 +15,150 @@ class PageThree extends StatefulWidget {
 }
 
 class _PageThreeState extends State<PageThree> {
+  final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
+  String? location = 'Unknown';
+  String? weatherDescription = 'Unknown';
+  double temperature = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchWeather();
+  }
+
+  Future<void> fetchWeather() async {
+    try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('engineers')
+            .doc(currentUser.email)
+            .get();
+        String? projectId = userSnapshot['projectId'];
+        if (projectId != null) {
+          DocumentSnapshot projectSnapshot = await FirebaseFirestore.instance
+              .collection('Projects')
+              .doc(projectId)
+              .get();
+          location = projectSnapshot['location'];
+          if (location != null) {
+            List<Location> locations = await locationFromAddress(location!);
+            if (locations.isNotEmpty) {
+              Location cityLocation = locations.first;
+              Weather weather = await _wf.currentWeatherByLocation(
+                  cityLocation.latitude, cityLocation.longitude);
+              setState(() {
+                weatherDescription = weather.weatherDescription ?? 'Unknown';
+                temperature = weather.temperature?.celsius ?? 0;
+              });
+            } else {
+              setState(() {
+                location = 'City not found';
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching weather data: $e');
+      }
+      setState(() {
+        location = 'Failed';
+        weatherDescription = 'Failed';
+      });
+    }
+  }
+
+  IconData getWeatherIcon(String weatherDescription) {
+    switch (weatherDescription.toLowerCase()) {
+      case 'clouds':
+        return Icons.cloud;
+      case 'clear':
+        return Icons.wb_sunny;
+      case 'rain':
+        return Icons.grain;
+    // Add more cases as needed for other weather conditions
+      default:
+        return Icons.cloud;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(
-          left: 8.0, top: 2.0, bottom: 2.0, right: 0.0),
+      padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        // Adjusted color here
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Column(
         children: [
-          const Center(
+          const SizedBox(height: 30),
+          Center(
+            child: Flexible(
               child: Text(
-                'Weather',
-                style: TextStyle(fontSize: 20,color: Colors.black),
-              )),
+                'Weather at $location:',
+                style: const TextStyle(fontSize: 20, color: Colors.black),
+                maxLines: 3, // Adjust maxLines as needed
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Row(
             children: [
               Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     width: 100,
                     height: 100,
-                    child: ColorFiltered(
-                      colorFilter:
-                      const ColorFilter.matrix([
-                        0.0, 0.0, 0.0, 0, 255,
-                        // red channel
-                        0.0, 0.0, 0.0, 0, 255,
-                        // green channel
-                        0.0, 0.0, 0.0, 0, 0,
-                        // blue channel to minimum
-                        0.0, 0.0, 0.0, 1, 0,
-                        // alpha channel
-                      ]),
-                      child: Image.asset(
-                          'assets/images/cloud_icon.png'),
+                    child: Icon(
+                      getWeatherIcon(weatherDescription ?? ''),
+                      size: 100,
+                      color: Colors.yellow,
                     ),
                   ),
                   Transform.translate(
-                    offset: const Offset(2, 7),
-                    // Adjust the vertical offset as needed
+                    offset: const Offset(2, 2),
                     child: RichText(
-                      text: const TextSpan(
+                      text: TextSpan(
                         children: [
                           TextSpan(
-                              text: 'Heavy Rain',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors
-                                      .black) // Increased size to 40
+                            text: weatherDescription ?? '',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
                           ),
-                          TextSpan(
-                              text: '\nTomorrow 11 PM',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black)),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(width: 30),
+              const SizedBox(width: 60),
               Transform.translate(
                 offset: const Offset(2, 7),
-                // Adjust the vertical offset as needed
                 child: RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     children: [
                       TextSpan(
-                          text: ' 26°',
-                          style: TextStyle(
-                              fontSize: 80,
-                              color: Colors.black) // Increased size to 40
+                        text: '${temperature.toStringAsFixed(1)}°',
+                        style: const TextStyle(
+                          fontSize: 50,
+                          color: Colors.black,
+                        ),
                       ),
-                      TextSpan(
-                          text: '\nCurrent Weather',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black)),
+                      const TextSpan(
+                        text: '\nCurrent Weather',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                 ),

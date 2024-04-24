@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:amir_khan1/notifications/notificationCases.dart';
+import '../../notifications/notification_services.dart';
 
 class AccountDetails extends StatefulWidget {
   AccountDetails({super.key});
@@ -22,6 +24,18 @@ class _AccountDetailsState extends State<AccountDetails> {
   String selectedProjectId = '';
   TextEditingController consultantController = TextEditingController();
   String selectedProject = ''; // Store the selected option
+  NotificationServices notificationServices = NotificationServices();
+  // Index of the selected tab
+  @override
+  void initState() {
+    super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupToken();
+    notificationServices.setupInteractMessage(context);
+
+  }
+
   Future<void> sendRequestToConsultant(projectId) async {
     final email = FirebaseAuth.instance.currentUser!.email;
     var activitiesSnapshot = await FirebaseFirestore.instance
@@ -37,6 +51,9 @@ class _AccountDetailsState extends State<AccountDetails> {
         .collection('Projects')
         .doc(projectId)
         .update({'isSelected': true});
+    //-----------Request Notification to Consultant----------------
+    NotificationCases()
+        .requestToConsultantNotification('Engineer', consultantEmail, email!);
   }
 
   Future<List> fetchConsultant() async {
@@ -117,7 +134,8 @@ class _AccountDetailsState extends State<AccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: const Text('Select a Project'),
+          backgroundColor: Colors.white,
+            title: const Text('Select a Project', style: TextStyle(color: Colors.black)),
             content: SizedBox(
               height: 400,
               child: FutureBuilder(
@@ -141,7 +159,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 child: Card(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.black12,
+                                      color: Colors.grey,
                                       borderRadius: BorderRadius.circular(5.0),
                                       border: Border.all(
                                         color: Colors.grey,
@@ -157,7 +175,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                         });
                                         Navigator.pop(context);
                                       },
-                                      title: Text('${projectList[index][0]}'),
+                                      title: Text('${projectList[index][0]}', style: const TextStyle(color: Colors.white),),
                                     ),
                                   ),
                                 ),
@@ -174,7 +192,8 @@ class _AccountDetailsState extends State<AccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: const Text('Select Company'),
+          backgroundColor: Colors.white,
+            title: const Text('Select Company', style: TextStyle(color: Colors.black)),
             content: SizedBox(
               height: 400,
               child: FutureBuilder(
@@ -198,7 +217,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 child: Card(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.black12,
+                                      color: Colors.grey,
                                       borderRadius: BorderRadius.circular(5.0),
                                       border: Border.all(
                                         color: Colors.grey,
@@ -216,7 +235,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                         Navigator.pop(context);
                                       },
                                       title:
-                                          Text('${consultantList[index][0]}'),
+                                          Text('${consultantList[index][0]}', style: const TextStyle(color: Colors.white)),
                                     ),
                                   ),
                                 ),
@@ -365,9 +384,6 @@ class _AccountDetailsState extends State<AccountDetails> {
                           fontSize: 20.0,
                         ),
                         decoration: InputDecoration(
-       
-            
-
                           border: InputBorder.none,
                           hintText: consultantUserName.isEmpty
                               ? 'Select Company'

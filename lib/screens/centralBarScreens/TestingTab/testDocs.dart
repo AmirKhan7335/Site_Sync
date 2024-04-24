@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
-
+import 'package:amir_khan1/notifications/notificationCases.dart';
 import 'package:path_provider/path_provider.dart';
 
 class TestDocumentScreen extends StatefulWidget {
@@ -72,6 +72,8 @@ class _TestDocumentScreenState extends State<TestDocumentScreen> {
           ].toString()
         ]),
       });
+      //---------Send Notification-----------
+      NotificationCases().testUploadedNotification(widget.projId);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }

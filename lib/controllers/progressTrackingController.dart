@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ProjectProgressController extends GetxController {
-  RxInt overAllPercent = 0.obs;
+  RxInt overAllPercent1 = 0.obs;
   Activity? findTodaysActivity(List<Activity> activities) {
     DateTime today = DateTime.now();
     String formattedToday =
@@ -65,6 +65,11 @@ class ProjectProgressController extends GetxController {
 
   Future<int> calculateOverallPercent(List<Activity> activities) async {
     try {
+      DateTime today1 = DateTime.now();
+      String formattedToday1 =
+      DateFormat('dd/MM/yyyy').format(today1);
+      DateTime todayDate1 = DateFormat('dd/MM/yyyy')
+          .parse(formattedToday1);
       DateTime today = DateTime.now();
       int totalDuration = 0;
       for (int i = 0; i < activities.length; i++) {
@@ -72,7 +77,9 @@ class ProjectProgressController extends GetxController {
         DateTime parsedFinishDate = parseDate(activities[i].finishDate);
         int activityDuration =
             parsedFinishDate.difference(parsedStartDate).inDays + 1;
+        print("activity duration = $activityDuration");
         totalDuration += activityDuration;
+        print("total duration = $totalDuration");
       }
       double completedActivitiesPercentages = 0;
       int todaysactivityduration = 0;
@@ -83,24 +90,20 @@ class ProjectProgressController extends GetxController {
         int activityDuration =
             parsedFinishDate.difference(parsedStartDate).inDays + 1;
 
-        bool continueBothLoops = false; // Flag to control loop continuation
-
         for (var activity in activities) {
           if (activity.name == findTodaysActivity(activities)?.name) {
             todaysactivityduration = activityDuration;
-            continueBothLoops = true; // Set the flag to true if the name matches
             break; // Break out of the loop once a match is found
           }
         }
 
-        if (continueBothLoops) {
-          continue; // Continue both loops if the flag is true
-        }
-
-        if (parsedFinishDate.isBefore(today)) {
+        if (parsedFinishDate.isBefore(todayDate1)) {
           // Activity is completed
           double percentComplete = (activityDuration / totalDuration) * 100;
+          print("parsed finishe");
+          print("percent complete = $percentComplete");
           completedActivitiesPercentages += percentComplete;
+          print("completed activities percentages = $completedActivitiesPercentages");
         }
       }
 
@@ -123,7 +126,7 @@ class ProjectProgressController extends GetxController {
         completedActivitiesPercentages += todayContribution.round();
       }
 
-      overAllPercent.value = completedActivitiesPercentages.round();
+      overAllPercent1.value = completedActivitiesPercentages.round();
 
       var email = FirebaseAuth.instance.currentUser!.email;
       FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -151,12 +154,12 @@ class ProjectProgressController extends GetxController {
         }
       }
 
-      await uploadOverallPercentToProject(projectID, overAllPercent.value);
+      await uploadOverallPercentToProject(projectID, overAllPercent1.value);
 
     } catch (e) {
       // Handle the error, log it, or display an error message
     }
-    return overAllPercent.value;
+    return overAllPercent1.value;
   }
 
   Future<void> uploadOverallPercentToProject(String projectID, int overallPercent) async {

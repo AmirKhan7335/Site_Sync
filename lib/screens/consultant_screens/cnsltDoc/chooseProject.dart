@@ -1,7 +1,6 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltDoc/consltDocuments.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class ChooseProjectForDocument extends StatefulWidget {
@@ -14,17 +13,43 @@ class ChooseProjectForDocument extends StatefulWidget {
 
 class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
   final myEmail = FirebaseAuth.instance.currentUser!.email;
-  Future<List> fetchProjects() async {
-    final query = await FirebaseFirestore.instance
+  Future<List<List<dynamic>>> fetchProjects() async {
+    final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
+
+    // Fetch projects owned by the current user
+    final userProjectsQuery = await FirebaseFirestore.instance
         .collection('Projects')
-        .where('email', isEqualTo: myEmail)
+        .where('email', isEqualTo: currentUserEmail)
         .get();
-    final result = query.docs.map((doc) {
+    final userProjects = userProjectsQuery.docs.map((doc) {
       return [doc['title'], doc.id];
     }).toList();
 
-    return result;
+    // // Fetch projects associated with contractors
+    // final contractorQuery = await FirebaseFirestore.instance
+    //     .collection('contractor')
+    //     .doc(currentUserEmail)
+    //     .collection('projects')
+    //     .where('reqAccepted', isEqualTo: true)
+    //     .get();
+    // final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+
+    // final contractorProjectsQuery = await FirebaseFirestore.instance
+    //     .collection('Projects')
+    //     .where(FieldPath.documentId, whereIn: contrProjId)
+    //     .get();
+    // final contractorProjects = contractorProjectsQuery.docs.map((doc) {
+    //   return [doc['title'], doc.id];
+    // }).toList();
+    //
+    // // Merge and return both sets of projects
+    // final List<List<dynamic>> allProjects = [];
+    // allProjects.addAll(userProjects);
+    // allProjects.addAll(contractorProjects);
+
+    return userProjects;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +58,8 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
-          title: Text(
+          iconTheme: const IconThemeData(color: Colors.black),
+          title: const Text(
             'Select Project',
             style: TextStyle(color: Colors.black),
           ),
@@ -43,11 +68,11 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
             future: fetchProjects(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData) {
-                return Center();
+                return const Center();
               }
               final data = snapshot.data;
               return ListView.builder(
@@ -69,7 +94,7 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
                         leading: ClipOval(
                           child: Text(
                             '${index + 1}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 20,
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
@@ -77,7 +102,7 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
                         ),
                         title: Text(
                           data[index][0].toString(),
-                          style: TextStyle(color: Colors.black),
+                          style: const TextStyle(color: Colors.black),
                         ),
                         subtitle: Container(
                           height: 1.5,

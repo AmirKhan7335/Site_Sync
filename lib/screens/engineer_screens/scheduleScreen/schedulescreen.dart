@@ -19,6 +19,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationCases.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 enum ExportFormat {
   excel,
@@ -258,49 +260,53 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           );
         }
       },
-      child: Card(
-        elevation: 5,
-        color: Colors.white,
-        child: Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-          decoration: BoxDecoration(
-            color: Colors.white,  
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 9.0,
-                height: 50,
-                color: Colors.green,
-              ),
-              const SizedBox(width: 12.0),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      displayText, // Use the modified display text
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 19.0,
-                      ),
-                    ),
-                    const SizedBox(height: 4.0),
-                    Text(
-                      '$formattedStartDate - $formattedFinishDate',
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 11.0,
-                      ),
-                    ),
-                  ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+        child: Card(
+          elevation: 5,
+          color: Colors.white,
+          child: Container(
+            height: 71,
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 7.0,
+                  height: 45,
+                  color: Colors.green,
                 ),
-              ),
-            ],
+                const SizedBox(width: 12.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        displayText, // Use the modified display text
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 19.0,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        '$formattedStartDate - $formattedFinishDate',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 11.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -456,7 +462,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     setState(() => isLoading = true);
     // Show a dialog to get activity details (name, start date, finish date, and order)
     final result = await showDialog(
-      
+
       context: context,
       builder: (BuildContext context) => AlertDialog(
         backgroundColor:  const Color(0xFFF3F3F3),
@@ -654,6 +660,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   void initState() {
     super.initState();
     fetchActivitiesFromFirebase();
+    _initializeTimeZone();
   }
 
   Future<void> fetchActivitiesFromFirebase() async {
@@ -741,13 +748,13 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
       var activitiesCollection =
           firestore.collection('engineers').doc(email).collection('activities');
-      
+
       String sanitizedActivityName =
           activity.name.replaceAll(RegExp(r'[/.#$\[\]]'), '_');
       String documentId =
           '${sanitizedActivityName}_${DateTime.now().millisecondsSinceEpoch}';
       activity.id = documentId; // Set the ID for the activity
-      
+
       var activityRef = activitiesCollection.doc(documentId);
       await activityRef.set({
         'id': documentId,
@@ -759,7 +766,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       });
       //------------------------------------------------Sending Notification-------
       NotificationCases().scheduleNotification(email!, 'Updated');
-      
+
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -818,19 +825,20 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         if (finishDate.isBefore(currentDate)) {
           // Calculate the total days from start date till finish date excluding Sundays
           int totalDays = finishDate.difference(startDate).inDays + 1;
-          int sundays = 0;
+          // int sundays = 0;
           for (int i = 0; i < totalDays; i++) {
             DateTime date = startDate.add(Duration(days: i));
-            if (date.weekday == DateTime.sunday) {
-              sundays++;
-            }
+            // if (date.weekday == DateTime.sunday) {
+            //   sundays++;
+            // }
           }
-          int dayCount = totalDays - sundays;
-
+          // int dayCount = totalDays - sundays;
+          int dayCount = totalDays;
           // Add the calculated day count to the total
           totalDayCount += dayCount;
         }
       }
+      totalDayCount += 1;
     } catch (e) {
       Get.snackbar('Error', '$e');
     }
@@ -897,8 +905,12 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       }
       Get.snackbar('Export Successful', 'File downloaded as $fileName');
     } catch (e, stackTrace) {
-      print('Export Error: $e');
-      print('Stack Trace: $stackTrace');
+      if (kDebugMode) {
+        print('Export Error: $e');
+      }
+      if (kDebugMode) {
+        print('Stack Trace: $stackTrace');
+      }
       Get.snackbar('Export Error', 'An error occurred during export: $e');
     }
   }
@@ -1018,6 +1030,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
+  Future<void> _initializeTimeZone() async {
+    tz.initializeTimeZones(); // Load time zone database
+  }
 
 
 
@@ -1027,16 +1042,29 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current date
-    final currentDate = DateTime.now();
-    // Get the current day of the week (0 for Monday, 1 for Tuesday, ..., 6 for Sunday)
-    final currentDayOfWeek = (currentDate.weekday + 6) % 7;
+    // Get current date and time in Pakistan time zone
+    final pakistanTimeZone = tz.getLocation('Asia/Karachi');
+    final currentDateTimeInPakistan = tz.TZDateTime.now(pakistanTimeZone);
+    print("current date time = $currentDateTimeInPakistan");
+
+//     // Extract year, month, and day
+//     final year = currentDateTimeInPakistan.year;
+//     final month = currentDateTimeInPakistan.month;
+//     final day = currentDateTimeInPakistan.day;
+//
+// // Create a DateTime object and add Pakistan's offset (UTC+5)
+//     final currentDate = DateTime(year, month, day).add(const Duration(hours: 5));
+//     print("current date 11 =$currentDate");
+
+    // Extract day of week
+    final currentDayOfWeek = currentDateTimeInPakistan.weekday;
+    print("current day of week =$currentDayOfWeek");
     // Convert the day of the week to a string representation
     final List<String> dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     // Format the date in 'Month Year' format
-    final String monthYear = DateFormat('MMMM yyyy').format(currentDate);
+    final String monthYear = DateFormat('MMMM yyyy').format(currentDateTimeInPakistan);
     // Determine if it's a working day (Monday to Thursday)
-    final bool isWorkingDay = currentDate.weekday != 0; // Sunday = 0, Saturday = 6
+    final bool isWorkingDay = currentDateTimeInPakistan.weekday != 0; // Sunday = 0, Saturday = 6
 
     return SingleChildScrollView(
       child: SizedBox(
@@ -1074,7 +1102,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                                   style: const TextStyle(
                                     color: Color(0xFFFFFFFF),
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18.0, 
+                                    fontSize: 18.0,
                                   ),
                                 ),
                               ),
@@ -1120,13 +1148,17 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                             children: List.generate(7, (index) {
                               // Calculate the date for each day of the week relative to the current day
                               final int dayIndex = index - 3;
-                              final day = currentDate.subtract(Duration(days: currentDayOfWeek - dayIndex ));
+                              print("day index = $dayIndex");
+                              final day = currentDateTimeInPakistan.subtract(Duration(days: currentDayOfWeek - dayIndex -2));
+                              print("day = $day");
                               // Format the date to 'd' (day of the month)
                               final formattedDate = DateFormat('d').format(day);
+                              print("formatted date = $formattedDate");
                               // Get the abbreviated day name
-                              final dayOfWeek = dayNames[(currentDayOfWeek + dayIndex) % 7];
+                              final dayOfWeek = dayNames[(currentDayOfWeek + dayIndex-1) % 7];
                               // Check if the current day matches today's date
                               final bool isToday = dayIndex == 0;
+                              print("is today = $isToday");
 
                               return Container(
                                 padding: const EdgeInsets.all(8.0),

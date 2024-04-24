@@ -97,6 +97,7 @@ class _SigninScreenState extends State<SigninScreen> {
   bool isloading = false;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController resetController = TextEditingController();
 
   signInWithEmailAndPassword() async {
     try {
@@ -389,13 +390,57 @@ class _SigninScreenState extends State<SigninScreen> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            // Add your logic for when the "Forgot Password" button is pressed.
+                            Get.defaultDialog(
+                              title: 'Forgot Password',
+                              content: Column(
+                                children: [
+                                  const Text(
+                                    'Enter your email address to reset your password.',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  MyTextField(
+                                    hintText: 'Enter your email',
+                                    obscureText: false,
+                                    controller: resetController,
+                                    icon: Icons.email,
+                                    keyboardType: TextInputType.emailAddress,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  MyButton(
+                                    text: 'Reset Password',
+                                    bgColor: Colors.green,
+                                    textColor: Colors.black,
+                                    icon: Icons.lock,
+                                    onTap: () async {
+                                      try {
+                                        await FirebaseAuth.instance.sendPasswordResetEmail(email: resetController.text);
+                                        Get.back();
+                                        resetController.clear();
+                                        Get.snackbar(
+                                          'Email Sent',
+                                          'Password Reset Link has been Sent to Your Email',
+                                        );
+                                      } catch (e) {
+                                        Get.back();
+                                        resetController.clear();
+                                        debugPrint(e.toString());
+                                        Get.snackbar('Error', '$e');
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
                           },
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.blueGrey,
+                              color: Colors.blue, // Change the color to blue to match the provided code
                             ),
                           ),
                         ),

@@ -16,7 +16,6 @@ class PageOne extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("activityProgress: $activityProgress");
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 10.0, bottom: 20.0),
@@ -26,6 +25,7 @@ class PageOne extends StatelessWidget {
       ),
       child: Center(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // SizedBox(
             //   width: 50,
@@ -40,35 +40,32 @@ class PageOne extends StatelessWidget {
             // ),
             // const SizedBox(height: 5),
 
-            // const SizedBox(height: 5),
+            const SizedBox(height: 30),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            // const SizedBox(height: 10),
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 40.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        "Start : $startDate",
-                        style: const TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        "End : $endDate",
-                        style: const TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Start : $startDate",
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "End : $endDate",
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 30),
                 Column(
                   children: [
-                    const SizedBox(height: 60),
                     SizedBox(
                       height: 90,
                       width: 90,

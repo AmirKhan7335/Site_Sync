@@ -9,6 +9,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../notifications/notificationCases.dart';
+import '../../notifications/notification_services.dart';
+
 class ContrAccountDetails extends StatefulWidget {
   ContrAccountDetails({super.key});
 
@@ -18,6 +21,7 @@ class ContrAccountDetails extends StatefulWidget {
 
 class _AccountDetailsState extends State<ContrAccountDetails> {
   final _formKey = GlobalKey<FormState>();
+  NotificationServices notificationServices = NotificationServices();
 
   bool isloading = false;
   String consultantEmail = '';
@@ -25,6 +29,18 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
   String selectedProjectId = '';
   TextEditingController consultantController = TextEditingController();
   String selectedProject = ''; // Store the selected option
+
+  // Index of the selected tab
+  @override
+  void initState() {
+    super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupToken();
+    notificationServices.setupInteractMessage(context);
+
+  }
+
   Future<void> sendRequestToConsultant(projectId) async {
     final email = FirebaseAuth.instance.currentUser!.email;
     var requests =
@@ -46,10 +62,22 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
       'reqAccepted': false,
       'date': DateTime.now()
     });
+    var activitiesSnapshot1 = await FirebaseFirestore.instance
+        .collection('contractors')
+        .doc(projectId)
+        .set({
+      'consultantEmail': consultantEmail,
+      'projectId': projectId,
+      'reqAccepted': false,
+      'date': DateTime.now()
+    });
     var projectSelected = await FirebaseFirestore.instance
         .collection('Projects')
         .doc(projectId)
         .update({'isContrSelected': true});
+    //-----------Request Notification to Consultant----------------
+    NotificationCases()
+        .requestToConsultantNotification('Contractor', consultantEmail, email!);
   }
 
   Future<List> fetchConsultant() async {

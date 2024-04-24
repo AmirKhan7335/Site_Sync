@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../screens/engineer_screens/chatscreen.dart';
 import 'package:path/path.dart' as p;
+import 'package:amir_khan1/notifications/notificationCases.dart';
 import 'messagetile.dart';
 import 'dart:io';
 import 'dart:async'; // Add import for Timer
@@ -214,6 +215,11 @@ class ChatInputAreaState extends State<ChatInputArea> {
           'documentName': '',
         };
         // print ("sender in chat input area = ${message['senderId']}");
+        //---------Send Notification------------------------
+        final senderId = FirebaseAuth.instance.currentUser?.email;
+        NotificationCases().textMessageNotification(senderId!, widget.user.id);
+
+        //-----------------------------------------------------
 
         DocumentReference messageRef = await FirebaseFirestore.instance
             .collection('chatRooms')
