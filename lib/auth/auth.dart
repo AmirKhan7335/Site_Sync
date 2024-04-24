@@ -1,8 +1,5 @@
-import 'package:amir_khan1/main.dart';
 import 'package:amir_khan1/screens/client_screen/clientAccountDetail.dart';
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
-import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
-import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
@@ -22,21 +19,34 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
   var status = null;
+  var clientStatus = null;
   @override
   void initState() {
     super.initState();
     getStatus();
+    getClientStatus();
     setState(() {});
+  }
+
+  getClientStatus() async {
+    clientStatus = await checkRequestStatusForClient();
   }
 
   getStatus() async {
     status = await checkRequestStatus();
   }
-
   final user = FirebaseAuth.instance.currentUser;
   Future checkRequestStatus() async {
     var activitiesSnapshot = await FirebaseFirestore.instance
         .collection('engineers')
+        .doc(user!.email)
+        .get();
+    final requestStatus = await activitiesSnapshot['reqAccepted'];
+    return requestStatus;
+  }
+  Future checkRequestStatusForClient() async {
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('clients')
         .doc(user!.email)
         .get();
     final requestStatus = await activitiesSnapshot['reqAccepted'];
@@ -76,32 +86,38 @@ class _AuthPageState extends State<AuthPage> {
                       }
                     }
                     else if (snapshot.data == 'Client') {
-                      if (status == true) {
+                      if (clientStatus == true) {
                         return EngineerHomePage(isClient: true,);
-                      } else if (status == false) {
+                      } else if (clientStatus == false) {
                         return WelcomeEngineer(isClient: true,);
                       } else {
-                        return ClientAccountDetails();
+                        return ClientAccountDetails(otherRole: false,);
                       }
                     }
                     else if (snapshot.data == 'Consultant') {
-                      return ConsultantHomePage();
+                      return const ConsultantHomePage();
                     }
                     else if (snapshot.data == 'Contractor') {
-                      return ContractorHomePage();
+                      return const ContractorHomePage();
                     }
                     else {
-                      return Center(child: Text('Nothing To Show'));
+                      if (clientStatus == true) {
+                        return EngineerHomePage(isClient: true,);
+                      } else if (clientStatus == false) {
+                        return WelcomeEngineer(isClient: true,);
+                      } else {
+                        return ClientAccountDetails(otherRole: true,);
+                      }
                     }
                   } else if (snapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   } else if (snapshot.hasError) {
                     return Center(child: Text(snapshot.error.toString()));
                   } else {
-                    return Text('Unknown Error');
+                    return const Text('Unknown Error');
                   }
                 });
           } else {

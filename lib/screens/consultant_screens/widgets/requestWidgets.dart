@@ -11,6 +11,7 @@ class PendingRequest extends StatefulWidget {
       required this.engEmail,
       required this.selectedValue,
         required this.profilePic,
+        required this.role,
       super.key});
 
   String name;
@@ -18,7 +19,7 @@ class PendingRequest extends StatefulWidget {
   List projectDataList;
   String engEmail;
   String selectedValue;
-
+  String role;
   @override
   State<PendingRequest> createState() => _PendingRequestState();
 }
@@ -118,6 +119,7 @@ class _PendingRequestState extends State<PendingRequest> {
         widget.engEmail, 'Accepted');
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,7 +142,7 @@ class _PendingRequestState extends State<PendingRequest> {
               name: widget.name,
               projectDataList: widget.projectDataList,
               engEmail: widget.engEmail,
-              role: widget.selectedValue,
+              role: widget.role,
               profilePic: widget.profilePic,
             ),
             const SizedBox(
@@ -202,10 +204,12 @@ class _PendingRequestState extends State<PendingRequest> {
                         .delete(
                       //FieldPath(['reqAccepted']): FieldValue.delete(),
                     );
-                    await FirebaseFirestore.instance
-                        .collection('Projects')
-                        .doc(widget.projectDataList[3])
-                        .update({'isSelected': false});
+                    if (widget.role != 'Client') {
+                      await FirebaseFirestore.instance
+                          .collection('Projects')
+                          .doc(widget.projectDataList[3])
+                          .update({'isClient': false});
+                    }
                     //-----------------Send notification
                     NotificationCases().requestAcceptanceorDecline(
                         widget.engEmail, 'Rejected');
@@ -216,10 +220,12 @@ class _PendingRequestState extends State<PendingRequest> {
                         .delete(
                       //FieldPath(['reqAccepted']): FieldValue.delete(),
                     );
-                    await FirebaseFirestore.instance
-                        .collection('Projects')
-                        .doc(widget.projectDataList[3])
-                        .update({'isClient': false});
+                    if (widget.role != 'Client') {
+                      await FirebaseFirestore.instance
+                          .collection('Projects')
+                          .doc(widget.projectDataList[3])
+                          .update({'isClient': false});
+                    }
                     //-----------------Send notification
                     NotificationCases().requestAcceptanceorDecline(
                         widget.engEmail, 'Rejected');
@@ -260,6 +266,7 @@ class ApprovedRequest extends StatefulWidget {
       required this.engEmail,
       required this.selectedValue,
         required this.profilePic,
+        required this.role,
       super.key});
 
   String name;
@@ -267,7 +274,7 @@ class ApprovedRequest extends StatefulWidget {
   List projectDataList;
   String engEmail;
   String selectedValue;
-
+  String role;
   @override
   State<ApprovedRequest> createState() => _ApprovedRequestState();
 }
@@ -306,6 +313,7 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
         .update({'isContrSelected': false});
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -328,7 +336,7 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
               name: widget.name,
               projectDataList: widget.projectDataList,
               engEmail: widget.engEmail,
-              role: widget.selectedValue,
+              role: widget.role,
               profilePic: widget.profilePic,
             ),
             const SizedBox(
@@ -354,10 +362,12 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
                         .collection('clients')
                         .doc('${widget.engEmail}')
                         .delete();
-                    await FirebaseFirestore.instance
-                        .collection('Projects')
-                        .doc(widget.projectDataList[3])
-                        .update({'isClient': false});
+                    if (widget.role != 'Client') {
+                      await FirebaseFirestore.instance
+                          .collection('Projects')
+                          .doc(widget.projectDataList[3])
+                          .update({'isClient': false});
+                    }
                   }
 
                   Navigator.pop(context);

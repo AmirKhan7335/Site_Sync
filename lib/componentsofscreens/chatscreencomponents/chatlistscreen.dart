@@ -368,20 +368,42 @@ class ChatListScreenState extends State<ChatListScreen> {
           validUsers = [ChatUser(id: contractorEmail, name: contractorName)];
           validUsers.addAll(validUsers1);
         } else {
-          final query = await FirebaseFirestore.instance
+          var projIdForClient = await FirebaseFirestore.instance
               .collection('clients')
               .doc(userEmail)
               .get();
-
-          final consltEmail = query.data()!['consultantEmail'];
-          print('Consultant Email: $consltEmail');
-          final usersData = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(consltEmail)
+          var clientProjectId = projIdForClient.data()!['projectId'];
+          var sameEngineer = await FirebaseFirestore.instance
+              .collection('engineers')
+              .where('projectId', isEqualTo: clientProjectId)
               .get();
-          validUsers = [
-            ChatUser(id: consltEmail, name: usersData.data()!['username'])
-          ];
+          if (sameEngineer.docs.isNotEmpty) {
+            var engEmails = sameEngineer.docs.map((e) => e.id).toList();
+            final data = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(engEmails[0])
+                .get();
+            var users = [
+              ChatUser(id: engEmails[0], name: data.data()!['username'])
+            ];
+
+            ///----------------------------------------------------
+            final query = await FirebaseFirestore.instance
+                .collection('clients')
+                .doc(userEmail)
+                .get();
+
+            final consltEmail = query.data()!['consultantEmail'];
+            print('Consultant Email: $consltEmail');
+            final usersData = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(consltEmail)
+                .get();
+            validUsers = [
+              ChatUser(id: consltEmail, name: usersData.data()!['username'])
+            ];
+            validUsers.addAll(users);
+          }
         }
       }
     } catch (e) {

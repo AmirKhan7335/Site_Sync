@@ -1,6 +1,4 @@
 import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
-import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
-import 'package:amir_khan1/screens/contractor_screen/contrAccountDetail.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/screens/engineer_screens/engineerHome.dart';
@@ -10,13 +8,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import '../components/my_button.dart';
 import '../components/mytextfield.dart';
-import '../main.dart';
 import 'createaccountscreen.dart';
 
 // Google sign in
@@ -41,7 +37,7 @@ Future<User?> signInWithGoogle() async {
 
     return authResult.user;
   } catch (e) {
-    Get.snackbar('Error', '${e}');
+    Get.snackbar('Error', '$e');
     return null;
   }
 }
@@ -98,6 +94,10 @@ class _SigninScreenState extends State<SigninScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController resetController = TextEditingController();
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   signInWithEmailAndPassword() async {
     try {
@@ -145,14 +145,18 @@ class _SigninScreenState extends State<SigninScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EngineerHomePage(isClient: false,),
+                      builder: (context) => EngineerHomePage(
+                        isClient: false,
+                      ),
                     ),
                   );
                 } else if (requestStatus == false) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WelcomeEngineer(isClient: false,),
+                      builder: (context) => WelcomeEngineer(
+                        isClient: false,
+                      ),
                     ),
                   );
                 }
@@ -175,8 +179,7 @@ class _SigninScreenState extends State<SigninScreen> {
             setState(() {
               isloading = false;
             });
-          }
-          else if (getRole == 'Client') {
+          } else if (getRole == 'Client') {
             final user = FirebaseAuth.instance.currentUser;
 
             var activitiesSnapshot = await FirebaseFirestore.instance
@@ -191,14 +194,18 @@ class _SigninScreenState extends State<SigninScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EngineerHomePage(isClient: true,),
+                      builder: (context) => EngineerHomePage(
+                        isClient: true,
+                      ),
                     ),
                   );
                 } else if (requestStatus == false) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WelcomeEngineer(isClient: true,),
+                      builder: (context) => WelcomeEngineer(
+                        isClient: true,
+                      ),
                     ),
                   );
                 }
@@ -221,9 +228,7 @@ class _SigninScreenState extends State<SigninScreen> {
             setState(() {
               isloading = false;
             });
-          }
-
-          else if (getRole == 'Consultant') {
+          } else if (getRole == 'Consultant') {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -233,15 +238,62 @@ class _SigninScreenState extends State<SigninScreen> {
             setState(() {
               isloading = false;
             });
-          }
-
-          else if (getRole == 'Contractor') {
+          } else if (getRole == 'Contractor') {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ContractorHomePage(),
+                builder: (context) => const ContractorHomePage(),
               ),
             );
+            setState(() {
+              isloading = false;
+            });
+          } else {
+            final user = FirebaseAuth.instance.currentUser;
+
+            var activitiesSnapshot = await FirebaseFirestore.instance
+                .collection('clients')
+                .doc(user!.email)
+                .get();
+            if (activitiesSnapshot.exists) {
+              if (activitiesSnapshot.data()!.containsKey('reqAccepted')) {
+                final requestStatus = await activitiesSnapshot['reqAccepted'];
+
+                if (requestStatus == true) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EngineerHomePage(
+                        isClient: true,
+                      ),
+                    ),
+                  );
+                } else if (requestStatus == false) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WelcomeEngineer(
+                        isClient: true,
+                      ),
+                    ),
+                  );
+                }
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AccountDetails(),
+                  ),
+                );
+              }
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AccountDetails(),
+                ),
+              );
+            }
             setState(() {
               isloading = false;
             });
@@ -279,7 +331,7 @@ class _SigninScreenState extends State<SigninScreen> {
           }
         }
       } else {
-        showErrorDialog('${e}');
+        showErrorDialog('$e');
         if (kDebugMode) {
           print('Error: ${e.message}');
         }
@@ -390,6 +442,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       children: [
                         TextButton(
                           onPressed: () {
+                            // Add your logic for when the "Forgot Password" button is pressed.
                             Get.defaultDialog(
                               title: 'Forgot Password',
                               content: Column(
@@ -417,7 +470,9 @@ class _SigninScreenState extends State<SigninScreen> {
                                     icon: Icons.lock,
                                     onTap: () async {
                                       try {
-                                        await FirebaseAuth.instance.sendPasswordResetEmail(email: resetController.text);
+                                        await FirebaseAuth.instance
+                                            .sendPasswordResetEmail(
+                                            email: resetController.text);
                                         Get.back();
                                         resetController.clear();
                                         Get.snackbar(
@@ -440,7 +495,7 @@ class _SigninScreenState extends State<SigninScreen> {
                             'Forgot Password?',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.blue, // Change the color to blue to match the provided code
+                              color: Colors.blue,
                             ),
                           ),
                         ),
@@ -496,7 +551,6 @@ class _SigninScreenState extends State<SigninScreen> {
                           await sendEmailToUser(user.email!);
                           // Navigate to home page after Google sign-in
                           if (context.mounted) {
-
                             //isloading = false;
                           }
                           //isloading = false;

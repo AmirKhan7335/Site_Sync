@@ -1,6 +1,5 @@
 import 'package:amir_khan1/screens/client_screen/clientAccountDetail.dart';
 import 'package:amir_khan1/screens/consultant_screens/cnsltCompanyInfo.dart';
-import 'package:amir_khan1/screens/consultant_screens/cnsltSplash.dart';
 import 'package:amir_khan1/screens/contractor_screen/contCompanyInfo.dart';
 import 'package:amir_khan1/screens/engineer_screens/accountDetails.dart';
 import 'package:amir_khan1/auth/signinscreen.dart';
@@ -16,6 +15,7 @@ import '../helper/helper_functions.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key, required this.onTap});
+
   final VoidCallback onTap;
 
   @override
@@ -27,10 +27,26 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController roleController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   bool isChecked = false;
   bool isloading = false;
   String dropdownValue = 'Choose Your Role\n----------------------------';
-  List<String> list = ['Choose Your Role\n----------------------------', 'Engineer', 'Consultant','Contractor','Client'];
+  List<String> list = [
+    'Choose Your Role\n----------------------------',
+    'Engineer',
+    'Consultant',
+    'Contractor',
+    'Client',
+    'Other'
+  ];
+
   void registerUser() async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -84,12 +100,12 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
               : usernameController.text,
           'role': dropdownValue,
         });
-        Get.snackbar('Success', 'Loged In');
+        Get.snackbar('Success', 'Logged In');
       } else {
         Get.snackbar('Empty', 'Credentials Empty');
       }
     } catch (e) {
-      Get.snackbar('Error', '${e}');
+      Get.snackbar('Error', '$e');
     }
   }
 
@@ -115,23 +131,28 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => CnsltCompanyInfo(),
+            builder: (context) => const CnsltCompanyInfo(),
           ),
         );
-      }
-      else if (getRole == 'Contractor') {
+      } else if (getRole == 'Contractor') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => ContractorCompanyInfo(),
+            builder: (context) => const ContractorCompanyInfo(),
           ),
         );
-      }
-      else if (getRole == 'Client') {
+      } else if (getRole == 'Client') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => ClientAccountDetails(),
+            builder: (context) => ClientAccountDetails(otherRole: false),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ClientAccountDetails(otherRole: true),
           ),
         );
       }
@@ -144,7 +165,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
+          await googleUser?.authentication;
 
       if (googleAuth?.accessToken != null && googleAuth?.idToken != null) {
         final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -153,7 +174,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         );
 
         UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+            await FirebaseAuth.instance.signInWithCredential(credential);
         await createUserDocument(userCredential, true);
         navigateToRoleScreen();
       } else {
@@ -162,7 +183,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
     } on FirebaseAuthException catch (e) {
       showErrorDialog('Failed to sign in with Google: ${e.message}');
     } catch (e) {
-      showErrorDialog('An error occurred. ${e}');
+      showErrorDialog('An error occurred. $e');
     }
   }
 
@@ -199,7 +220,6 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 backgroundImage: AssetImage('assets/images/logo1.png'),
                 backgroundColor: Colors.transparent,
               ),
-
               const Text('Create Account',
                   style: TextStyle(
                       fontSize: 24,
@@ -226,15 +246,18 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                 ),
                 child: Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Icon(Icons.person_add,color: Colors.grey,),
-                    SizedBox(
+                    const Icon(
+                      Icons.person_add,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(
                       width: 20,
                     ),
                     DropdownButton<String>(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
 
                       dropdownColor: Colors.white,
                       iconEnabledColor: Colors.grey,
@@ -243,20 +266,50 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                       elevation: 16,
                       style: TextStyle(
                         fontSize: 16,
-                        color: dropdownValue == 'Choose Your Role\n----------------------------'
+                        color: dropdownValue ==
+                                'Choose Your Role\n----------------------------'
                             ? Colors.grey // Lighter color for initial label
                             : Colors.black, // Darker color for selected value
                       ),
                       onChanged: (String? value) {
-                        // This is called when the user selects an item.
-                        setState(() {
-                          dropdownValue = value!;
-                        });
+                        if (value == 'Other') {
+                          Get.defaultDialog(
+                            title: 'Other Role',
+                            content: Column(
+                              children: [
+                                MyTextField(
+                                  hintText: 'Enter your Role',
+                                  obscureText: false,
+                                  controller: roleController,
+                                  icon: Icons.contacts,
+                                  keyboardType: TextInputType.text,
+                                ),
+                                MyButton(
+                                  text: 'Submit',
+                                  bgColor: Colors.green,
+                                  textColor: Colors.black,
+                                  onTap: () {
+                                    if (roleController.text.isNotEmpty) {
+                                      list.add(roleController.text);
+                                      setState(() {
+                                        dropdownValue = roleController.text;
+                                      });
+                                      Get.back();
+                                      roleController.clear();
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          setState(() {
+                            dropdownValue = value!;
+                          });
+                        }
                       },
-
                       items: list.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
-
                           value: value,
                           child: Text(value),
                         );
@@ -304,7 +357,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                         TextSpan(
                             text: "Privacy Policy, Terms and Conditions",
                             style:
-                            TextStyle(fontSize: 16, color: Colors.green)),
+                                TextStyle(fontSize: 16, color: Colors.green)),
                       ],
                     ),
                   ),
@@ -321,22 +374,22 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                     style: TextStyle(color: Colors.red)),
               const SizedBox(height: 10),
               isloading
-                  ? Center(
-                child: CircularProgressIndicator(color: Colors.green),
-              )
+                  ? const Center(
+                      child: CircularProgressIndicator(color: Colors.green),
+                    )
                   : MyButton(
-                text: 'Sign Up',
-                bgColor: Colors.green,
-                textColor: Colors.black,
-                onTap: () {
-                  if (isChecked) {
-                    setState(() {
-                      isloading = true;
-                    });
-                    registerUser();
-                  }
-                },
-              ),
+                      text: 'Sign Up',
+                      bgColor: Colors.green,
+                      textColor: Colors.black,
+                      onTap: () {
+                        if (isChecked) {
+                          setState(() {
+                            isloading = true;
+                          });
+                          registerUser();
+                        }
+                      },
+                    ),
               const SizedBox(height: 10),
               SizedBox(
                 width: 376.0,
@@ -366,8 +419,8 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => SigninScreen(
-                              onTap: () {},
-                            ))),
+                                  onTap: () {},
+                                ))),
                     child: const Text('Sign in',
                         style: TextStyle(
                             color: Colors.green,

@@ -45,8 +45,8 @@ class _RequestPageState extends State<RequestPage> {
 
       return [getProject, getNames, nameEmail, getProfilePic];
     } catch (e) {
-      Get.snackbar('Error11', e.toString());
-      print("Error11: $e");
+      Get.snackbar('Error ', e.toString());
+      print("Error: $e");
       return [[]];
     }
   }
@@ -273,9 +273,17 @@ class _RequestPageState extends State<RequestPage> {
 
       return projectDataList;
     } catch (e) {
-      Get.snackbar('Error222', e.toString());
-      print("Error222: $e");
+      Get.snackbar('Error ', e.toString());
+      print("Error: $e");
     }
+  }
+
+  getRole(email) async {
+    final query =
+    await FirebaseFirestore.instance.collection('users').doc(email).get();
+    final role = await query.data()!['role'];
+
+    return role;
   }
 
   bool isPending = true;
@@ -283,8 +291,9 @@ class _RequestPageState extends State<RequestPage> {
     return FutureBuilder(
         future: _selectedValue == 'Contractor'
             ? getPendingContrRequests()
-            :_selectedValue == 'Engineer'?
-        getPendingRequests():
+            : _selectedValue == 'Engineer'
+            ? getPendingRequests()
+            :
         //      _selectedValue == 'Client'?
         getPendingClientRequests(),
         builder: (context, snapshot) {
@@ -303,6 +312,7 @@ class _RequestPageState extends State<RequestPage> {
                     final project = await data[0][index];
                     final email = await data[2][index];
                     final profilePic = await data[3][index];
+                    final role = await getRole(email);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -311,7 +321,8 @@ class _RequestPageState extends State<RequestPage> {
                                 projectDataList: project,
                                 engEmail: email,
                                 profilePic: profilePic,
-                                selectedValue:_selectedValue
+                                selectedValue:_selectedValue,
+                                role: role // Pass the role
                             )));
                   },
                   leading: CircleAvatar(
@@ -346,8 +357,9 @@ class _RequestPageState extends State<RequestPage> {
     return FutureBuilder(
         future: _selectedValue == 'Contractor'
             ? getApprovedContrRequests()
-            :_selectedValue == 'Engineer'?
-        getApprovedRequests():
+            : _selectedValue == 'Engineer'
+            ? getApprovedRequests()
+            :
         //      _selectedValue == 'Client'?
         getApprovedClientRequests(),
         builder: (context, snapshot) {
@@ -360,16 +372,21 @@ class _RequestPageState extends State<RequestPage> {
             return ListView.builder(
                 itemCount: data![0].length,
                 itemBuilder: (context, index) => ListTile(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ApprovedRequest(
-                            name: data[1][index],
-                            projectDataList: data[0][index],
-                            engEmail: data[2][index],
-                            profilePic: data[3][index],
-                            selectedValue: _selectedValue,
-                          ))),
+                  onTap: () async {
+                    final role = await getRole(data[2][index]);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ApprovedRequest(
+                                  name: data[1][index],
+                                  projectDataList: data[0][index],
+                                  engEmail: data[2][index],
+                                  profilePic: data[3][index],
+                                  selectedValue: _selectedValue,
+                                  role: role,
+                                )));
+                  },
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(10), // Radius to create a circle
                     child: data[3][index] != null && data[3][index] != ""
@@ -430,152 +447,157 @@ class _RequestPageState extends State<RequestPage> {
         iconTheme: const IconThemeData(color: Colors.black),
         backgroundColor: const Color(0xffFBFBFB),
       ),
-      body: Container(
-        color: const Color(0xffFBFBFB),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Container(
+          color: const Color(0xffFBFBFB),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Card(
+                      elevation: 10,
+                      child: Container(
+                        width: 150,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: isPending ? const Color(0xff3EED88) : Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            if (isPending == false) {
+                              setState(() {
+                                isPending = true;
+                              });
+                            }
+                          },
+                          child: const Center(
+                            child: Text(
+                              'Pending',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Card(
+                      elevation: 10,
+                      child: Container(
+                        width: 150,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: !isPending ? const Color(0xff3EED88) : Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            if (isPending == true) {
+                              setState(() {
+                                isPending = false;
+                              });
+                            }
+                          },
+                          child: const Center(
+                            child: Text(
+                              'Approved',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .center, // Center the radio buttons horizontally
                 children: [
-                  Card(
-                    elevation: 10,
-                    child: Container(
-                      width: 150,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: isPending ? const Color(0xff3EED88) : Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          if (isPending == false) {
-                            setState(() {
-                              isPending = true;
-                            });
-                          }
-                        },
-                        child: const Center(
-                          child: Text(
-                            'Pending',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  Radio<String>(
+                    activeColor: Colors.green,
+        
+                    fillColor: MaterialStateProperty.all(Colors.green),
+                    value:
+                    'Engineer', // Value associated with the Consultant radio button
+                    groupValue:
+                    _selectedValue, // This variable should hold the currently selected value
+                    onChanged: (value) {
+                      setState(() {
+                        // Update the state when the radio button is selected
+                        _selectedValue = value!;
+                      });
+                    },
                   ),
-                  const SizedBox(width: 10),
-                  Card(
-                    elevation: 10,
-                    child: Container(
-                      width: 150,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: !isPending ? const Color(0xff3EED88) : Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          if (isPending == true) {
-                            setState(() {
-                              isPending = false;
-                            });
-                          }
-                        },
-                        child: const Center(
-                          child: Text(
-                            'Approved',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  const Text(
+                    'Engineer',
+                    style: TextStyle(color: Colors.black),
+                  ), // Label for the Consultant radio button
+                  const SizedBox(
+                      width:
+                      20), // Add some spacing between radio button and label
+                  Radio<String>(
+                    activeColor: Colors.green,
+                    fillColor: MaterialStateProperty.all(Colors.green),
+                    value:
+                    'Contractor', // Value associated with the Contractor radio button
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedValue = value!;
+                      });
+                    },
                   ),
+                  const Text('Contractor',
+                      style: TextStyle(
+                          color: Colors
+                              .black)),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .center, // Center the radio buttons horizontally
-              children: [
-                Radio<String>(
-                  activeColor: Colors.green,
-
-                  fillColor: MaterialStateProperty.all(Colors.green),
-                  value:
-                  'Engineer', // Value associated with the Consultant radio button
-                  groupValue:
-                  _selectedValue, // This variable should hold the currently selected value
-                  onChanged: (value) {
-                    setState(() {
-                      // Update the state when the radio button is selected
-                      _selectedValue = value!;
-                    });
-                  },
-                ),
-                const Text(
-                  'Engineer',
-                  style: TextStyle(color: Colors.black),
-                ), // Label for the Consultant radio button
-                const SizedBox(
-                    width:
-                    20), // Add some spacing between radio button and label
-                Radio<String>(
-                  activeColor: Colors.green,
-                  fillColor: MaterialStateProperty.all(Colors.green),
-                  value:
-                  'Contractor', // Value associated with the Contractor radio button
-                  groupValue: _selectedValue,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedValue = value!;
-                    });
-                  },
-                ),
-                const Text('Contractor',
-                    style: TextStyle(
-                        color: Colors
-                            .black)),
-                const SizedBox(
-                    width:
-                    20), // Add some spacing between radio button and label
-                Radio<String>(
-                  activeColor: Colors.green,
-                  fillColor: MaterialStateProperty.all(Colors.green),
-                  value:
-                  'Client', // Value associated with the Contractor radio button
-                  groupValue: _selectedValue,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedValue = value!;
-                    });
-                  },
-                ),
-                const Text('Client',
-                    style: TextStyle(
-                        color: Colors
-                            .black)),
-                // Label for the Contractor radio button
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: isPending ? pendingRequests() : approvedRequests(),
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 60,
+                  ),
+                  Radio<String>(
+                    activeColor: Colors.green,
+                    fillColor: MaterialStateProperty.all(Colors.green),
+                    value:
+                    'Client', // Value associated with the Contractor radio button
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedValue = value!;
+                      });
+                    },
+                  ),
+                  const Text('Client and Others',
+                      style: TextStyle(
+                          color: Colors
+                              .black)),
+                ],
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: isPending ? pendingRequests() : approvedRequests(),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

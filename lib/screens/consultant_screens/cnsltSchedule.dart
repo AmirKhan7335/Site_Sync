@@ -9,7 +9,7 @@ class ConsultantSchedule extends StatefulWidget {
   String projId;
   String title;
   @override
-  State<ConsultantSchedule> createState() => _ConsultantScheduleState();
+  State<ConsultantSchedule> createState() => _ConsultantScheduleState(); 
 }
 
 class _ConsultantScheduleState extends State<ConsultantSchedule> {

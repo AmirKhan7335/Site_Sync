@@ -9,8 +9,8 @@ import 'package:amir_khan1/notifications/notificationCases.dart';
 import 'package:amir_khan1/notifications/notification_services.dart';
 
 class ClientAccountDetails extends StatefulWidget {
-  ClientAccountDetails({super.key});
-
+  ClientAccountDetails({required bool this.otherRole, super.key});
+  bool otherRole;
   @override
   State<ClientAccountDetails> createState() => _ClientAccountDetailsState();
 }
@@ -46,12 +46,13 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
       'reqAccepted': false,
       'date': DateTime.now()
     });
-    var projectSelected = await FirebaseFirestore.instance
-        .collection('Projects')
-        .doc(projectId)
-        .update({'isClient': true});
-    //----------------------------------------------------------Send Nitification-----
-    NotificationCases().requestToConsultantNotification('client',consultantEmail,email!);
+    if (widget.otherRole == false) {
+      var projectSelected = await FirebaseFirestore.instance
+          .collection('Projects')
+          .doc(projectId)
+          .update({'isClient': true});
+    }
+    NotificationCases().requestToConsultantNotification(widget.otherRole ? 'A New Role' : 'Client', consultantEmail, email!);
   }
 
   Future<List> fetchConsultant() async {
@@ -111,7 +112,12 @@ class _ClientAccountDetailsState extends State<ClientAccountDetails> {
     await FirebaseFirestore.instance.collection('engineers').get();
     final selectedProject =
     await alreaySelectedProjects.docs.map((e) => e['projectId']).toList();
-    final collectionData = await FirebaseFirestore.instance
+    final collectionData = widget.otherRole
+        ? await FirebaseFirestore.instance
+        .collection('Projects')
+        .where('email', isEqualTo: email)
+        .get()
+        : await FirebaseFirestore.instance
         .collection('Projects')
         .where('email', isEqualTo: email)
         .where('isClient', isEqualTo: false)

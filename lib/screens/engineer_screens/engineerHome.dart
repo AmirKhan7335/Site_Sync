@@ -1,5 +1,6 @@
 import 'package:amir_khan1/components/my_drawer.dart';
 import 'package:amir_khan1/controllers/navigationController.dart';
+import 'package:amir_khan1/notifications/notification_services.dart';
 import 'package:amir_khan1/screens/engineer_screens/chatscreen.dart';
 import 'package:amir_khan1/screens/engineer_screens/enghomeTab.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
@@ -8,11 +9,9 @@ import 'package:amir_khan1/screens/engineer_screens/takePicture/takePicture.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../notifications/notification_services.dart';
-
 class EngineerHomePage extends StatefulWidget {
-  const EngineerHomePage({required this.isClient, super.key});
-  final bool isClient;
+  EngineerHomePage({required bool this.isClient, super.key});
+  bool isClient;
   @override
   MyHomePageState createState() => MyHomePageState();
 }
@@ -27,37 +26,34 @@ class MyHomePageState extends State<EngineerHomePage> {
     notificationServices.firebaseInit(context);
     notificationServices.setupToken();
     notificationServices.setupInteractMessage(context);
-
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
+    controller.getSeenStatus();
     return Scaffold(
       drawer: const MyDrawer(),
-      body: Obx(
-            () => controller.engCurrentIndex.value == 1
-            ? ChatScreen(isClient:widget.isClient)
-            : controller.engCurrentIndex.value == 2
-            ? widget.isClient
-            ? Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            title: const Text(
-              'You are in Client Mode',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        )
-            : TakePicture()
+      body: Obx(() {
+        return widget.isClient
+            ? controller.engCurrentIndex.value == 1
+            ? ChatScreen(isClient: widget.isClient)
+
             : controller.engCurrentIndex.value == 0
-            ?
-        //Placeholder().com
-        EngineerHomeTab(isClient:widget.isClient)
+            ? EngineerHomeTab(isClient: widget.isClient)
+            : controller.engCurrentIndex.value == 2
+            ? ScheduleScreen(isClient: widget.isClient)
+            : const NotificationsScreen()
+            : controller.engCurrentIndex.value == 1
+            ? ChatScreen(isClient: widget.isClient)
+            : controller.engCurrentIndex.value == 2
+            ? TakePicture()
+            : controller.engCurrentIndex.value == 0
+            ? EngineerHomeTab(isClient: widget.isClient)
             : controller.engCurrentIndex.value == 3
             ? ScheduleScreen(isClient: widget.isClient)
-            : const NotificationsScreen(),
-      ),
+            :  const NotificationsScreen();
+      }),
       bottomNavigationBar: Obx(
             () => BottomNavigationBar(
           selectedIconTheme: const IconThemeData(
@@ -73,7 +69,8 @@ class MyHomePageState extends State<EngineerHomePage> {
           onTap: (int index) {
             controller.engCurrentIndex.value = index;
           },
-          items: [
+          items: widget.isClient
+              ? [
             const BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
@@ -98,6 +95,24 @@ class MyHomePageState extends State<EngineerHomePage> {
               ]),
               label: 'Chat',
             ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.schedule),
+              label: 'Schedule',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.currency_bitcoin),
+              label: 'Finanace',
+            ),
+          ]
+              : [
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Chat',
+            ),
             BottomNavigationBarItem(
               icon: Padding(
                 padding: const EdgeInsets.all(0.0),
@@ -106,12 +121,16 @@ class MyHomePageState extends State<EngineerHomePage> {
                   child: Container(
                     width: 60.0,
                     height: 38.0,
-                    decoration: const BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    decoration: BoxDecoration(
+                      color:
+                      widget.isClient ? Colors.white : Colors.green,
+                      borderRadius:
+                      const BorderRadius.all(Radius.circular(20.0)),
                     ),
-                    child: Icon(widget.isClient ? Icons.info : Icons.camera_alt,
-                        color: Colors.white, size: 40.0),
+                    child: Icon(
+                        widget.isClient ? Icons.info : Icons.camera_alt,
+                        color: Colors.white,
+                        size: 40.0),
                   ),
                 ),
               ),

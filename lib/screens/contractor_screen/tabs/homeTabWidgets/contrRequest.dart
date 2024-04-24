@@ -172,6 +172,14 @@ class _RequestPageState extends State<ContrRequestPage> {
     }
   }
 
+  getRole(email) async {
+    final query =
+    await FirebaseFirestore.instance.collection('users').doc(email).get();
+    final role = await query.data()!['role'];
+
+    return role;
+  }
+
   bool isPending = true;
   Widget pendingRequests() {
     return FutureBuilder(
@@ -193,6 +201,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                     final name = await data[1][index];
                     final project = await data[0][index];
                     final email = await data[2][index];
+                    final role = await getRole(email);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -201,6 +210,7 @@ class _RequestPageState extends State<ContrRequestPage> {
                               projectDataList: project,
                               engEmail: email,
                               selectedValue: _selectedValue,
+                              role: role,
                             )));
                   },
                   leading: const CircleAvatar(
@@ -246,15 +256,19 @@ class _RequestPageState extends State<ContrRequestPage> {
             return ListView.builder(
                 itemCount: data![0].length,
                 itemBuilder: (context, index) => ListTile(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ContrApprovedRequest(
-                            name: data[1][index],
-                            projectDataList: data[0][index],
-                            engEmail: data[2][index],
-                            selectedValue: _selectedValue,
-                          ))),
+                  onTap: () async {
+                    final role = await getRole(data[2][index]); // Get the role
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ContrApprovedRequest(
+                              name: data[1][index],
+                              projectDataList: data[0][index],
+                              engEmail: data[2][index],
+                              selectedValue: _selectedValue,
+                              role: role, // Pass the role here
+                            )));
+                  },
                   leading: const CircleAvatar(
                     radius: 30,
                     child: Icon(Icons.person),
