@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class PageTwo extends StatefulWidget {
   String total;
   String retMoney;
-  PageTwo({super.key,required this.total,required this.retMoney});
+  String receivedMoney;
+  PageTwo({super.key,required this.total,required this.retMoney, required this.receivedMoney});
 
   @override
   State<PageTwo> createState() => _PageTwoState();
@@ -72,13 +73,13 @@ class _PageTwoState extends State<PageTwo> {
                       decoration: const BoxDecoration(
                           shape: BoxShape.circle, color: Colors.green),
                       child: const Icon(Icons.arrow_upward, color: Colors.black,)),
-                  const Column(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text("Received",
+                      const Text("Received",
                           style:
                           TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
-                      Text("105,649,534",style:  TextStyle(fontSize: 16, color: Colors.black),)
+                      Text(widget.receivedMoney,style:  const TextStyle(fontSize: 16, color: Colors.black),)
                     ],
                   ),
                   const SizedBox(

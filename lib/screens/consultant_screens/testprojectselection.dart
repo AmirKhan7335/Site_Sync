@@ -3,14 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ChooseProjectForTest extends StatefulWidget {
-  const ChooseProjectForTest({super.key});
+class ChooseProjectForTest1 extends StatefulWidget {
+  const ChooseProjectForTest1({super.key});
 
   @override
-  State<ChooseProjectForTest> createState() => _ChooseProjectForTestState();
+  State<ChooseProjectForTest1> createState() => _ChooseProjectForTest1State();
 }
 
-class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
+class _ChooseProjectForTest1State extends State<ChooseProjectForTest1> {
   final myEmail = FirebaseAuth.instance.currentUser!.email;
   Future<List> fetchProjects() async {
     final query = await FirebaseFirestore.instance
@@ -20,30 +20,9 @@ class _ChooseProjectForTestState extends State<ChooseProjectForTest> {
     final result = query.docs.map((doc) {
       return [doc['title'], doc.id];
     }).toList();
-    final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
-    // Fetch projects associated with contractors
-    final contractorQuery = await FirebaseFirestore.instance
-        .collection('contractor')
-        .doc(currentUserEmail)
-        .collection('projects')
-        .where('reqAccepted', isEqualTo: true)
-        .get();
-    final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
 
-    final contractorProjectsQuery = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where(FieldPath.documentId, whereIn: contrProjId)
-        .get();
-    final contractorProjects = contractorProjectsQuery.docs.map((doc) {
-      return [doc['title'], doc.id];
-    }).toList();
 
-    // Merge and return both sets of projects
-    final List<List<dynamic>> allProjects = [];
-    allProjects.addAll(result);
-    allProjects.addAll(contractorProjects);
-
-    return allProjects;
+    return result;
   }
 
   @override

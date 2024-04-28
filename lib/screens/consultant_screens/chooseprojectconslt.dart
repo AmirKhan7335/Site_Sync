@@ -3,15 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ChooseProjectForDocument extends StatefulWidget {
-  const ChooseProjectForDocument({super.key});
+class ChooseProjectForDocument1 extends StatefulWidget {
+  const ChooseProjectForDocument1({super.key});
 
   @override
-  State<ChooseProjectForDocument> createState() =>
-      _ChooseProjectForDocumentState();
+  State<ChooseProjectForDocument1> createState() =>
+      _ChooseProjectForDocument1State();
 }
 
-class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
+class _ChooseProjectForDocument1State extends State<ChooseProjectForDocument1> {
   final myEmail = FirebaseAuth.instance.currentUser!.email;
   Future<List<List<dynamic>>> fetchProjects() async {
     final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
@@ -25,29 +25,29 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
       return [doc['title'], doc.id];
     }).toList();
 
-    // Fetch projects associated with contractors
-    final contractorQuery = await FirebaseFirestore.instance
-        .collection('contractor')
-        .doc(currentUserEmail)
-        .collection('projects')
-        .where('reqAccepted', isEqualTo: true)
-        .get();
-    final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+    // // Fetch projects associated with contractors
+    // final contractorQuery = await FirebaseFirestore.instance
+    //     .collection('contractor')
+    //     .doc(currentUserEmail)
+    //     .collection('projects')
+    //     .where('reqAccepted', isEqualTo: true)
+    //     .get();
+    // final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+    //
+    // final contractorProjectsQuery = await FirebaseFirestore.instance
+    //     .collection('Projects')
+    //     .where(FieldPath.documentId, whereIn: contrProjId)
+    //     .get();
+    // final contractorProjects = contractorProjectsQuery.docs.map((doc) {
+    //   return [doc['title'], doc.id];
+    // }).toList();
+    //
+    // // Merge and return both sets of projects
+    // final List<List<dynamic>> allProjects = [];
+    // allProjects.addAll(userProjects);
+    // allProjects.addAll(contractorProjects);
 
-    final contractorProjectsQuery = await FirebaseFirestore.instance
-        .collection('Projects')
-        .where(FieldPath.documentId, whereIn: contrProjId)
-        .get();
-    final contractorProjects = contractorProjectsQuery.docs.map((doc) {
-      return [doc['title'], doc.id];
-    }).toList();
-
-    // Merge and return both sets of projects
-    final List<List<dynamic>> allProjects = [];
-    allProjects.addAll(userProjects);
-    allProjects.addAll(contractorProjects);
-
-    return allProjects;
+    return userProjects; 
   }
 
 

@@ -29,6 +29,19 @@ class InvoiceDetail extends StatefulWidget {
 class _InvoiceDetailState extends State<InvoiceDetail> {
   final controller = TextEditingController();
   final paymentController = TextEditingController();
+  String daysLeft(requestDate, int totalDays) {
+    debugPrint('1111111');
+    DateTime currentDate = DateTime.now();
+    debugPrint('222222');
+    // Calculate the difference between the given date and the current date
+    Duration difference = currentDate.difference(requestDate);
+    debugPrint('3333333');
+    // Extract the number of days from the duration
+    int numberOfDays = difference.inDays;
+    debugPrint('44444444');
+    int leftDays = totalDays - numberOfDays;
+    return leftDays.toString();
+  }
 
   Widget afterPayment() {
     return Column(
@@ -112,7 +125,6 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   @override
   Widget build(BuildContext context) {
-
     final financeController = Get.put(FinanceController());
     return Scaffold(
       appBar: AppBar(
@@ -258,7 +270,8 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               ),
             ),
             MySimpleTextField(
-              hintText: '12',
+              hintText: daysLeft(
+                  widget.data['requestDate'].toDate(), widget.data['daysLeft']),
               obscureText: false,
               controller: controller,
               keyboardType: TextInputType.emailAddress,

@@ -165,7 +165,7 @@ class _CnsltFinanceHomeState extends State<CnsltFinanceHome> {
               child: ListTile(
                 onTap: () async {
                   if (invoiceData['transaction'] != 'Make Request') {
-                    var reload =  Navigator.push(
+                    var reload = await Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => InvoiceDetail(
@@ -235,7 +235,10 @@ class _CnsltFinanceHomeState extends State<CnsltFinanceHome> {
                     return Center(
                       child: CircularProgressIndicator(),
                     );
-                  } else if (snapshot.hasData) {
+                  }  else if (snapshot.hasError) {
+                    return SizedBox();
+                  }
+                  else if (snapshot.hasData) {
                     return invoiceList(snapshot.data);
                   } else {
                     return Center(

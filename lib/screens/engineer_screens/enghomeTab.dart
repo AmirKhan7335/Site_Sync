@@ -21,6 +21,7 @@ import '../centralBarScreens/siteCamera/siteCameraScreen.dart';
 
 class EngineerHomeTab extends StatefulWidget {
   final bool isClient;
+
   const EngineerHomeTab({super.key, required this.isClient});
 
   @override
@@ -39,13 +40,13 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
     try {
       final collectionData = widget.isClient
           ? await FirebaseFirestore.instance
-          .collection('clients')
-          .doc(user!.email)
-          .get()
+              .collection('clients')
+              .doc(user!.email)
+              .get()
           : await FirebaseFirestore.instance
-          .collection('engineers')
-          .doc(user!.email)
-          .get();
+              .collection('engineers')
+              .doc(user!.email)
+              .get();
 
       final projectId = await collectionData.data()!['projectId'];
       final projectCollection = await FirebaseFirestore.instance
@@ -62,12 +63,14 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
         data['location'],
         data['creationDate'],
         data['retMoney'],
-        projectId
+        projectId,
+        data['receivedMoney'].toString()
       ];
       return projectData;
 //..
     } catch (e) {
-      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
+      Get.snackbar('Error', e.toString(),
+          backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
@@ -125,7 +128,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
           .collection('clients')
           .doc(email)
           .get();
-      var clientProjectId = projIdForClient.data()?['projectId']; // Add null check here
+      var clientProjectId =
+          projIdForClient.data()?['projectId']; // Add null check here
       var sameEngineer = await FirebaseFirestore.instance
           .collection('engineers')
           .where('projectId', isEqualTo: clientProjectId)
@@ -133,16 +137,16 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       var engEmails = sameEngineer.docs.map((e) => e.id).toList();
       var activitiesSnapshot = widget.isClient
           ? await FirebaseFirestore.instance
-          .collection('engineers')
-          .doc(engEmails[0])
-          .collection('activities')
-          .get()
-      //----------------------------------------------------------------------
+              .collection('engineers')
+              .doc(engEmails[0])
+              .collection('activities')
+              .get()
+          //----------------------------------------------------------------------
           : await FirebaseFirestore.instance
-          .collection('engineers')
-          .doc(email)
-          .collection('activities')
-          .get();
+              .collection('engineers')
+              .doc(email)
+              .collection('activities')
+              .get();
 
       // Convert documents to Activity objects
       var activities = activitiesSnapshot.docs.map((doc) {
@@ -150,20 +154,19 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
           id: doc['id'],
           name: doc['name'],
           startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
-          finishDate: DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+          finishDate:
+              DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
           order: doc['order'],
         );
       }).toList();
 
       return activities;
     } catch (e) {
-      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
+      Get.snackbar('Error', e.toString(),
+          backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
-
-
-
 
   Activity? findTodaysActivity(List<Activity> activities) {
     DateTime today = DateTime.now();
@@ -217,8 +220,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       DateTime today = DateTime.now();
 
       // Calculate the difference in days
-      int daysDifference = parsedFinishDate.difference(today).inDays+1;
-
+      int daysDifference = parsedFinishDate.difference(today).inDays + 1;
 
       // if (today.hour < 12) {
       //   daysDifference += 1;
@@ -227,7 +229,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       if (daysDifference < 0) {
         return 0; // The finish date is in the past, no days left
       } else {
-        return daysDifference ; // Add 1 to include the due date
+        return daysDifference; // Add 1 to include the due date
       }
     } catch (e) {
       return -1; // Return a default value or handle the error accordingly
@@ -288,7 +290,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
           .collection('users')
           .doc(user?.email)
           .get();
-      if (userSnapshot['profilePic'] != null && userSnapshot['profilePic'].isNotEmpty) {
+      if (userSnapshot['profilePic'] != null &&
+          userSnapshot['profilePic'].isNotEmpty) {
         print("profile pic url = " + userSnapshot['profilePic']);
         return userSnapshot['profilePic'];
       } else {
@@ -437,16 +440,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                           color: Colors.transparent,
                                           elevation: 10,
                                           child: PageOne(
-                                              startDate: DateFormat(
-                                                      'dd/MM/yy')
-                                                  .format(
-                                                      projData[3].toDate())
-                                                  .toString(),
-                                              endDate: DateFormat(
-                                                      'dd/MM/yy')
-                                                  .format(
-                                                      projData[4].toDate())
-                                                  .toString(),
+                                              startDate: DateFormat('dd/MM/yy').format(projData[3].toDate()), // Fix here
+                                              endDate: DateFormat('dd/MM/yy').format(projData[4].toDate()),
                                               activityProgress: controller
                                                   .overAllPercent1.value,
                                               title: projData[0]),
@@ -456,8 +451,9 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                         color: Colors.transparent,
                                         elevation: 10,
                                         child: PageTwo(
-                                            total: projData[1],
-                                            retMoney: projData[7]),
+                                          total: projData[1],
+                                          retMoney: projData[7],
+                                          receivedMoney: projData[9], ),
                                       ),
                                       const Card(
                                           color: Colors.transparent,
@@ -495,8 +491,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                 onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                             DocumentScreen( isClient:widget.isClient))),
+                                        builder: (context) => DocumentScreen(
+                                            isClient: widget.isClient))),
                                 child: Card(
                                   elevation: 5,
                                   color: Colors.transparent,
@@ -546,7 +542,8 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => SiteCamera()),
+                                    MaterialPageRoute(
+                                        builder: (context) => SiteCamera()),
                                   ); // Replace with your actual function call
                                 },
                                 child: Card(
@@ -651,7 +648,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => TestingScreen(
-                                          isClient:widget.isClient,
+                                              isClient: widget.isClient,
                                               projId: projData[8],
                                               isCnslt: false,
                                             ))),
@@ -742,7 +739,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                     // const SizedBox(width: 80),
                                     Container(
                                       width: 80,
-                                      padding: const EdgeInsets.all(3.0), 
+                                      padding: const EdgeInsets.all(3.0),
                                       decoration: BoxDecoration(
                                         color: Colors.green,
                                         borderRadius:
@@ -791,8 +788,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                    todayActivity
-                                                                ?.finishDate !=
+                                                    todayActivity?.finishDate !=
                                                             null
                                                         ? "Completed"
                                                         : "",

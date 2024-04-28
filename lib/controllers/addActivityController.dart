@@ -15,9 +15,9 @@ class AddActivityController extends GetxController{
       lastDate: DateTime(2101),
     );
 
-    if (picked != null && picked != selectedDate) {
+    if (picked != null && picked != requestDate) {
 
-      selectedDate!.value = picked;
+      requestDate!.value = picked;
 
     }
   }Future<void> ApprovalDate( context) async {
@@ -28,9 +28,9 @@ class AddActivityController extends GetxController{
       lastDate: DateTime(2101),
     );
 
-    if (picked != null && picked != selectedDate) {
+    if (picked != null && picked != approvalDate) {
 
-      selectedDate!.value = picked;
+      approvalDate!.value = picked;
 
     }
   }

@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 class Query {
-  generateInvoiceForCnsltProject(name, amountRequested, requestDate,fileInfo) async {
+  generateInvoiceForCnsltProject(
+      name, amountRequested, requestDate, daysLeft, fileInfo) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var activitiesCollection = await firestore
@@ -16,15 +17,15 @@ class Query {
       'amountRequested': amountRequested,
       'requestDate': requestDate,
       'status': 'Unpaid',
-      'daysLeft': 30,
+      'daysLeft': daysLeft,
       'transaction': 'Make Request',
       'payment': 'notMade',
-      'requestReceipt':fileInfo
+      'requestReceipt': fileInfo
     });
   }
 
-  generateInvoiceForContrProject(
-      name, amountRequested, requestDate, amountApproved, approvalDate,fileInfo) async {
+  generateInvoiceForContrProject(name, amountRequested, requestDate,
+      amountApproved, approvalDate, fileInfo) async {
     var email = FirebaseAuth.instance.currentUser!.email;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var activitiesCollection = await firestore
@@ -39,7 +40,7 @@ class Query {
       'status': 'Paid',
       'amountApproved': amountApproved,
       'approvalDate': approvalDate,
-      'requestReceipt':fileInfo
+      'requestReceipt': fileInfo
     });
   }
 
@@ -175,6 +176,19 @@ class Query {
         .doc(docId)
         .update({
       'transaction': value,
+    });
+  }
+
+  updateDays(docId, int value) async {
+    var email = FirebaseAuth.instance.currentUser!.email;
+
+    var invoiceCollection = await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc(email)
+        .collection('invoices')
+        .doc(docId)
+        .update({
+      'daysLeft': value,
     });
   }
 

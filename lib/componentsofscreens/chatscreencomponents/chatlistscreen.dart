@@ -156,7 +156,7 @@ class ChatListScreenState extends State<ChatListScreen> {
             .where(FieldPath.documentId, whereIn: docIds)
             .get();
 
-        validUsers = usersData.docs.map((doc) {
+        var validUsers1 = usersData.docs.map((doc) {
           final Map<String, dynamic> data =
               doc.data(); // Cast to Map<String, dynamic>
           return ChatUser(
@@ -190,7 +190,7 @@ class ChatListScreenState extends State<ChatListScreen> {
             name: data['username'] ?? '',
           );
         }).toList();
-        validUsers.addAll(validConslt);
+        validConslt.addAll(validUsers1);
 //--------------------------------------------------------------------
         final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
 //////////////////////////////////////////////////////////////////
@@ -217,7 +217,8 @@ class ChatListScreenState extends State<ChatListScreen> {
             name: data['username'] ?? '',
           );
         }).toList();
-        validUsers.addAll(validClientContrUsers);
+        validClientContrUsers.addAll(validConslt);
+
 //////////////////////////////////////////////////////////
         final contrData = await FirebaseFirestore.instance
             .collection('engineers')
@@ -241,7 +242,7 @@ class ChatListScreenState extends State<ChatListScreen> {
             name: data['username'] ?? '',
           );
         }).toList();
-        validUsers.addAll(validContrUsers);
+        validContrUsers.addAll(validClientContrUsers);
         //====================================================================
       } else if (role == 'Engineer') {
         final query = await FirebaseFirestore.instance

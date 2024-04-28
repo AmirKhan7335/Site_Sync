@@ -197,6 +197,7 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
                                     namecontroller.text,
                                     amountcontroller.text,
                                     dcontroller.requestDate!.value,
+                                    30,
                                     fileInformation);
                               } else if (widget.projectCreatedByContr) {
                                 Query().generateInvoiceForContrProject(

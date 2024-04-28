@@ -6,6 +6,7 @@ import 'package:amir_khan1/screens/consultant_screens/cnsltTest/chooseProj.dart'
 import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/consultant_screens/progressPage.dart';
 import 'package:amir_khan1/screens/consultant_screens/requestPage.dart';
+import 'package:amir_khan1/screens/consultant_screens/testprojectselection.dart';
 import 'package:amir_khan1/screens/consultant_screens/widgets/statusContainer.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../centralBarScreens/siteCamera/siteCameraScreen.dart';
+import 'chooseprojectconslt.dart';
 
 class ConsultantHomeTab extends StatefulWidget {
   const ConsultantHomeTab({super.key});
@@ -506,7 +508,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const ChooseProjectForDocument())),
+                    builder: (context) => const ChooseProjectForDocument1())),
             child: Card(
               color: Colors.transparent,
               elevation: 5,
@@ -661,7 +663,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const ChooseProjectForTest())),
+                    builder: (context) => const ChooseProjectForTest1())),
             child: Card(
               color: Colors.transparent,
               elevation: 5,

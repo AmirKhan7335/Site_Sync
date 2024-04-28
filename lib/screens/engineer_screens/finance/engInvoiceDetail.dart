@@ -31,6 +31,20 @@ class EngInvoiceDetail extends StatefulWidget {
 class _EngInvoiceDetailState extends State<EngInvoiceDetail> {
   final controller = TextEditingController();
   final backendClass = backEnd.Query();
+  final amountcontroller = TextEditingController();
+  String daysLeft(requestDate,int totalDays) {
+    debugPrint('1111111');
+    DateTime currentDate = DateTime.now();
+    debugPrint('222222');
+    // Calculate the difference between the given date and the current date
+    Duration difference = currentDate.difference(requestDate);
+    debugPrint('3333333');
+    // Extract the number of days from the duration
+    int numberOfDays = difference.inDays;
+    debugPrint('44444444');
+    int leftDays = totalDays - numberOfDays;
+    return leftDays.toString();
+  }
 
   Widget afterPayment() {
     return Column(
@@ -302,7 +316,12 @@ class _EngInvoiceDetailState extends State<EngInvoiceDetail> {
                   ),
                 ),
                 MySimpleTextField(
-                  hintText: '12',
+                  hintText:
+                  daysLeft(
+                      widget.invoiceDetail['requestDate']
+                          .toDate(),
+                      widget.invoiceDetail['daysLeft'])
+                  ,
                   obscureText: false,
                   controller: controller,
                   keyboardType: TextInputType.emailAddress,
@@ -337,7 +356,47 @@ class _EngInvoiceDetailState extends State<EngInvoiceDetail> {
                       fontWeight: FontWeight.bold),
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Get.defaultDialog(
+                        title: 'Set No of Days',
+                        content: Column(
+                          children: [
+                            MyTextField(
+                              hintText: widget
+                                  .invoiceDetail[
+                              'daysLeft']
+                                  .toString(),
+                              obscureText: false,
+                              controller:
+                              amountcontroller,
+                              icon: Icons.money,
+                              keyboardType:
+                              TextInputType.number,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            MyButton(
+                              text: 'Change',
+                              bgColor:
+                              Colour().lightGreen,
+                              textColor: Colors.black,
+                              icon: Icons.receipt,
+                              onTap: () async {
+                                backendClass.updateDays(
+                                    widget.invoiceId,
+                                    int.parse(
+                                        amountcontroller
+                                            .text));
+                                Get.back();
+                                Navigator.pop(
+                                    context, true);
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        ));
+                  },
                   child: Text(
                     widget.invoiceDetail['daysLeft']
                         .toString(),

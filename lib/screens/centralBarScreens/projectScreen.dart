@@ -220,12 +220,22 @@ class _ProjectScreenState extends State<ProjectScreen> {
                           //       ? 'Completed'
                           //       : 'Ongoing',
                           //   style: const TextStyle(color: Colors.black),
-                            subtitle: Text(
-                            DateTime.now().isAfter(data[index][2].toDate())
-                                ? 'Completed'
-                                : 'Ongoing',
-                            style: const TextStyle(color: Colors.black),
-                          ),
+                          // subtitle: Text(
+                          //   (() {
+                          //     if (data[index][2] is String) {
+                          //       return DateTime.now().isAfter(DateFormat('yyyy-MM-dd').parse(data[index][2]))
+                          //           ? 'Completed'
+                          //           : 'Ongoing';
+                          //     } else if (data[index][2] is Timestamp) {
+                          //       return DateTime.now().isAfter((data[index][2] as Timestamp).toDate())
+                          //           ? 'Completed'
+                          //           : 'Ongoing';
+                          //     } else {
+                          //       return 'Invalid Date'; // Handle unexpected data type
+                          //     }
+                          //   })(),
+                          //   style: const TextStyle(color: Colors.black),
+                          // ),
                         ),
                       ),
                     )));
