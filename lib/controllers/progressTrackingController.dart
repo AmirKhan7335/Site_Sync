@@ -66,29 +66,37 @@ class ProjectProgressController extends GetxController {
   Future<int> calculateOverallPercent(List<Activity> activities) async {
     try {
       DateTime today1 = DateTime.now();
-      String formattedToday1 =
-      DateFormat('dd/MM/yyyy').format(today1);
-      DateTime todayDate1 = DateFormat('dd/MM/yyyy')
-          .parse(formattedToday1);
+      String formattedToday1 = DateFormat('dd/MM/yyyy').format(today1);
+      DateTime todayDate1 = DateFormat('dd/MM/yyyy').parse(formattedToday1);
       DateTime today = DateTime.now();
       int totalDuration = 0;
       for (int i = 0; i < activities.length; i++) {
         DateTime parsedStartDate = parseDate(activities[i].startDate);
         DateTime parsedFinishDate = parseDate(activities[i].finishDate);
-        int activityDuration =
-            parsedFinishDate.difference(parsedStartDate).inDays + 1;
+        int activityDuration = parsedFinishDate.difference(parsedStartDate).inDays + 1;
         print("activity duration = $activityDuration");
         totalDuration += activityDuration;
         print("total duration = $totalDuration");
       }
+
       double completedActivitiesPercentages = 0;
       int todaysactivityduration = 0;
+
+      // Fetch "No Work" data
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var projId = (await firestore.collection('users').doc(email).get()).data()!['projectId'];
+      var noWorkSnapshot = await firestore.collection('No_Work')
+          .where('projectId', isEqualTo: projId)
+          .get();
+      List<DateTime> noWorkDates = noWorkSnapshot.docs.map((doc) =>
+          DateFormat('dd/MM/yyyy').parse(doc['date'])
+      ).toList();
 
       for (int i = 0; i < activities.length; i++) {
         DateTime parsedStartDate = parseDate(activities[i].startDate);
         DateTime parsedFinishDate = parseDate(activities[i].finishDate);
-        int activityDuration =
-            parsedFinishDate.difference(parsedStartDate).inDays + 1;
+        int activityDuration = parsedFinishDate.difference(parsedStartDate).inDays + 1;
 
         for (var activity in activities) {
           if (activity.name == findTodaysActivity(activities)?.name) {
@@ -97,8 +105,14 @@ class ProjectProgressController extends GetxController {
           }
         }
 
-        if (parsedFinishDate.isBefore(todayDate1)) {
-          // Activity is completed
+        bool isNoWorkDay = noWorkDates.any((noWorkDate) =>
+        noWorkDate.year == parsedFinishDate.year &&
+            noWorkDate.month == parsedFinishDate.month &&
+            noWorkDate.day == parsedFinishDate.day
+        );
+
+        if (parsedFinishDate.isBefore(todayDate1) && !isNoWorkDay) {
+          // Activity is completed (excluding no-work days)
           double percentComplete = (activityDuration / totalDuration) * 100;
           print("parsed finishe");
           print("percent complete = $percentComplete");
@@ -107,30 +121,44 @@ class ProjectProgressController extends GetxController {
         }
       }
 
-
-      // Find today's activity and calculate its percentage
+      // Find today's activity and calculate its percentage, handle "No Work"
       Activity? todayActivity = findTodaysActivity(activities);
-      if (todayActivity != null
-      // && todayActivity.finishDate !=
-          //     DateFormat('dd/MM/yyyy').format(DateTime.now())
-      ) {
-        int todayActivityPercent = calculatePercentComplete(
-          todayActivity.startDate,
-          todayActivity.finishDate,
+      if (todayActivity != null) {
+        bool isTodaysActivityNoWork = noWorkDates.any((noWorkDate) =>
+        noWorkDate.year == todayDate1.year &&
+            noWorkDate.month == todayDate1.month &&
+            noWorkDate.day == todayDate1.day
         );
-        // Calculate the contribution of today's activity to the overall percentage
-        int todayContribution =
-            ((todayActivityPercent) * (todaysactivityduration / totalDuration))
-                .round();
 
-        completedActivitiesPercentages += todayContribution.round();
+        if (!isTodaysActivityNoWork) {
+          int todayActivityPercent = calculatePercentComplete(
+            todayActivity.startDate,
+            todayActivity.finishDate,
+          );
+
+          // Apply "two days progress update" logic
+          DateTime yesterday = todayDate1.subtract(Duration(days: 1));
+          bool wasYesterdayNoWork = noWorkDates.any((noWorkDate) =>
+          noWorkDate.year == yesterday.year &&
+              noWorkDate.month == yesterday.month &&
+              noWorkDate.day == yesterday.day
+          );
+          // if (wasYesterdayNoWork) {
+          //   todayActivityPercent *= 2; // Double the progress for today
+          // }
+
+          // Calculate the contribution of today's activity to the overall percentage
+          int todayContribution =
+          ((todayActivityPercent) * (todaysactivityduration / totalDuration))
+              .round();
+          completedActivitiesPercentages += todayContribution.round();
+        }
       }
 
       overAllPercent1.value = completedActivitiesPercentages.round();
 
-      var email = FirebaseAuth.instance.currentUser!.email;
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      var engineersCollection = firestore.collection('engineers');
+      FirebaseFirestore firestore1 = FirebaseFirestore.instance;
+      var engineersCollection = firestore1.collection('engineers');
       var consultantEmail;
       var projectID;
 

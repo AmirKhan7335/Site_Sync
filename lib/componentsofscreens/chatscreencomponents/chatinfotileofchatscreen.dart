@@ -71,25 +71,12 @@ class _ChatInfoTileState extends State<ChatInfoTile> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
+                elevation: 10,
                 child: ListTile(
                   tileColor: Colors.white,
-                  leading: Container(
-                    width: 60,
-                    height: 60,
-
-                    decoration: const BoxDecoration(
-                      color: Colors.grey,
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      widget.otherUser.name.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  leading: CircleAvatar(
+                    radius: 30,
+                    child: Image.asset('assets/images/Ellipse.png'),
                   ),
                   title: Text(
                     widget.otherUser.name,

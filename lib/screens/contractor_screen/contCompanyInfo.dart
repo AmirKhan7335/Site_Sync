@@ -46,7 +46,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
         'office': officeController.text
       });
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -218,7 +218,7 @@ class _CompanyInfoState extends State<ContractorCompanyInfo> {
                             MaterialPageRoute(
                                 builder: (context) => ContrAccountDetails()));
                       } else {
-                        Get.snackbar('Sorry', 'Please Fill All the Fields');
+                        Get.snackbar('Sorry', 'Please Fill All the Fields', backgroundColor: Colors.white, colorText: Colors.black);
                       }},
                     ),
                     const SizedBox(height: 20),

@@ -51,8 +51,9 @@ class EditActivityScreenState extends State<EditActivityScreen> {
     final controller = Get.put(EditActivityController());
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editing Activity'),
-        backgroundColor: const Color(0xFF212832),
+        title: const Text('Editing Activity', style: TextStyle(color: Colors.black)),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -65,7 +66,7 @@ class EditActivityScreenState extends State<EditActivityScreen> {
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
+                  fontSize: 20.0,
                 ),
               ),
               MyTextField(
@@ -82,36 +83,39 @@ class EditActivityScreenState extends State<EditActivityScreen> {
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
+                  fontSize: 20.0,
                 ),
               ),
-              MyDateField(
-                  hintText: controller.selectedDate == null
-                      ? 'Start Date'
-                      : '${controller.selectedDate!.value.toLocal()}'
-                          .split(' ')[0],
-                  callback: controller.SelectDate),
+              Obx(
+                    ()=> MyDateField(
+                    hintText: controller.selectedDate == null
+                        ? 'Start Date'
+                        : DateFormat('dd-MM-yyyy').format(controller.selectedDate!.value),
+                    callback: controller.SelectDate),
+              ),
               const SizedBox(height: 16.0),
               const Text(
                 'Finish Date',
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
+                  fontSize: 20.0,
                 ),
               ),
-              MyDateField(
-                  hintText: controller.endDate == null
-                      ? 'End Date'
-                      : '${controller.endDate!.value.toLocal()}'.split(' ')[0],
-                  callback: controller.EndDate),
+              Obx(
+                    ()=> MyDateField(
+                    hintText: controller.endDate == null
+                        ? 'End Date'
+                        : DateFormat('dd-MM-yyyy').format(controller.endDate!.value),
+                    callback: controller.EndDate),
+              ),
               const SizedBox(height: 16.0),
               const Text(
                 'Order',
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
+                  fontSize: 20.0,
                 ),
               ),
               MyTextField(
@@ -123,12 +127,15 @@ class EditActivityScreenState extends State<EditActivityScreen> {
                     TextInputType.number, // Use number input type for order
               ),
               const SizedBox(height: 16.0),
-              MyButton(
-                text: 'Save Changes',
-                bgColor: Colors.yellow,
-                textColor: Colors.white,
-                icon: Icons.save,
-                onTap: _saveActivity,
+              Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: MyButton(
+                  text: 'Save Changes',
+                  bgColor: const Color(0xff2CF07F),
+                  textColor: Colors.black,
+                  icon: Icons.save,
+                  onTap: _saveActivity,
+                ),
               ),
             ],
           ),

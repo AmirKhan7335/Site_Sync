@@ -26,8 +26,10 @@ class _TestingScreenState extends State<TestingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(labelText),
+          backgroundColor: Colors.white,
+          title: Text(labelText, style: const TextStyle(color: Colors.black)),
           content: TextField(
+            style: const TextStyle(color: Colors.black),
             onChanged: (String value) {
               _text = value;
             },
@@ -52,7 +54,7 @@ class _TestingScreenState extends State<TestingScreen> {
                 }
                 Navigator.pop(context, _text);
               },
-              child: const Text('Save'),
+              child: const Text('Save', style: TextStyle(color: Colors.blue)),
             ),
           ],
         );
@@ -65,17 +67,18 @@ class _TestingScreenState extends State<TestingScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-          title: Text(
+          iconTheme: const IconThemeData(color: Colors.black),
+          title: const Text(
             'Testing',
             style: TextStyle(color: Colors.black),
           ),
+          centerTitle: true,
         ),
         body: NamesList(projId: widget.projId, isClient: widget.isClient),
         floatingActionButton: widget.isCnslt
-            ? Center()
+            ? const Center()
             : widget.isClient
-            ? Center()
+            ? const Center()
             : FloatingActionButton(
           onPressed: () {
             showTextInputDialog(context, 'Write Test');
@@ -106,9 +109,9 @@ class _NamesListState extends State<NamesList> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center();
+          return const Center();
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
@@ -148,11 +151,11 @@ class _NamesListState extends State<NamesList> {
                       leading: ClipOval(
                           child: Text(
                             '${index + 1}',
-                            style: TextStyle(color: Colors.black, fontSize: 20),
+                            style: const TextStyle(color: Colors.black, fontSize: 20),
                           )),
                       title: Text(
-                        '${data[index].id}',
-                        style: TextStyle(
+                        data[index].id,
+                        style: const TextStyle(
                             color: Colors.black,
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
@@ -200,10 +203,10 @@ class DetailScreenState extends State<DetailScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         title: Text(
           widget.title,
-          style: TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black),
         ),
       ),
       body: ListView.builder(
@@ -230,7 +233,7 @@ class DetailScreenState extends State<DetailScreen> {
                       )),
                   title: Text(
                     '${names[index]}',
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 20,
                         color: Colors.black,
                         fontWeight: FontWeight.bold),

@@ -78,7 +78,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         isloading = false;
       });
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       setState(() {
         isloading = false;
       });
@@ -100,12 +100,12 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
               : usernameController.text,
           'role': dropdownValue,
         });
-        Get.snackbar('Success', 'Logged In');
+        Get.snackbar('Success', 'Logged In', backgroundColor: Colors.white, colorText: Colors.black);
       } else {
-        Get.snackbar('Empty', 'Credentials Empty');
+        Get.snackbar('Empty', 'Credentials Empty', backgroundColor: Colors.white, colorText: Colors.black);
       }
     } catch (e) {
-      Get.snackbar('Error', '$e');
+      Get.snackbar('Error', '$e', backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -157,7 +157,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         );
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -178,7 +178,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         await createUserDocument(userCredential, true);
         navigateToRoleScreen();
       } else {
-        Get.snackbar('Empty', 'Tokens are Empty');
+        Get.snackbar('Empty', 'Tokens are Empty', backgroundColor: Colors.white, colorText: Colors.black);
       }
     } on FirebaseAuthException catch (e) {
       showErrorDialog('Failed to sign in with Google: ${e.message}');
@@ -382,11 +382,16 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                       bgColor: Colors.green,
                       textColor: Colors.black,
                       onTap: () {
-                        if (isChecked) {
-                          setState(() {
-                            isloading = true;
-                          });
-                          registerUser();
+                        if (passwordController.text ==
+                            confirmPasswordController.text) {
+                          if (isChecked) {
+                            setState(() {
+                              isloading = true;
+                            });
+                            registerUser();
+                          }
+                        } else {
+                          Get.snackbar('Sorry', 'Password not Matched', backgroundColor: Colors.white, colorText: Colors.black);
                         }
                       },
                     ),

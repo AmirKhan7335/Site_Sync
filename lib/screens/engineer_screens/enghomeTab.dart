@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../centralBarScreens/siteCamera/inputRtsp.dart';
+import '../centralBarScreens/siteCamera/siteCameraScreen.dart';
 
 class EngineerHomeTab extends StatefulWidget {
   final bool isClient;
@@ -66,7 +67,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       return projectData;
 //..
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
@@ -156,7 +157,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
 
       return activities;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
@@ -218,14 +219,15 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
       // Calculate the difference in days
       int daysDifference = parsedFinishDate.difference(today).inDays+1;
 
-      if (today.hour < 12) {
-        daysDifference += 1;
-      }
+
+      // if (today.hour < 12) {
+      //   daysDifference += 1;
+      // }
 
       if (daysDifference < 0) {
         return 0; // The finish date is in the past, no days left
       } else {
-        return daysDifference + 1; // Add 1 to include the due date
+        return daysDifference ; // Add 1 to include the due date
       }
     } catch (e) {
       return -1; // Return a default value or handle the error accordingly
@@ -361,7 +363,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                         snapshot.data![0].profilePicUrl!)
                                     : const NetworkImage(
                                         'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
-                                radius: 25,
+                                radius: 30,
                               ),
                             ),
                             const SizedBox(
@@ -395,18 +397,18 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   Icons.refresh,
                                   color: Colors.black,
                                 )),
-                            IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => const Scaffold(
-                                              body: NotificationsScreen())));
-                                },
-                                icon: const Icon(
-                                  Icons.notifications,
-                                  color: Colors.black,
-                                ))
+                            // IconButton(
+                            //     onPressed: () {
+                            //       Navigator.push(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //               builder: (context) => const Scaffold(
+                            //                   body: NotificationsScreen())));
+                            //     },
+                            //     icon: const Icon(
+                            //       Icons.notifications,
+                            //       color: Colors.black,
+                            //     ))
                           ],
                         ),
                         const SizedBox(height: 10),
@@ -542,7 +544,10 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                               ),
                               InkWell(
                                 onTap: () {
-                                  Dialogue().inputRtsp(context); // Replace with your actual function call
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => SiteCamera()),
+                                  ); // Replace with your actual function call
                                 },
                                 child: Card(
                                   elevation: 5,
@@ -725,17 +730,19 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      todayActivity?.name ?? 'No Activity',
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                    Expanded(
+                                      child: Text(
+                                        todayActivity?.name ?? 'No Activity',
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                     // const SizedBox(width: 80),
                                     Container(
                                       width: 80,
-                                      padding: const EdgeInsets.all(3.0),
+                                      padding: const EdgeInsets.all(3.0), 
                                       decoration: BoxDecoration(
                                         color: Colors.green,
                                         borderRadius:

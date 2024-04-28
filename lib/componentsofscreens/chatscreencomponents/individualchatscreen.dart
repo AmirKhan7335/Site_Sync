@@ -42,12 +42,8 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
             Row(
               children: [
                 CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.blue,
-                  child: Text(
-                    widget.selectedUser?.name[0] ?? '', // Use widget.selectedUser
-                    style: const TextStyle(fontSize: 18,),
-                  ),
+                  radius: 25,
+                  child: Image.asset('assets/images/Ellipse.png'),
                 ),
                 const SizedBox(width: 10),
                 Column(
@@ -62,18 +58,18 @@ class IndividualChatScreenState extends State<IndividualChatScreen> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.video_call, color: Colors.black),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: const Icon(Icons.call, color: Colors.black),
-                  onPressed: () {},
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     IconButton(
+            //       icon: const Icon(Icons.video_call, color: Colors.black),
+            //       onPressed: () {},
+            //     ),
+            //     IconButton(
+            //       icon: const Icon(Icons.call, color: Colors.black),
+            //       onPressed: () {},
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

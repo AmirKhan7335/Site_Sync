@@ -117,6 +117,7 @@ class _SummaryScreenState extends State<SummaryScreenClient> {
             style: TextStyle(color: Colors.black),
           ),
         ),
+        centerTitle: true,
       ),
       body: data.isEmpty
           ? const Center(child: CircularProgressIndicator())

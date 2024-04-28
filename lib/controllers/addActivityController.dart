@@ -4,7 +4,36 @@ import 'package:get/get.dart';
 class AddActivityController extends GetxController{
   Rx<DateTime>? selectedDate=DateTime.now().obs;
   Rx<DateTime>? endDate=DateTime.now().obs;
+  Rx<DateTime>? requestDate=DateTime.now().obs;
+  Rx<DateTime>? approvalDate=DateTime.now().obs;
 
+  Future<void> RequestDate( context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: requestDate!.value ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedDate) {
+
+      selectedDate!.value = picked;
+
+    }
+  }Future<void> ApprovalDate( context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: approvalDate!.value ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedDate) {
+
+      selectedDate!.value = picked;
+
+    }
+  }
   Future<void> SelectDate( context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -14,9 +43,9 @@ class AddActivityController extends GetxController{
     );
 
     if (picked != null && picked != selectedDate) {
-      
-        selectedDate!.value = picked;
-      
+
+      selectedDate!.value = picked;
+
     }
   }
 
@@ -29,9 +58,9 @@ class AddActivityController extends GetxController{
     );
 
     if (pick != null && pick != endDate) {
-      
-        endDate!.value = pick;
-      
+
+      endDate!.value = pick;
+
     }
   }
 

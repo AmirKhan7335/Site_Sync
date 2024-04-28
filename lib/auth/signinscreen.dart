@@ -37,7 +37,7 @@ Future<User?> signInWithGoogle() async {
 
     return authResult.user;
   } catch (e) {
-    Get.snackbar('Error', '$e');
+    Get.snackbar('Error', '$e', backgroundColor: Colors.white, colorText: Colors.black);
     return null;
   }
 }
@@ -305,7 +305,7 @@ class _SigninScreenState extends State<SigninScreen> {
           setState(() {
             isloading = false;
           });
-          Get.snackbar('Error', e.toString());
+          Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -477,13 +477,13 @@ class _SigninScreenState extends State<SigninScreen> {
                                         resetController.clear();
                                         Get.snackbar(
                                           'Email Sent',
-                                          'Password Reset Link has been Sent to Your Email',
+                                          'Password Reset Link has been Sent to Your Email', backgroundColor: Colors.white, colorText: Colors.black
                                         );
                                       } catch (e) {
                                         Get.back();
                                         resetController.clear();
                                         debugPrint(e.toString());
-                                        Get.snackbar('Error', '$e');
+                                        Get.snackbar('Error', '$e', backgroundColor: Colors.white, colorText: Colors.black);
                                       }
                                     },
                                   ),

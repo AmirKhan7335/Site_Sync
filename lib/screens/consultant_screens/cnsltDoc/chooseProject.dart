@@ -33,7 +33,7 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
     //     .where('reqAccepted', isEqualTo: true)
     //     .get();
     // final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
-
+    //
     // final contractorProjectsQuery = await FirebaseFirestore.instance
     //     .collection('Projects')
     //     .where(FieldPath.documentId, whereIn: contrProjId)
@@ -63,6 +63,7 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
             'Select Project',
             style: TextStyle(color: Colors.black),
           ),
+          centerTitle: true,
         ),
         body: FutureBuilder(
             future: fetchProjects(),
@@ -78,7 +79,7 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
               return ListView.builder(
                   itemCount: data!.length,
                   itemBuilder: ((context, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
                     child: Card(
                       elevation: 5,
                       color: Colors.white,
@@ -102,12 +103,7 @@ class _ChooseProjectForDocumentState extends State<ChooseProjectForDocument> {
                         ),
                         title: Text(
                           data[index][0].toString(),
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                        subtitle: Container(
-                          height: 1.5,
-                          width: 500,
-                          color: Colors.grey,
+                          style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

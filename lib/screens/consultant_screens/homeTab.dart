@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../centralBarScreens/siteCamera/siteCameraScreen.dart';
+
 class ConsultantHomeTab extends StatefulWidget {
   const ConsultantHomeTab({super.key});
 
@@ -105,7 +107,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
 
       return userData;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
 
       return 0;
     }
@@ -140,7 +142,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
       return userData;
 //..
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
@@ -175,7 +177,7 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
 
       return userData;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
 
       return 0;
     }
@@ -216,11 +218,11 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                                 ? NetworkImage(snapshot.data!.profilePicUrl!)
                                 : const NetworkImage(
                                 'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png'),
-                            radius: 25,
+                            radius: 30,
                           ),
                         ),
                         const SizedBox(
-                          width: 5,
+                          width: 20,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,20 +243,20 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
                             ),
                           ],
                         ),
-                        const Spacer(),
-                        IconButton(
-                            color: Colors.black,
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Scaffold(
-                                          body: NotificationsScreen())));
-                            },
-                            icon: const Icon(Icons.notifications)),
+                        // const Spacer(),
+                        // IconButton(
+                        //     color: Colors.black,
+                        //     onPressed: () {
+                        //       Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //               builder: (context) => const Scaffold(
+                        //                   body: NotificationsScreen())));
+                        //     },
+                        //     icon: const Icon(Icons.notifications)),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    // const SizedBox(height: 10),
                     // Search bar
                     const SizedBox(height: 20),
                     // Page view with indicators
@@ -553,7 +555,10 @@ class _ConsultantHomeTabState extends State<ConsultantHomeTab> {
           ),
           InkWell(
             onTap: () {
-              Dialogue().inputRtsp(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SiteCamera()),
+              );
             },
             child: Card(
               color: Colors.transparent,

@@ -26,11 +26,9 @@ class _SummaryScreenConsState extends State<SummaryScreenCons> {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection(widget.projectId)
         .get();
-
     List<Map<String, dynamic>> dataList = snapshot.docs
         .map((doc) => doc.data() as Map<String, dynamic>)
         .toList();
-
     print('Fetched ${dataList.length} progress reports');
     print('Data list: $dataList');
 
@@ -38,21 +36,27 @@ class _SummaryScreenConsState extends State<SummaryScreenCons> {
     groupedData = groupByMonth(dataList);
     print('Grouped data by month: $groupedData');
 
-    // Extract unique months and sort them
-    List<String> months =
-    groupedData.keys.toList()..sort((a, b) => b.compareTo(a));
-    print('Unique months: $months');
+    // Check if groupedData is empty
+    if (groupedData.isEmpty) {
+      // Update state to indicate no data
+      setState(() {
+        data = ['noData'];
+      });
+    } else {
+      // Extract unique months and sort them
+      List<String> months = groupedData.keys.toList()..sort((a, b) => b.compareTo(a));
+      print('Unique months: $months');
 
-    // Flatten the grouped data into a list to display in ListView
-    List<dynamic> flattenedData = [];
-    for (String month in months) {
-      flattenedData.add(month);
-      flattenedData.addAll(groupedData[month]!);
+      // Flatten the grouped data into a list to display in ListView
+      List<dynamic> flattenedData = [];
+      for (String month in months) {
+        flattenedData.add(month);
+        flattenedData.addAll(groupedData[month]!);
+      }
+      setState(() {
+        data = flattenedData;
+      });
     }
-
-    setState(() {
-      data = flattenedData;
-    });
   }
 
 
@@ -99,15 +103,16 @@ class _SummaryScreenConsState extends State<SummaryScreenCons> {
       appBar: AppBar(
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: const Center(
-          child: Text(
-            'Summary Screen',
-            style: TextStyle(color: Colors.black),
-          ),
+        title: const Text(
+          'Record Screen',
+          style: TextStyle(color: Colors.black),
         ),
+        centerTitle: true,
       ),
       body: data.isEmpty
           ? const Center(child: CircularProgressIndicator())
+          : data.first == 'noData' // Check for no data indicator
+          ? const Center(child: Text('No record shared till now', style: TextStyle(color: Colors.black, fontSize: 20)))
           : ListView.builder(
         itemCount: data.length,
         itemBuilder: (context, index) {

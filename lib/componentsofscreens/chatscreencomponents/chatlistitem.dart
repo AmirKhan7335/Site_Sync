@@ -23,7 +23,7 @@ class ChatListItem extends StatelessWidget {
         child: ListTile(
           leading:
           CircleAvatar(
-            radius: 30,
+            radius: 26,
             child: Image.asset('assets/images/Ellipse.png'),
           ),
           title: Text(user.name,style: TextStyle(color: Colors.black)),

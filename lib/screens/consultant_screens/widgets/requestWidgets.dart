@@ -11,6 +11,7 @@ class PendingRequest extends StatefulWidget {
       required this.engEmail,
       required this.selectedValue,
         required this.profilePic,
+        required this.companyName,
         required this.role,
       super.key});
 
@@ -18,6 +19,7 @@ class PendingRequest extends StatefulWidget {
   String profilePic;
   List projectDataList;
   String engEmail;
+  String companyName;
   String selectedValue;
   String role;
   @override
@@ -36,6 +38,10 @@ class _PendingRequestState extends State<PendingRequest> {
           .collection('Projects')
           .doc(widget.projectDataList[3])
           .update({"contractorName": widget.name});
+      await FirebaseFirestore.instance
+          .collection('Projects')
+          .doc(widget.projectDataList[3])
+          .update({"companyName": widget.companyName});
       var list = activitiesSnapshot.docs.map((e) {
         var update = FirebaseFirestore.instance
             .collection('contractorReq')
@@ -166,7 +172,7 @@ class _PendingRequestState extends State<PendingRequest> {
                   Navigator.pop(context);
                   setState(() {});
                   Get.snackbar('Request Accepted',
-                      '${widget.selectedValue} has been added to the project');
+                      '${widget.selectedValue} has been added to the project', backgroundColor: Colors.white, colorText: Colors.black);
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF2CF07F)),
@@ -232,7 +238,7 @@ class _PendingRequestState extends State<PendingRequest> {
                   }
                   Navigator.pop(context);
                   setState(() {});
-                  Get.snackbar('Request Rejected', '');
+                  Get.snackbar('Request Rejected', '', backgroundColor: Colors.white, colorText: Colors.black);
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF2CF07F)),
@@ -372,7 +378,7 @@ class _ApprovedRequestState extends State<ApprovedRequest> {
 
                   Navigator.pop(context);
                   setState(() {});
-                  Get.snackbar('${widget.selectedValue} Deleted', '');
+                  Get.snackbar('${widget.selectedValue} Deleted', '', backgroundColor: Colors.white, colorText: Colors.black);
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF2CF07F)),

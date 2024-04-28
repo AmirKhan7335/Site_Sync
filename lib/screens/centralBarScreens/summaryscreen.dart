@@ -1,6 +1,8 @@
   import 'package:firebase_auth/firebase_auth.dart';
   import 'package:flutter/material.dart';
   import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 
 import 'monthlyprogressscreen.dart';
@@ -16,6 +18,7 @@ import 'monthlyprogressscreen.dart';
     late List<dynamic> data = [];
     late Map<String, List<dynamic>> groupedData;
     String? projectId = "";
+    bool isLoading = true;
 
     @override
     void initState() {
@@ -23,17 +26,150 @@ import 'monthlyprogressscreen.dart';
       getData();
     }
 
+    Future<int> calculateDayNo() async {
+      int totalDayCount = 0;
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var role = (await firestore.collection('users').doc(email).get()).data()!['role'];
+      try {
+        role == 'Engineer'
+            ? totalDayCount = await _calculateForNonClient()
+            : totalDayCount = await _calculateForClient();
+      } catch (e) {
+        Get.snackbar('Error', '$e', backgroundColor: Colors.white, colorText: Colors.black);
+      }
+      return totalDayCount;
+    }
+
+    Future<int> _calculateForClient() async {
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var projId = (await firestore.collection('clients').doc(email).get()).data()!['projectId'];
+      final engineerQuerySnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .where('projectId',isEqualTo: projId)// Sort by order
+          .get();
+      final engineerDoc = engineerQuerySnapshot.docs.first;
+      var engEmail = engineerDoc.id;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(engEmail)
+          .collection('activities')
+          .orderBy('order') // Sort by order
+          .get();
+
+      // Get yesterday's date
+      DateTime currentDate = DateTime.now();
+      int totalDaysCount = 0;
+
+      for (var doc in activitiesSnapshot.docs) {
+        DateTime startDate = doc['startDate'].toDate();
+        DateTime finishDate = doc['finishDate'].toDate();
+
+        // Ensure that the activity's finish date is on or before today's date
+        if (finishDate.isBefore(currentDate) ||
+            finishDate.isAtSameMomentAs(currentDate)) {
+          // Calculate the total days from start date till finish date excluding Sundays
+          int totalDays = finishDate.difference(startDate).inDays + 1;
+          print(
+              "start date = $startDate, finish date = $finishDate, total days = $totalDays, current date = $currentDate");
+          int dayCount = totalDays;
+
+          // Add the calculated day count to the total
+          totalDaysCount += dayCount;
+        }
+
+        // Ensure that the activity's start date is the same as today's date
+        if (startDate.year == currentDate.year &&
+            startDate.month == currentDate.month &&
+            startDate.day == currentDate.day) {
+          totalDaysCount += 1; // Increment by 1 if start date is today
+        }
+      }
+
+      return totalDaysCount;
+    }
+
+    Future<int> _calculateForNonClient() async {
+      var email = FirebaseAuth.instance.currentUser!.email;
+      var activitiesSnapshot = await FirebaseFirestore.instance
+          .collection('engineers')
+          .doc(email)
+          .collection('activities')
+          .orderBy('order') // Sort by order
+          .get();
+
+      // Get yesterday's date
+      DateTime currentDate = DateTime.now();
+      int totalDaysCount = 0;
+
+      for (var doc in activitiesSnapshot.docs) {
+        DateTime startDate = doc['startDate'].toDate();
+        DateTime finishDate = doc['finishDate'].toDate();
+
+        // Ensure that the activity's finish date is on or before today's date
+        if (finishDate.isBefore(currentDate) ||
+            finishDate.isAtSameMomentAs(currentDate)) {
+          // Calculate the total days from start date till finish date excluding Sundays
+          int totalDays = finishDate.difference(startDate).inDays + 1;
+          print(
+              "start date = $startDate, finish date = $finishDate, total days = $totalDays, current date = $currentDate");
+          int dayCount = totalDays;
+
+          // Add the calculated day count to the total
+          totalDaysCount += dayCount;
+        }
+
+        // Ensure that the activity's start date is the same as today's date
+        if (startDate.year == currentDate.year &&
+            startDate.month == currentDate.month &&
+            startDate.day == currentDate.day) {
+          totalDaysCount += 1; // Increment by 1 if start date is today
+        }
+      }
+
+      return totalDaysCount;
+    }
+
     Future<void> getData() async {
       User? user = FirebaseAuth.instance.currentUser;
       String? currentUserEmail = user?.email!;
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var role = (await firestore.collection('users').doc(email).get()).data()!['role'];
+      print('Role: $role');
+       if(role != 'Engineer')
+            {
+              DocumentSnapshot engineerDoc1 = await FirebaseFirestore.instance
+                  .collection('clients')
+                  .doc(currentUserEmail)
+                  .get();
+              // Check if data exists before casting
+              if (engineerDoc1.exists) {
+                projectId = (engineerDoc1.data() as Map<String, dynamic>)['projectId'];
+                print('Project ID: $projectId');
+              } else {
+                // Handle the case where document is empty or doesn't exist
+                print('Engineer document is empty or does not exist');
+                 // Or handle it differently as needed
+              }
+            }
+            else
+            {
+              DocumentSnapshot engineerDoc = await FirebaseFirestore.instance
+                  .collection('engineers')
+                  .doc(currentUserEmail)
+                  .get();
+              if (engineerDoc.exists) {
+              projectId =
+              (engineerDoc.data() as Map<String, dynamic>)['projectId'];
+              } else {
+                // Handle the case where document is empty or doesn't exist
+                print('Engineer document is empty or does not exist');
+                // Or handle it differently as needed
+              }
+            }
 
-      DocumentSnapshot engineerDoc = await FirebaseFirestore.instance
-          .collection('engineers')
-          .doc(currentUserEmail)
-          .get();
-
-      projectId =
-      (engineerDoc.data() as Map<String, dynamic>)['projectId'];
 
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(projectId!)
@@ -64,6 +200,7 @@ import 'monthlyprogressscreen.dart';
 
       setState(() {
         data = flattenedData;
+        isLoading = false;
       });
     }
 
@@ -111,16 +248,19 @@ import 'monthlyprogressscreen.dart';
         appBar: AppBar(
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.black),
-          title: const Center(
-            child: Text(
-              'Summary Screen',
-              style: TextStyle(color: Colors.black),
-            ),
+          title: const Text(
+            'Record Screen',
+            style: TextStyle(color: Colors.black),
           ),
+          centerTitle: true,
         ),
-        body: data.isEmpty
+        body: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
+            : data.isEmpty
+            ? const Center(
+          child: Text('No documents uploaded yet',
+              style: TextStyle(fontSize: 18, color: Colors.black)),
+        ):ListView.builder(
           itemCount: data.length,
           itemBuilder: (context, index) {
             final item = data[index];

@@ -32,9 +32,9 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
 
       final contrProj = await FirebaseFirestore.instance
           .collection('Projects')
-      // .where(FieldPath.documentId, whereIn: contrProjId)
+          // .where(FieldPath.documentId, whereIn: contrProjId)
           .where('endDate',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
           .get();
 
       final contrResult = await contrProj.docs
@@ -48,7 +48,8 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
           doc['endDate'],
           doc['location'],
           doc['creationDate'],
-          doc.id
+          doc.id,
+          'consultant'
         ];
       }).toList();
 //===========================================================
@@ -56,10 +57,10 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
           .where('endDate',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+              isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
           .get();
       final userData = collectionData.docs.map(
-            (doc) {
+        (doc) {
           return [
             doc['title'],
             doc['budget'],
@@ -68,7 +69,8 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
             doc['endDate'],
             doc['location'],
             doc['creationDate'],
-            doc.id
+            doc.id,
+            'contractor'
           ];
         },
       ).toList();
@@ -77,33 +79,33 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
       return userData;
 //..
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
 
-  calculateProgress(DateTime startDate, DateTime endDate) {
-    try {
-      if (endDate.isBefore(startDate)) {
-        throw ArgumentError('End date cannot be before start date.');
-      }
-      final now = DateTime.now();
-      final totalDuration = endDate.difference(startDate).inSeconds;
-      final elapsedDuration = now.difference(startDate).inSeconds;
-
-      if (elapsedDuration < 0) {
-        return 0.0;
-      } else if (elapsedDuration >= totalDuration) {
-        return 100.0;
-      }
-
-      // Calculate progress as a percentage
-      final progress = elapsedDuration / totalDuration * 100.0;
-      return progress.roundToDouble();
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-    }
-  }
+  // calculateProgress(DateTime startDate, DateTime endDate) {
+  //   try {
+  //     if (endDate.isBefore(startDate)) {
+  //       throw ArgumentError('End date cannot be before start date.');
+  //     }
+  //     final now = DateTime.now();
+  //     final totalDuration = endDate.difference(startDate).inSeconds;
+  //     final elapsedDuration = now.difference(startDate).inSeconds;
+  //
+  //     if (elapsedDuration < 0) {
+  //       return 0.0;
+  //     } else if (elapsedDuration >= totalDuration) {
+  //       return 100.0;
+  //     }
+  //
+  //     // Calculate progress as a percentage
+  //     final progress = elapsedDuration / totalDuration * 100.0;
+  //     return progress.roundToDouble();
+  //   } catch (e) {
+  //     Get.snackbar('Error', e.toString());
+  //   }
+  // }
 
   Widget Ongoing() {
     return FutureBuilder(
@@ -120,35 +122,41 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
 
             return ListView.builder(
               itemCount: data!.length,
-              itemBuilder: (context, index) => ListTile(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ContrScheduleDetail(
-                            projId: data[index][7], title: data[index][0]))),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey[400],
-                  radius: 30,
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  elevation: 5, // Add elevation for the card
+                  color: Colors.white, // Set card color to white
+                  child: ListTile(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ContrScheduleDetail(
+                                projId: data[index][7],
+                                title: data[index][0],
+                                projType: data[index][8]))),
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 30,
+                      child: Text(
+                        '${index + 1}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.black),
+                      ),
+                    ),
+                    title: Padding(
+                      // Add padding around the title content
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('${data[index][0]}',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.black)),
+                    ),
                   ),
                 ),
-                title: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${data[index][0]}',style: const TextStyle(color: Colors.black),),
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    )),
               ),
             );
           } else {
@@ -172,49 +180,48 @@ class _ScheduleProjectsState extends State<ContrScheduleProjects> {
                 child: Text(
                   'Schedule',
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                 ),
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: Get.width * 0.9,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {},
-                    child: const Center(
-                      child: Text(
-                        'Ongoing',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       Container(
+          //         width: Get.width * 0.9,
+          //         height: 50,
+          //         decoration: BoxDecoration(
+          //           color: Colors.green,
+          //           borderRadius: BorderRadius.circular(5),
+          //         ),
+          //         child: InkWell(
+          //           onTap: () {},
+          //           child: const Center(
+          //             child: Text(
+          //               'Ongoing',
+          //               style: TextStyle(
+          //                 fontSize: 20,
+          //                 color: Colors.black,
+          //                 fontWeight: FontWeight.bold,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       const SizedBox(width: 10),
+          //     ],
+          //   ),
+          // ),
           const SizedBox(
-            height: 30,
+            height: 20,
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 8, left: 8, bottom: 0),
+            padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
             child: SingleChildScrollView(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,

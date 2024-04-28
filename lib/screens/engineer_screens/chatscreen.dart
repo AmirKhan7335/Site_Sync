@@ -49,6 +49,7 @@ class ChatScreenState extends State<ChatScreen> {
   List allChatRooms = [];
   late final String chatRoomId;
   String currentUserId = FirebaseAuth.instance.currentUser?.email ?? '';
+  bool _isLoadingMessages = false;
 
   MessageStatus getMessageStatus(String sender, String deliveryStatus) {
     if (deliveryStatus == 'read' || sender == currentUserId) {
@@ -150,6 +151,12 @@ class ChatScreenState extends State<ChatScreen> {
     super.initState();
     getAllChatRooms();
     changeSeenStatus();
+    _isLoadingMessages = true; // Set to true initially
+    _fetchChatDataAndMessages().whenComplete(() {
+      setState(() {
+        _isLoadingMessages = false; // Set to false after messages are fetched
+      });
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // await getAllChatRooms();
       if (selectedUser != null) {
@@ -157,6 +164,13 @@ class ChatScreenState extends State<ChatScreen> {
       }
       setState(() {});
     });
+  }
+  Future<void> _fetchChatDataAndMessages() async {
+    await fetchChatData(); // Get chat data
+    if (selectedUser != null) {
+      await fetchChatMessages(selectedUser!.chatRoomId); // Get messages if user is selected
+    }
+    setState(() {});
   }
 
   changeSeenStatus() async {
@@ -172,7 +186,7 @@ class ChatScreenState extends State<ChatScreen> {
       final controller = Get.put(NavigationController());
       controller.getSeenStatus();
     } catch (e) {
-      print(e.toString() + 'error in changeSeenStatus');
+      print('${e}error in changeSeenStatus');
     }
   }
 
@@ -252,19 +266,24 @@ class ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.only(left: 16, top: 42, right: 8),
             child: Row(
               children: [
+                const Expanded(child: SizedBox()),
                 const Text(
-                  '           Messages',
+                  'Messages',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 30,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const Expanded(child: SizedBox()),
                 IconButton(
-                  icon: const Icon(Icons.search, color: Colors.black),
-                  onPressed: () {},
-                ),
+                    onPressed: () {
+                      setState(() {});
+                    },
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: Colors.black,
+                    )),
                 IconButton(
                   icon: const Icon(Icons.add, color: Colors.black),
                   onPressed: () async {
@@ -280,76 +299,73 @@ class ChatScreenState extends State<ChatScreen> {
                     }
                   },
                 ),
-                IconButton(
-                  icon: const Icon(Icons.more_vert, color: Colors.black),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 150,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: isChat ?  const Color(0xFF3EED88): Colors.grey,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      if (isChat == false) {
-                        setState(() {
-                          isChat = true;
-                        });
-                      }
-                    },
-                    child: Center(
-                      child: Text(
-                        'Chats',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: isChat ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
                 const SizedBox(width: 10),
-                Container(
-                  width: 150,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: !isChat ?  const Color(0xFF3EED88): Colors.grey,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      if (isChat == true) {
-                        setState(() {
-                          isChat = false;
-                        });
-                      }
-                    },
-                    child: Center(
-                      child: Text(
-                        'Groups',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: !isChat ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
+          // Padding(
+          //   padding: const EdgeInsets.all(4),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       Container(
+          //         width: 150,
+          //         height: 50,
+          //         decoration: BoxDecoration(
+          //           color: isChat ?  const Color(0xFF3EED88): Colors.grey,
+          //           borderRadius: BorderRadius.circular(5),
+          //         ),
+          //         child: InkWell(
+          //           onTap: () {
+          //             if (isChat == false) {
+          //               setState(() {
+          //                 isChat = true;
+          //               });
+          //             }
+          //           },
+          //           child: Center(
+          //             child: Text(
+          //               'Chats',
+          //               style: TextStyle(
+          //                 fontSize: 20,
+          //                 color: isChat ? Colors.black : Colors.white,
+          //                 fontWeight: FontWeight.bold,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       const SizedBox(width: 10),
+          //       Container(
+          //         width: 150,
+          //         height: 50,
+          //         decoration: BoxDecoration(
+          //           color: !isChat ?  const Color(0xFF3EED88): Colors.grey,
+          //           borderRadius: BorderRadius.circular(5),
+          //         ),
+          //         child: InkWell(
+          //           onTap: () {
+          //             if (isChat == true) {
+          //               setState(() {
+          //                 isChat = false;
+          //               });
+          //             }
+          //           },
+          //           child: Center(
+          //             child: Text(
+          //               'Groups',
+          //               style: TextStyle(
+          //                 fontSize: 20,
+          //                 color: !isChat ? Colors.black : Colors.white,
+          //                 fontWeight: FontWeight.bold,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0, left: 16.0),
             child: StreamBuilder<Object>(
@@ -357,6 +373,11 @@ class ChatScreenState extends State<ChatScreen> {
                 builder: (context, snapshot) {
                   return Column(
                     children: [
+                      _isLoadingMessages // Check if messages are being fetched
+                          ? const Center(
+                        child: CircularProgressIndicator(color: Colors.blue), // Show loading indicator
+                      )
+                          :
                       StreamBuilder<List<Map<String, dynamic>>>(
                         stream: selectedUser != null
                             ? FirebaseFirestore.instance
@@ -369,12 +390,27 @@ class ChatScreenState extends State<ChatScreen> {
                                     .toList())
                             : null,
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
+                          if (selectedUser == null) {
+                            // Show a placeholder or loading indicator while selectedUser is null
+                            return const Center(child: CircularProgressIndicator(color: Colors.blue));
+                          }
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            // Show loading indicator while data is being fetched
                             return const Center(
-                              child: Text(
-                                'No Chats yet',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 25),
+                              child: CircularProgressIndicator(color: Colors.blue),
+                            );
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            // Show "No Chats yet" message if no data or empty
+                            return const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: 300),
+                                  Text(
+                                    'No Chats yet',
+                                    style: TextStyle(color: Colors.black, fontSize: 25),
+                                  ),
+                                ],
                               ),
                             );
                           } else {
@@ -410,11 +446,6 @@ class ChatScreenState extends State<ChatScreen> {
                                             });
                                           },
                                         ),
-                                        const Padding(
-                                          padding: EdgeInsets.only(top: 4, left: 16.0, right: 16.0),
-                                          child: Divider(
-                                              color: Colors.grey, height: 0),
-                                        )
                                       ],
                                     ),
                                   );

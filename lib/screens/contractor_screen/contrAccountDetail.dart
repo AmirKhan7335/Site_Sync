@@ -1,11 +1,7 @@
 import 'package:amir_khan1/components/my_button.dart';
-import 'package:amir_khan1/components/mytextfield.dart';
-import 'package:amir_khan1/screens/consultant_screens/consultantHome.dart';
 import 'package:amir_khan1/screens/contractor_screen/contrHome.dart';
-import 'package:amir_khan1/screens/engineer_screens/welcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -101,7 +97,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
           .toList();
       return userData;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
 //..
@@ -134,8 +130,9 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Select a Project'),
-            content: Container(
+          backgroundColor: Colors.white,
+            title: const Text('Select a Project', style: TextStyle(color: Colors.black)),
+            content: SizedBox(
               height: 400,
               child: FutureBuilder(
                   future: fetchProjects(consultantEmail),
@@ -148,7 +145,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return Text('No Projects ');
+                      return const Text('No Projects ', style: TextStyle(color: Colors.black));
                     } else {
                       final projectList = snapshot.data;
                       return ListView.builder(
@@ -158,10 +155,10 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                             child: Card(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black12,
+                                  color: const Color(0xFFEAEAEA),
                                   borderRadius: BorderRadius.circular(5.0),
                                   border: Border.all(
-                                    color: Colors.grey,
+                                    color: Colors.transparent,
                                   ),
                                 ),
                                 child: ListTile(
@@ -174,7 +171,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                                     });
                                     Navigator.pop(context);
                                   },
-                                  title: Text('${projectList![index][0]}'),
+                                  title: Text('${projectList[index][0]}', style: TextStyle(color: Colors.black)),
                                 ),
                               ),
                             ),
@@ -191,8 +188,9 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Select Company'),
-            content: Container(
+          backgroundColor: Colors.white,
+            title: const Text('Select Company', style: TextStyle(color: Colors.black)),
+            content: SizedBox(
               height: 400,
               child: FutureBuilder(
                   future: fetchConsultant(),
@@ -205,7 +203,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     } else if (!snapshot.hasData) {
-                      return Text('No Consultant');
+                      return const Text('No Consultant', style: TextStyle(color: Colors.black));
                     } else {
                       final consultantList = snapshot.data;
                       return ListView.builder(
@@ -215,10 +213,10 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                             child: Card(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black12,
+                                  color: const Color(0xFFEAEAEA),
                                   borderRadius: BorderRadius.circular(5.0),
                                   border: Border.all(
-                                    color: Colors.grey,
+                                    color: Colors.transparent,
                                   ),
                                 ),
                                 child: ListTile(
@@ -233,7 +231,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                                     Navigator.pop(context);
                                   },
                                   title:
-                                  Text('${consultantList![index][0]}'),
+                                  Text('${consultantList[index][0]}', style: TextStyle(color: Colors.black)),
                                 ),
                               ),
                             ),
@@ -293,43 +291,44 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                         ),
                       ),
                     ),
-                    Container(
-                      height: 58,
-                      width: 376,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        border: Border.all(
-                          color: Colors.transparent,
-                        ),
-                        color:
-                        const Color(0xFF6B8D9F), // Set the background color
-                      ),
-                      child: TextFormField(
-                        readOnly: true,
-                        onTap: () {
-                          showConsultant(context);
-                          setState(() {});
-                        },
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: consultantUserName.isEmpty
-                              ? 'Select Company'
-                              : consultantUserName,
-                          hintStyle: TextStyle(
-                            color: consultantUserName.isEmpty
-                                ? Colors.grey
-                                : Colors.white,
+                    Card(
+                      elevation: 5,
+                      child: Container(
+                        height: 58,
+                        width: 376,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5.0),
+                          border: Border.all(
+                            color: Colors.transparent,
                           ),
-                          filled: true, // Ensure that the fillColor is applied
-                          fillColor: const Color(
-                              0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white, // Set icon color to white
+                          color: const Color(0xFFF3F3F3),// Set the background color
+                        ),
+                        child: TextFormField(
+                          readOnly: true,
+                          onTap: () {
+                            showConsultant(context);
+                            setState(() {});
+                          },
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.0,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: consultantUserName.isEmpty
+                                ? 'Select Company'
+                                : consultantUserName,
+                            hintStyle: TextStyle(
+                              color: consultantUserName.isEmpty
+                                  ? Colors.grey
+                                  : Colors.black,
+                            ),
+                            filled: true, // Ensure that the fillColor is applied
+                            fillColor: const Color(0xFFF3F3F3), // Set the fillColor to the same background color
+                            prefixIcon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.black, // Set icon color to white
+                            ),
                           ),
                         ),
                       ),
@@ -348,46 +347,48 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                         ),
                       ),
                     ),
-                    Container(
-                      height: 58,
-                      width: 376,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        border: Border.all(
-                          color: Colors.transparent,
-                        ),
-                        color:
-                        const Color(0xFF6B8D9F), // Set the background color
-                      ),
-                      child: TextFormField(
-                        readOnly: true,
-                        onTap: () {
-                          if (consultantEmail != '') {
-                            showProjects(context);
-                          } else {
-                            Get.snackbar("Sorry", 'Select Consultant First');
-                          }
-                        },
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: selectedProject.isEmpty
-                              ? 'Select A Project'
-                              : selectedProject,
-                          hintStyle: TextStyle(
-                            color: selectedProject.isEmpty
-                                ? Colors.grey
-                                : Colors.white,
+                    Card(
+                      elevation: 5,
+                      child: Container(
+                        height: 58,
+                        width: 376,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5.0),
+                          border: Border.all(
+                            color: Colors.transparent,
                           ),
-                          filled: true, // Ensure that the fillColor is applied
-                          fillColor: const Color(
-                              0xFF6B8D9F), // Set the fillColor to the same background color
-                          prefixIcon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white, // Set icon color to white
+                          color:
+                          const  Color(0xFFF3F3F3), // Set the background color
+                        ),
+                        child: TextFormField(
+                          readOnly: true,
+                          onTap: () {
+                            if (consultantEmail != '') {
+                              showProjects(context);
+                            } else {
+                              Get.snackbar("Sorry", 'Select Consultant First', backgroundColor: Colors.white, colorText: Colors.black);
+                            }
+                          },
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.0,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: selectedProject.isEmpty
+                                ? 'Select A Project'
+                                : selectedProject,
+                            hintStyle: TextStyle(
+                              color: selectedProject.isEmpty
+                                  ? Colors.grey
+                                  : Colors.black,
+                            ),
+                            filled: true, // Ensure that the fillColor is applied
+                            fillColor: const Color(0xFFF3F3F3),// Set the fillColor to the same background color
+                            prefixIcon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.black, // Set icon color to white
+                            ),
                           ),
                         ),
                       ),
@@ -401,24 +402,24 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        ContractorHomePage()));
+                                        const ContractorHomePage()));
                           },
-                          child: Text(
+                          style: const ButtonStyle(),
+                          child: const Text(
                             'Skip',
-                            style: TextStyle(),
+                            style: TextStyle(color: Colors.blue),
                           ),
-                          style: ButtonStyle(),
                         ),
                       ],
                     ),
                     const SizedBox(height: 50),
                     MyButton(
                       text: 'Continue',
-                      bgColor: Colors.green,
+                      bgColor: Color(0xFF2CF07F),
                       textColor: Colors.black,
                       onTap: () async {
                         if (consultantEmail == '' || selectedProject == '') {
-                          Get.snackbar('Sorry', 'Please Select All Fields');
+                          Get.snackbar('Sorry', 'Please Select All Fields', backgroundColor: Colors.white, colorText: Colors.black);
                         } else {
                           setState(() {
                             isloading = true;
@@ -430,7 +431,7 @@ class _AccountDetailsState extends State<ContrAccountDetails> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ContractorHomePage()));
+                                  builder: (context) => const ContractorHomePage()));
                         }
                       },
                     ),

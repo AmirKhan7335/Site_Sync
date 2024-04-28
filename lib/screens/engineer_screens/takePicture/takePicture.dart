@@ -56,10 +56,11 @@ class _TakePictureState extends State<TakePicture> {
     return SafeArea(
       child: Column(
         children: [
+          const SizedBox(height: 10),
           const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text('Take Picture',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black)),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,color: Colors.black)),
           ),
           Padding(
               padding: const EdgeInsets.all(8.0),
@@ -73,39 +74,58 @@ class _TakePictureState extends State<TakePicture> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      _takePicture('camera', context);
-                    },
-                    child: const Center(
-                        child: Icon(Icons.camera_alt_rounded,
-                            color: Colors.black, size: 100.0)),
-                  ),
+                Column(
+                  children: [
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff2CF07F),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          _takePicture('camera', context);
+                        },
+                        child: const Center(
+                            child: Icon(Icons.camera_alt_rounded,
+                                color: Colors.black, size: 100.0)),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('Camera',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
+                  ],
                 ),
                 const SizedBox(width: 10),
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.green
-                    ,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      _takePicture('gallery', context);
-                    },
-                    child: const Center(
-                        child: Icon(Icons.file_upload,
-                            color: Colors.black, size: 100.0)),
-                  ),
+                Column(
+                  children: [
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                          color: const Color(0xff2CF07F),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          _takePicture('gallery', context);
+                        },
+                        child: const Center(
+                            child: Icon(Icons.file_upload,
+                                color: Colors.black, size: 100.0)),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('Upload',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
+                  ],
                 ),
               ],
             ),
@@ -179,108 +199,113 @@ class _AddPicState extends State<AddPic> {
   Widget build(BuildContext context) {
     final controller = Get.put(TakePictureController());
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                'Choose Activity To Add Pic',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: FutureBuilder<List<Activity>>(
-                    future: fetchActivitiesFromFirebase(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('${snapshot.error}');
-                      } else if (!snapshot.hasData) {
-                        return const Text('No Activities Found');
-                      } else if (snapshot.hasData) {
-                        return Obx(()
-                        => Stack(
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.7,
-                              child: ListView.builder(
-                                  itemCount: snapshot.data!.length,
-                                  itemBuilder: ((context, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[800],
-                                          border:
-                                          Border.all(color: Colors.grey),
-                                          borderRadius:
-                                          BorderRadius.circular(10),
-                                        ),
-                                        child: ListTile(
-                                          onTap: () async {
-                                            try {
-                                              controller.isloading.value = true;
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          'Choose Activity To Add Pic',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: FutureBuilder<List<Activity>>(
+                future: fetchActivitiesFromFirebase(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator(color: Colors.blue));
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  } else if (!snapshot.hasData) {
+                    return const Text('No Activities Found');
+                  } else if (snapshot.hasData) {
+                    return Obx(()
+                    => Stack(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: ((context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Card(
+                                      elevation: 10,
+                                      color: Colors.white,
+                                      child: ListTile(
+                                        onTap: () async {
+                                          try {
+                                            controller.isloading.value = true;
 
-                                              final url =
-                                              await uploadImageToStorage(
-                                                  File(widget.image));
-                                              await addPicture(
-                                                  snapshot.data?[index].id,
-                                                  url);
-                                              Navigator.pop(context);
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(const SnackBar(
-                                                  content:
-                                                  Text('Image Added')));
-                                              controller.isloading.value= false;
-                                            } catch (e) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      '${e.toString()}')));
-                                              Navigator.pop(context);
-                                              controller.isloading.value= false;
-                                            }
-                                          },
-                                          title: Text(
-                                            '${snapshot.data?[index].name}',
-                                            style: const TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.bold),
-                                          ),
+                                            final url =
+                                            await uploadImageToStorage(
+                                                File(widget.image));
+                                            await addPicture(
+                                                snapshot.data?[index].id,
+                                                url);
+                                            Navigator.pop(context);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                                content:
+                                                Text('Image Added')));
+                                            controller.isloading.value= false;
+                                          } catch (e) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    '${e.toString()}')));
+                                            Navigator.pop(context);
+                                            controller.isloading.value= false;
+                                          }
+                                        },
+                                        title: Text(
+                                          '${snapshot.data?[index].name}',
+                                          style: const TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold, color: Colors.black),
                                         ),
                                       ),
-                                    );
-                                  })),
-                            ),
-                            controller.isloading.value
-                                ? const Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(height: 300,),
-                                  CircularProgressIndicator(
-                                      color: Colors.yellow),
-
-                                ],
-                              ),
-                            )
-                                : const SizedBox()
-                          ],
+                                    ),
+                                  ),
+                                );
+                              })),
                         ),
-                        );
-                      } else {
-                        return const CircularProgressIndicator();
-                      }
-                    }),
-              )
-            ],
-          ),
-        ),
+                        controller.isloading.value
+                            ? const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 300,),
+                              CircularProgressIndicator(
+                                  color: Colors.blue),
+
+                            ],
+                          ),
+                        )
+                            : const SizedBox()
+                      ],
+                    ),
+                    );
+                  } else {
+                    return const CircularProgressIndicator(color: Colors.blue);
+                  }
+                }),
+          )
+        ],
       ),
     );
   }

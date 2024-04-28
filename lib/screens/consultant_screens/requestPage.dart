@@ -42,10 +42,11 @@ class _RequestPageState extends State<RequestPage> {
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
       final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
+      final getCompanyNames = await getCompanyName(nameEmail);
 
-      return [getProject, getNames, nameEmail, getProfilePic];
+      return [getProject, getNames, nameEmail, getProfilePic, getCompanyNames];
     } catch (e) {
-      Get.snackbar('Error ', e.toString());
+      Get.snackbar('Error ', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       print("Error: $e");
       return [[]];
     }
@@ -77,10 +78,11 @@ class _RequestPageState extends State<RequestPage> {
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
       final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
+      final getCompanyNames = await getCompanyName(nameEmail);
 
-      return [getProject, getNames, nameEmail, getProfilePic];
+      return [getProject, getNames, nameEmail, getProfilePic, getCompanyNames];
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [[]];
     }
   }
@@ -114,10 +116,11 @@ class _RequestPageState extends State<RequestPage> {
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
       final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
+      final getCompanyNames = await getCompanyName(nameEmail);
 
-      return [getProject, getNames, nameEmail, getProfilePic];
+      return [getProject, getNames, nameEmail, getProfilePic, getCompanyNames];
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [[]];
     }
   }
@@ -150,10 +153,11 @@ class _RequestPageState extends State<RequestPage> {
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
       final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
+      final getCompanyNames = await getCompanyName(nameEmail);
 
-      return [getProject, getNames, nameEmail, getProfilePic];
+      return [getProject, getNames, nameEmail, getProfilePic, getCompanyNames];
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [[]];
     }
   }
@@ -183,10 +187,11 @@ class _RequestPageState extends State<RequestPage> {
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
       final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
+      final getCompanyNames = await getCompanyName(nameEmail);
 
-      return [getProject, getNames, nameEmail, getProfilePic];
+      return [getProject, getNames, nameEmail, getProfilePic, getCompanyNames];
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [[]];
     }
   }
@@ -214,10 +219,11 @@ class _RequestPageState extends State<RequestPage> {
       final getProject = await getProjectDetail(project);
       final getNames = await getEngineerUserName(nameEmail);
       final getProfilePic = await getEngineerProfilePicUrl(nameEmail);
+      final getCompanyNames = await getCompanyName(nameEmail);
 
-      return [getProject, getNames, nameEmail, getProfilePic];
+      return [getProject, getNames, nameEmail, getProfilePic, getCompanyNames];
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [[]];
     }
   }
@@ -234,7 +240,26 @@ class _RequestPageState extends State<RequestPage> {
 
       return namesList;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
+    }
+  }
+  getCompanyName(List emails) async {
+    try {
+      var activitiesSnapshot = await FirebaseFirestore.instance.collection('users');
+      final namesList = await Future.wait(emails.map((mail) async {
+        final companyNameDoc = await activitiesSnapshot.doc(mail).get();
+        // Check if 'companyName' field exists and has a value
+        if (companyNameDoc.exists &&
+            companyNameDoc.data()!.containsKey('companyName') &&
+            companyNameDoc['companyName'] != null) {
+          return companyNameDoc['companyName'];
+        } else {
+          return 'Amir'; // Default value if companyName is missing
+        }
+      }).toList());
+      return namesList;
+    } catch (e) {
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
   getEngineerProfilePicUrl(List emails) async {
@@ -252,7 +277,7 @@ class _RequestPageState extends State<RequestPage> {
 
       return profilepicList;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -273,7 +298,7 @@ class _RequestPageState extends State<RequestPage> {
 
       return projectDataList;
     } catch (e) {
-      Get.snackbar('Error ', e.toString());
+      Get.snackbar('Error ', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       print("Error: $e");
     }
   }
@@ -312,6 +337,7 @@ class _RequestPageState extends State<RequestPage> {
                     final project = await data[0][index];
                     final email = await data[2][index];
                     final profilePic = await data[3][index];
+                    final companyName = await data[4][index];
                     final role = await getRole(email);
                     Navigator.push(
                         context,
@@ -321,15 +347,30 @@ class _RequestPageState extends State<RequestPage> {
                                 projectDataList: project,
                                 engEmail: email,
                                 profilePic: profilePic,
+                                companyName: companyName,
                                 selectedValue:_selectedValue,
                                 role: role // Pass the role
                             )));
                   },
-                  leading: CircleAvatar(
-                    radius: 30,
-                    child: data[3][index] != null && data[3][index] != ""  // Check if profilePic is not null
-                        ? Image.network(data[3][index]) // Display network image if available
-                        : Image.asset('assets/images/Ellipse.png'),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(10), // Radius to create a circle
+                    child: data[3][index] != null && data[3][index] != ""
+                        ? ClipOval(
+                      child: Image.network(
+                        data[3][index] as String,
+                        fit: BoxFit.cover, // Adjust the image fitting as needed
+                        width: 60, // Adjust width and height as needed
+                        height: 60,
+                      ),
+                    )
+                        : ClipOval(
+                      child: Image.asset(
+                        'assets/images/Ellipse.png',
+                        fit: BoxFit.cover, // Adjust the image fitting as needed
+                        width: 60, // Adjust width and height as needed
+                        height: 60,
+                      ),
+                    ),
                   ),
                   title: Text('${data[1][index]}',
                       style: const TextStyle(color: Colors.black)),
@@ -387,23 +428,27 @@ class _RequestPageState extends State<RequestPage> {
                                   role: role,
                                 )));
                   },
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(10), // Radius to create a circle
-                    child: data[3][index] != null && data[3][index] != ""
-                        ? ClipOval(
-                      child: Image.network(
-                        data[3][index] as String,
-                        fit: BoxFit.cover, // Adjust the image fitting as needed
-                        width: 60, // Adjust width and height as needed
-                        height: 60,
-                      ),
-                    )
-                        : ClipOval(
-                      child: Image.asset(
-                        'assets/images/Ellipse.png',
-                        fit: BoxFit.cover, // Adjust the image fitting as needed
-                        width: 60, // Adjust width and height as needed
-                        height: 60,
+                  leading: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10), // Radius to create a circle
+                      child: data[3][index] != null && data[3][index] != ""
+                          ? ClipOval(
+                        child: Image.network(
+                          data[3][index] as String,
+                          fit: BoxFit.cover, // Adjust the image fitting as needed
+                          width: 60, // Adjust width and height as needed
+                          height: 60,
+                        ),
+                      )
+                          : ClipOval(
+                        child: Image.asset(
+                          'assets/images/Ellipse.png',
+                          fit: BoxFit.cover, // Adjust the image fitting as needed
+                          width: 60, // Adjust width and height as needed
+                          height: 60,
+                        ),
                       ),
                     ),
                   ),

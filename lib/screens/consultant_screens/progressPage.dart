@@ -7,6 +7,8 @@
   // import 'package:flutter/foundation.dart';
   import 'package:flutter/material.dart';
   import 'package:get/get.dart';
+
+import '../../controllers/progressTrackingController.dart';
   // import 'package:intl/intl.dart';
 
   class ProgressPage extends StatefulWidget {
@@ -19,32 +21,6 @@
   class _ScheduleProjectsState extends State<ProgressPage> {
     final user = FirebaseAuth.instance.currentUser;
     Map<String, double> projectProgress = {};
-
-    @override
-    void initState() {
-      super.initState();
-      fetchProgress(); // Call fetchProgress when the widget initializes
-    }
-
-    Future<void> fetchProgress() async {
-      try {
-        final projectsSnapshot = await FirebaseFirestore.instance.collection('Projects').get();
-
-        for (var projectDoc in projectsSnapshot.docs) {
-          final projectId = projectDoc.id;
-          final projectData = projectDoc.data();
-          final overallPercent = projectData.containsKey('overallPercent')
-              ? (projectData['overallPercent'] as num).toDouble()
-              : 0.0;
-          projectProgress[projectId] = overallPercent;
-          print("Project ID: $projectId, Progress: $overallPercent");
-        }
-
-        setState(() {}); // Update the state after fetching progress values
-      } catch (e) {
-        Get.snackbar('Error', e.toString());
-      }
-    }
 
 
 
@@ -60,6 +36,7 @@
             .get();
         final userData = collectionData.docs.map(
               (doc) {
+            final overallPercentExists = doc.data().containsKey('overallPercent');
             return [
               doc['title'],
               doc['budget'],
@@ -68,6 +45,7 @@
               doc['endDate'],
               doc['location'],
               doc['creationDate'],
+              overallPercentExists ? doc['overallPercent'] : 0,
               doc.id
             ];
           },
@@ -76,7 +54,37 @@
 
         return userData;
       } catch (e) {
-        Get.snackbar('Error', e.toString());
+        print(e.toString());
+        Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
+        return [];
+      }
+    }
+    Future<List<dynamic>> fetchAllProjects() async {
+      try {
+        final collectionData = await FirebaseFirestore.instance
+            .collection('Projects')
+            .where('email', isEqualTo: user!.email)
+            .get();
+
+        final allProjects = collectionData.docs.map((doc) {
+          final overallPercentExists = doc.data().containsKey('overallPercent');
+          return [
+            doc['title'],
+            doc['budget'],
+            doc['funding'],
+            doc['startDate'],
+            doc['endDate'],
+            doc['location'],
+            doc['creationDate'],
+            overallPercentExists ? doc['overallPercent'] : 0,
+            doc.id
+          ];
+        }).toList();
+
+        return allProjects;
+      } catch (e) {
+        print(e.toString());
+        Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
         return [];
       }
     }
@@ -94,6 +102,7 @@
             .get();
         final userData = collectionData.docs.map(
           (doc) {
+            final overallPercentExists = doc.data().containsKey('overallPercent');
             return [
               doc['title'],
               doc['budget'],
@@ -102,6 +111,7 @@
               doc['endDate'],
               doc['location'],
               doc['creationDate'],
+              overallPercentExists ? doc['overallPercent'] : 0,
               doc.id
             ];
           },
@@ -110,7 +120,7 @@
         return userData;
   //..
       } catch (e) {
-        Get.snackbar('Error', e.toString());
+        Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
         return [];
       }
     }
@@ -119,8 +129,6 @@
       return ListView.builder(
         itemCount: projectsData.length,
         itemBuilder: (context, index) {
-          final projectId = projectsData[index][7];
-          final progress = projectProgress[projectId] ?? 0.0;
           return Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 5.0),
             child: Card(
@@ -156,14 +164,14 @@
                               child: LinearProgressIndicator(
                                 minHeight: 7,
                                 borderRadius: BorderRadius.circular(5),
-                                value: progress/100,
+                                value: projectsData[index][7]/100,
                                 backgroundColor: Colors.grey,
                                 valueColor: const AlwaysStoppedAnimation<Color>(
                                     Colors.green),
                               ),
                             ),
                             const SizedBox(width: 10),
-                            Text('$progress%',
+                            Text('${projectsData[index][7]}%',
                                 style: const TextStyle(color: Colors.black)),
                           ],
                         )
@@ -179,76 +187,65 @@
     }
 
 
-
-
-    Widget Completed() {
-      return FutureBuilder(
-          future: fetchCompletedProjects(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return Center(child: Text(snapshot.error.toString()));
-            } else if (snapshot.hasData) {
-              final data = snapshot.data;
-              return ListView.builder(
-                itemCount: data!.length,
-                itemBuilder: (context, index) => Card(
-                  color: Colors.white,
-                  elevation: 5,
-                  child: ListTile(
-                    onTap: () {},
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 30,
-                      child: Text(
-                        '${index + 1}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    title: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('${data[index][0]}',style: const TextStyle(color: Colors.black)),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 160,
-                                    child: LinearProgressIndicator(
-                                      minHeight: 7,
-                                      borderRadius: BorderRadius.circular(5),
-                                      value: 1,
-                                      backgroundColor: Colors.white,
-                                      valueColor: const AlwaysStoppedAnimation<Color>(
-                                          Colors.green),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  const Text('100%',style: TextStyle(color: Colors.black)),
-                                ],
-                              )
-                            ],
-                          ),
-                        )),
+    Widget Completed(List<dynamic> projectsData) {
+      return ListView.builder(
+        itemCount: projectsData.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 5.0),
+            child: Card(
+              elevation: 5,
+              color: Colors.white,
+              child: ListTile(
+                onTap: () => {},
+                leading: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 30,
+                  child: Text(
+                    '${index + 1}',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black, fontSize: 25),
                   ),
                 ),
-              );
-            } else {
-              return const Center(
-                child: Text('No Completed Projects'),
-              );
-            }
-          });
+                title: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('${projectsData[index][0]}',
+                            style: const TextStyle(color: Colors.black)),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: LinearProgressIndicator(
+                                minHeight: 7,
+                                borderRadius: BorderRadius.circular(5),
+                                value: projectsData[index][7] / 100, // Use correct index
+                                backgroundColor: Colors.grey,
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                    Colors.green),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text('${projectsData[index][7]}%', // Use correct index
+                                style: const TextStyle(color: Colors.black)),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
     }
 
     bool isOngoing = true;
@@ -349,26 +346,29 @@
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.68,
                       child: FutureBuilder(
-                        future: fetchOngoingProjects(),
+                        future: fetchAllProjects(),
                         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
+                            return const Center(child: CircularProgressIndicator());
                           } else if (snapshot.hasError) {
-                            return Center(
-                              child: Text(snapshot.error.toString()),
-                            );
+                            return Center(child: Text(snapshot.error.toString()));
                           } else {
-                            final projectsData = snapshot.data!;
-                            return isOngoing ? Ongoing(projectsData) : Completed();
+                            final allProjects = snapshot.data!;
+
+                            final ongoingProjects = allProjects.where((project) => project[7] < 100).toList();
+                            final completedProjects = allProjects.where((project) => project[7] == 100).toList();
+                            print('Ongoing Projects: $ongoingProjects');
+                            print('Completed Projects: $completedProjects');
+
+                            return isOngoing
+                                ? Ongoing(ongoingProjects)
+                                : Completed(completedProjects);
                           }
                         },
                       ),
                     ),
                   ),
                 )
-
               ],
             ),
           ),

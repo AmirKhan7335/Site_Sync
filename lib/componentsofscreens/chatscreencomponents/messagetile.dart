@@ -90,7 +90,7 @@ class _MessageTileState extends State<MessageTile> {
         OpenFile.open(filePath);
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 

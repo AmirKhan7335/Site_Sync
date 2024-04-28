@@ -54,7 +54,7 @@ class _RequestBodyState extends State<ProjectDetail> {
         this.contractorName = contractorName;
       });
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -81,7 +81,7 @@ class _RequestBodyState extends State<ProjectDetail> {
         progress = overallPercent;
       });
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -95,6 +95,7 @@ class _RequestBodyState extends State<ProjectDetail> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text('Project Detail',style: TextStyle(color: Colors.black)),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -123,9 +124,6 @@ class _RequestBodyState extends State<ProjectDetail> {
                 height: 1.5,
                 color: Colors.grey,
               ),
-            ),
-            const SizedBox(
-              height: 10,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 32.0, bottom: 5.0, left: 32.0, right: 32.0),
@@ -186,180 +184,183 @@ class _RequestBodyState extends State<ProjectDetail> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 24, bottom: 24),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Client:  ',
-                          ),
-                          Text(
-                            clientName,
-                            softWrap: true,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Contractor:  ',
-                          ),
-                          Text(
-                            contractorName,
-                            softWrap: true,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Total Cost:  ',
-                          ),
-                          Text(
-                            widget.projectDataList[3],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Engineer :  ',
-                          ),
-                          Text(
-                            widget.engineerName,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Retention Money :  ',
-                          ),
-                          Text(
-                            '${widget.projectDataList[4]}',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Funding :  ',
-                          ),
-                          Text(
-                            '${widget.projectDataList[5]}',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Location :  ',
-                          ),
-                          Expanded(
-                            child: Text( 
-                              '${widget.projectDataList[6]}',
-                              style: const TextStyle(
-                                height: 1.0,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 24, bottom: 24),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
                             ),
-                          ),
-                          // Text(
-                          //   '${widget.projectDataList[6]}',
-                          // ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'Start Date:  ',
-                          ),
-                          Text(
-                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate()),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          const Text(
-                            'End Date:  ',
-                          ),
-                          Text(
-                            DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate()),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const Text(
+                              'Client:  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              clientName, style: TextStyle(color: Colors.black),
+                              softWrap: true,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'Contractor:  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              contractorName, style: TextStyle(color: Colors.black),
+                              softWrap: true,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'Total Cost:  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              widget.projectDataList[3], style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'Engineer :  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              widget.engineerName, style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'Retention Money :  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              '${widget.projectDataList[4]}', style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'Funding :  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              '${widget.projectDataList[5]}', style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'Location :  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${widget.projectDataList[6]}',
+                                style: const TextStyle(
+                                  height: 1.0, color: Colors.black,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                              ),
+                            ),
+                            // Text(
+                            //   '${widget.projectDataList[6]}',
+                            // ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'Start Date:  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              DateFormat('dd-MM-yyyy').format(widget.projectDataList[1].toDate()), style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            const Text(
+                              'End Date:  ', style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              DateFormat('dd-MM-yyyy').format(widget.projectDataList[2].toDate()), style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

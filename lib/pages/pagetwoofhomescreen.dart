@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../components/arcpainter.dart';
 
 class PageTwo extends StatefulWidget {
   String total;
@@ -24,101 +23,85 @@ class _PageTwoState extends State<PageTwo> {
       ),
       child: Column(
         children: [
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: ColorFiltered(
-              colorFilter: const ColorFilter.matrix([
-                0.0, 0.0, 0.0, 0, 255,
-                // red channel
-                0.0, 0.0, 0.0, 0, 255,
-                // green channel
-                0.0, 0.0, 0.0, 0, 0,
-                // blue channel to minimum
-                0.0, 0.0, 0.0, 1, 0,
-                // alpha channel
-              ]),
-              child: Image.asset('assets/images/budget_icon.png',color: Colors.green,),
-            ),
-          ),
-          Transform.translate(
-            offset: const Offset(2, 0),
-            // Adjust the vertical offset as needed
-            child: Column(
+          // SizedBox(
+          //   width: 50,
+          //   height: 50,
+          //   child: ColorFiltered(
+          //     colorFilter: const ColorFilter.matrix([
+          //       0.0, 0.0, 0.0, 0, 255,
+          //       // red channel
+          //       0.0, 0.0, 0.0, 0, 255,
+          //       // green channel
+          //       0.0, 0.0, 0.0, 0, 0,
+          //       // blue channel to minimum
+          //       0.0, 0.0, 0.0, 1, 0,
+          //       // alpha channel
+          //     ]),
+          //     child: Image.asset('assets/images/budget_icon.png',color: Colors.green,),
+          //   ),
+          // ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Total Cost",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black)),
+              // const SizedBox(height: 10),
+              Row(
 
-              children: [
-                Text("Total Coast",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black)),
-                Text('${widget.total}',style: TextStyle(color: Colors.black),)
-              ],
-            ),
+                children: [
+                  Text(widget.total,
+                      style: const TextStyle(
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black)),
+                ],),
+            ],
           ),
           const SizedBox(height: 20),
           Row(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Move "Status: On Time" text upwards
-                ],
-              ),
-              const SizedBox(width: 50),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    height: 55,
-                    width: 90,
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.green),
-                            child: Icon(Icons.arrow_upward)),
-                        Text("  Approved\n105,649,534",
-                            style:
-                            TextStyle(fontSize: 10, color: Colors.white)),
-                      ],
-                    ),
+                    width: 40,
+                    height: 40,
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.green),
+                      child: const Icon(Icons.arrow_upward, color: Colors.black,)),
+                  const Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text("Received",
+                          style:
+                          TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
+                      Text("105,649,534",style:  TextStyle(fontSize: 16, color: Colors.black),)
+                    ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
-                  Container(
-                    height: 55,
-                    width: 90,
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.red),
-                            child: Icon(Icons.arrow_downward)),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("  Retention",
-                                style:
-                                TextStyle(fontSize: 10, color: Colors.white)),
-                            Text(widget.retMoney,style:  TextStyle(fontSize: 10, color: Colors.white),)
-                          ],
-                        ),
-                      ],
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                              shape: BoxShape.circle, color: Colors.red),
+                          child: const Icon(Icons.arrow_downward, color: Colors.black,)),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Text(" Retention",
+                              style:
+                              TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
+                          Text(widget.retMoney,style:  const TextStyle(fontSize: 16, color: Colors.black),)
+                        ],
+                      ),
+                    ],
                   )
                 ],
               )

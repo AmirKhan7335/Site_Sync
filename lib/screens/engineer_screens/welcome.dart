@@ -134,7 +134,7 @@ class _WelcomeEngineerState extends State<WelcomeEngineer> {
                           }
                         } else {
                           Get.snackbar(
-                              'Sorry', 'Request is not Accepted Yet!!');
+                              'Sorry', 'Request is not Accepted Yet!!', backgroundColor: Colors.white, colorText: Colors.black);
                         }
                       },
                     ),

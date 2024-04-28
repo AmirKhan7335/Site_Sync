@@ -76,7 +76,7 @@ class _AccountDetailsState extends State<AccountDetails> {
           .toList();
       return userData;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
 //..
@@ -101,7 +101,7 @@ class _AccountDetailsState extends State<AccountDetails> {
           .toList();
       return userData;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
 //..
@@ -159,10 +159,10 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 child: Card(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.grey,
+                                      color: const Color(0xFF6B8D9F),
                                       borderRadius: BorderRadius.circular(5.0),
                                       border: Border.all(
-                                        color: Colors.grey,
+                                        color: const Color(0xFF6B8D9F),
                                       ),
                                     ),
                                     child: ListTile(
@@ -217,10 +217,11 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 child: Card(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.grey,
+                                      color: const Color(
+                                          0xFF6B8D9F),
                                       borderRadius: BorderRadius.circular(5.0),
                                       border: Border.all(
-                                        color: Colors.grey,
+                                        color: const Color(0xFF6B8D9F),
                                       ),
                                     ),
                                     child: ListTile(
@@ -434,7 +435,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                           if (consultantEmail != '') {
                             showProjects(context);
                           } else {
-                            Get.snackbar("Sorry", 'Select Company First');
+                            Get.snackbar("Sorry", 'Select Company First', backgroundColor: Colors.white, colorText: Colors.black);
                           }
                         },
                         style: const TextStyle(
@@ -471,7 +472,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                       textColor: Colors.black,
                       onTap: () async {
                         if (consultantEmail == '' || selectedProject == '') {
-                          Get.snackbar('Sorry', 'Please Select All Fields');
+                          Get.snackbar('Sorry', 'Please Select All Fields', backgroundColor: Colors.white, colorText: Colors.black);
                         } else {
                           setState(() {
                             isloading = true;

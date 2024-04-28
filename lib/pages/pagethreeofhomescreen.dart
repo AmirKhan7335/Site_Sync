@@ -29,32 +29,68 @@ class _PageThreeState extends State<PageThree> {
   Future<void> fetchWeather() async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
+      DocumentSnapshot userSnapshot1 = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser?.email)
+          .get();
+      String? role = userSnapshot1['role'];
       if (currentUser != null) {
-        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-            .collection('engineers')
-            .doc(currentUser.email)
-            .get();
-        String? projectId = userSnapshot['projectId'];
-        if (projectId != null) {
-          DocumentSnapshot projectSnapshot = await FirebaseFirestore.instance
-              .collection('Projects')
-              .doc(projectId)
+        if (role =='Engineer') {
+          DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+              .collection('engineers')
+              .doc(currentUser.email)
               .get();
-          location = projectSnapshot['location'];
-          if (location != null) {
-            List<Location> locations = await locationFromAddress(location!);
-            if (locations.isNotEmpty) {
-              Location cityLocation = locations.first;
-              Weather weather = await _wf.currentWeatherByLocation(
-                  cityLocation.latitude, cityLocation.longitude);
-              setState(() {
-                weatherDescription = weather.weatherDescription ?? 'Unknown';
-                temperature = weather.temperature?.celsius ?? 0;
-              });
-            } else {
-              setState(() {
-                location = 'City not found';
-              });
+          String? projectId = userSnapshot['projectId'];
+          if (projectId != null) {
+            DocumentSnapshot projectSnapshot = await FirebaseFirestore.instance
+                .collection('Projects')
+                .doc(projectId)
+                .get();
+            location = projectSnapshot['location'];
+            if (location != null) {
+              List<Location> locations = await locationFromAddress(location!);
+              if (locations.isNotEmpty) {
+                Location cityLocation = locations.first;
+                Weather weather = await _wf.currentWeatherByLocation(
+                    cityLocation.latitude, cityLocation.longitude);
+                setState(() {
+                  weatherDescription = weather.weatherDescription ?? 'Unknown';
+                  temperature = weather.temperature?.celsius ?? 0;
+                });
+              } else {
+                setState(() {
+                  location = 'City not found';
+                });
+              }
+            }
+          }
+        } else {
+          DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+              .collection('clients')
+              .doc(currentUser.email)
+              .get();
+          String? projectId = userSnapshot['projectId'];
+          if (projectId != null) {
+            DocumentSnapshot projectSnapshot = await FirebaseFirestore.instance
+                .collection('Projects')
+                .doc(projectId)
+                .get();
+            location = projectSnapshot['location'];
+            if (location != null) {
+              List<Location> locations = await locationFromAddress(location!);
+              if (locations.isNotEmpty) {
+                Location cityLocation = locations.first;
+                Weather weather = await _wf.currentWeatherByLocation(
+                    cityLocation.latitude, cityLocation.longitude);
+                setState(() {
+                  weatherDescription = weather.weatherDescription ?? 'Unknown';
+                  temperature = weather.temperature?.celsius ?? 0;
+                });
+              } else {
+                setState(() {
+                  location = 'City not found';
+                });
+              }
             }
           }
         }

@@ -77,7 +77,8 @@ class _CreateProjectState extends State<CreateProject> {
           'isSelected': false,
           'retMoney': retMoneyController.text,
           'isContrSelected': false,
-          'isClient': false
+          'isClient': false,
+          'receivedMoney':0
         },
       );
 
@@ -90,14 +91,14 @@ class _CreateProjectState extends State<CreateProject> {
       await testing.doc('Compressive Strength Test').set({});
 
 
-      Get.snackbar('Success', 'Project created Successfully');
+      Get.snackbar('Success', 'Project created Successfully', backgroundColor: Colors.white, colorText: Colors.black);
       titleController.clear();
       budgetController.clear();
       retMoneyController.clear();
       fundingController.clear();
       locationController.clear();
     } catch (e) {
-      Get.snackbar("Error", '${e}');
+      Get.snackbar("Error", '${e}', backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 

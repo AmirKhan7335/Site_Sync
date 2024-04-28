@@ -52,7 +52,7 @@ class _MonthProgressScreenState extends State<MonthProgressScreen> {
         OpenFile.open(filePath);
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -70,6 +70,7 @@ class _MonthProgressScreenState extends State<MonthProgressScreen> {
       appBar: AppBar(
         title: Text(widget.monthYear, style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
+        centerTitle: true,
       ),
       body: widget.progressReports != null && widget.progressReports!.isNotEmpty
           ? ListView.builder(

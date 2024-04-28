@@ -20,7 +20,8 @@ class DailyProgressReportScreen extends StatefulWidget {
   const DailyProgressReportScreen({super.key});
 
   @override
-  DailyProgressReportScreenState createState() => DailyProgressReportScreenState();
+  DailyProgressReportScreenState createState() =>
+      DailyProgressReportScreenState();
 }
 
 class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
@@ -31,15 +32,18 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
   TextEditingController weatherController = TextEditingController();
   TextEditingController overallProgressController = TextEditingController();
   final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
-  String? projectId="";
+  String? projectId = "";
   Weather? weather1;
   final user = FirebaseAuth.instance.currentUser;
+  List<DateTime> noWorkDates = [];
+  late final DateTime currentDateTimeInPakistan;
 
   @override
   void initState() {
     super.initState();
     // Call the method to fetch project details
     fetchProjectDetails();
+    currentDateTimeInPakistan = DateTime.now().toUtc().add(const Duration(hours: 5));
   }
 
   Future<void> fetchProjectDetails() async {
@@ -61,35 +65,38 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
 
         if (projectId != null) {
           // Query Firestore to fetch project details using the project ID
-          DocumentSnapshot<Map<String, dynamic>> projectDoc = await FirebaseFirestore.instance
-              .collection('Projects')
-              .doc(projectId)
-              .get();
-          DocumentSnapshot<Map<String, dynamic>> engineerDoc = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(currentUserEmail)
-              .get();
+          DocumentSnapshot<Map<String, dynamic>> projectDoc =
+              await FirebaseFirestore.instance
+                  .collection('Projects')
+                  .doc(projectId)
+                  .get();
+          DocumentSnapshot<Map<String, dynamic>> engineerDoc =
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(currentUserEmail)
+                  .get();
 
           // Check if projectDoc exists
           if (projectDoc.exists) {
             setState(() {
               // Update text controllers with fetched project details
-              projectNameController.text = capitalizeFirstLetter(projectDoc.data()!['title'] ?? 'Unknown');
-              locationController.text = capitalizeFirstLetter(projectDoc.data()!['location'] ?? 'Unknown');
-              contractorController.text = capitalizeFirstLetter(projectDoc.data()!['contractor'] ?? 'Unknown');
-              engineerController.text = capitalizeFirstLetter(engineerDoc.data()!['username'] ?? 'Unknown');
-              contractorController.text = capitalizeFirstLetter(projectDoc.data()!['contractorName'] ?? 'Unknown');
+              projectNameController.text = capitalizeFirstLetter(
+                  projectDoc.data()!['title'] ?? 'Unknown');
+              locationController.text = capitalizeFirstLetter(
+                  projectDoc.data()!['location'] ?? 'Unknown');
+              engineerController.text = capitalizeFirstLetter(
+                  engineerDoc.data()!['username'] ?? 'Unknown');
+              contractorController.text = capitalizeFirstLetter(
+                  projectDoc.data()!['companyName'] ?? 'Unknown');
 
               // Fetch and set weather information here
               fetchWeather(projectDoc.data()!['location']);
             });
-
           }
         }
       }
     }
   }
-
 
   Future<void> fetchWeather(String location) async {
     try {
@@ -98,12 +105,14 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       if (locations.isNotEmpty) {
         Location cityLocation = locations.first;
         // Fetch weather details using the city's coordinates
-        Weather weather = await _wf.currentWeatherByLocation(cityLocation.latitude, cityLocation.longitude);
+        Weather weather = await _wf.currentWeatherByLocation(
+            cityLocation.latitude, cityLocation.longitude);
         setState(() {
           weather1 = weather;
           String weatherDescription = weather.weatherDescription ?? 'Unknown';
           double temperature = weather.temperature?.celsius ?? 0.0;
-          weatherController.text = '$weatherDescription, Temperature: ${temperature.toStringAsFixed(1)}°C';
+          weatherController.text =
+              '$weatherDescription, Temperature: ${temperature.toStringAsFixed(1)}°C';
         });
       } else {
         // Handle case where no matching city is found
@@ -121,6 +130,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       });
     }
   }
+
   Future<List> fetchProject() async {
 //..
     try {
@@ -149,7 +159,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       return projectData;
 //..
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
@@ -165,7 +175,8 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
           .collection('clients')
           .doc(email)
           .get();
-      var clientProjectId = projIdForClient.data()?['projectId']; // Add null check here
+      var clientProjectId =
+          projIdForClient.data()?['projectId']; // Add null check here
       var sameEngineer = await FirebaseFirestore.instance
           .collection('engineers')
           .where('projectId', isEqualTo: clientProjectId)
@@ -183,14 +194,31 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
           id: doc['id'],
           name: doc['name'],
           startDate: DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
-          finishDate: DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+          finishDate:
+              DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
           order: doc['order'],
         );
       }).toList();
+      // Fetch "No Work" data
+      var noWorkSnapshot = await FirebaseFirestore.instance
+          .collection('No_Work')
+          .where('projectId',
+          isEqualTo: clientProjectId ?? projectId) // Include both client and non-client cases
+          .get();
+      noWorkDates = noWorkSnapshot.docs
+          .map((doc) => DateFormat('dd/MM/yyyy').parse(doc['date']))
+          .toList();
+      print('No Work Dates: $noWorkDates');
+
+      // Check if today is a "No Work" day (moved here for access to noWorkDates)
+      bool isNoWorkDay = noWorkDates.any((noWorkDate) =>
+      noWorkDate.year == currentDateTimeInPakistan.year &&
+          noWorkDate.month == currentDateTimeInPakistan.month &&
+          noWorkDate.day == currentDateTimeInPakistan.day);
 
       return activities;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
@@ -252,7 +280,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
   Activity? findTodaysActivity(List<Activity> activities) {
     DateTime today = DateTime.now();
     String formattedToday =
-    DateFormat('dd/MM/yyyy').format(today); // Format current date
+        DateFormat('dd/MM/yyyy').format(today); // Format current date
 
     try {
       DateTime todayDate = DateFormat('dd/MM/yyyy')
@@ -305,9 +333,9 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
     }
   }
 
-
   String capitalizeFirstLetter(String text) {
-    return text.replaceAllMapped(RegExp(r'\b\w'), (match) => match.group(0)!.toUpperCase());
+    return text.replaceAllMapped(
+        RegExp(r'\b\w'), (match) => match.group(0)!.toUpperCase());
   }
 
   int calculatePercentComplete(String startDate, String finishDate) {
@@ -332,6 +360,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       return -1; // Return a default value or error code in case of any error
     }
   }
+
   int calculatePercentComplete1(String startDate, String finishDate) {
     try {
       DateTime today = DateTime.now();
@@ -340,7 +369,7 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
 
       int totalDuration =
           parsedFinishDate.difference(parsedStartDate).inDays + 1;
-      int timeElapsed = today.difference(parsedStartDate).inDays+1;
+      int timeElapsed = today.difference(parsedStartDate).inDays + 1;
       if (totalDuration <= 0) {
         return 0; // Return 0 if total duration is non-positive
       }
@@ -363,9 +392,9 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       // Calculate the difference in days
       int daysDifference = parsedFinishDate.difference(today).inDays;
 
-      if (today.hour < 12) {
-        daysDifference += 1;
-      }
+      // if (today.hour < 12) {
+      //   daysDifference += 1;
+      // }
 
       if (daysDifference < 0) {
         return 0; // The finish date is in the past, no days left
@@ -378,8 +407,8 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
   }
 
   // Function to generate PDF
-  Future<PdfDocument> generatePDF(
-      List<Activity> activities, Activity? todayActivity, ProjectProgressController controller) async {
+  Future<PdfDocument> generatePDF(List<Activity> activities,
+      Activity? todayActivity, ProjectProgressController controller) async {
     // Create a new PDF document
     final document = PdfDocument();
 
@@ -398,6 +427,12 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
 
     // Add project details
     final details = StringBuffer();
+    // Check if today is a "No Work" day using noWorkDates
+    bool isNoWorkDay = noWorkDates.any((noWorkDate) =>
+    noWorkDate.year == currentDateTimeInPakistan.year &&
+        noWorkDate.month == currentDateTimeInPakistan.month &&
+        noWorkDate.day == currentDateTimeInPakistan.day);
+    print('No Work Day: $isNoWorkDay');
     details.writeln('');
     details.writeln('');
     details.writeln('');
@@ -424,7 +459,8 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
     details.writeln('Weather: ${weatherController.text}');
     details.writeln('');
     details.writeln('');
-    details.writeln('');details.writeln('');
+    details.writeln('');
+    details.writeln('');
     page.graphics.drawString(
       'TODAY\'S OVERALL PROGRESS:',
       PdfStandardFont(PdfFontFamily.helvetica, 18),
@@ -434,26 +470,41 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
         lineAlignment: PdfVerticalAlignment.middle,
       ),
     );
-    details.writeln('- ${capitalizeFirstLetter(todayActivity?.name ?? 'No')} activity was scheduled today.');
-    details.writeln('- The activity progress was ${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%.');
-    details.writeln('- After the execution of the work, the activity progress is ${calculatePercentComplete1(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%.');
-    details.writeln('- The activity is estimated to complete in ${activities.isNotEmpty ? (todayActivity != null ? (calculateDaysLeft(todayActivity.finishDate) == 1 ? '1 day.' : '${calculateDaysLeft(todayActivity.finishDate)} days.') : 'No Activity') : '.'}');
-    details.writeln('- The overall progress of the project is ${controller.overAllPercent1.value}%');
-
-
+    if (isNoWorkDay) {
+    details.writeln(
+        '- ${capitalizeFirstLetter(todayActivity?.name ?? 'No')} activity was scheduled today.');
+    details.writeln(
+        '- The activity progress was ${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%.');
+    details.writeln(
+        '- No work was done today.');
+    details.writeln(
+        '- The activity is estimated to complete in ${activities.isNotEmpty ? (todayActivity != null ? (calculateDaysLeft(todayActivity.finishDate) == 1 ? '1 day.' : '${calculateDaysLeft(todayActivity.finishDate)} days.') : 'No Activity') : '.'}');
+    details.writeln(
+        '- The overall progress of the project is ${controller.overAllPercent1.value}%');
+    } else {
+      details.writeln(
+          '- ${capitalizeFirstLetter(todayActivity?.name ?? 'No')} activity was scheduled today.');
+      details.writeln(
+          '- The activity progress was ${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%.');
+      details.writeln(
+          '- After the execution of the work, the activity progress is ${calculatePercentComplete1(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%.');
+      details.writeln(
+          '- The activity is estimated to complete in ${activities.isNotEmpty ? (todayActivity != null ? (calculateDaysLeft(todayActivity.finishDate) == 1 ? '1 day.' : '${calculateDaysLeft(todayActivity.finishDate)} days.') : 'No Activity') : '.'}');
+      details.writeln(
+          '- The overall progress of the project is ${controller.overAllPercent1.value}%');
+    }
 
     // Draw project details on the page
     page.graphics.drawString(
       details.toString(),
       PdfStandardFont(PdfFontFamily.helvetica, 12),
-      bounds: Rect.fromLTWH(0, 40, page.getClientSize().width, page.getClientSize().height - 40),
+      bounds: Rect.fromLTWH(
+          0, 40, page.getClientSize().width, page.getClientSize().height - 40),
     );
 
     // Return the generated PDF document
     return document;
   }
-
-
 
 // Function to save PDF to downloads directory
   Future<String> savePDF(PdfDocument document) async {
@@ -463,9 +514,9 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
           (await getExternalStorageDirectory())?.path;
       if (downloadsDirectory != null) {
         // Define the file path with dynamic file name based on current date
-        final String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+        final String currentDate =
+            DateFormat('dd-MM-yyyy').format(DateTime.now());
         final String filePath = '$downloadsDirectory/$currentDate.pdf';
-
 
         // Save the PDF to the downloads directory
         final file = File(filePath);
@@ -485,7 +536,6 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
     }
   }
 
-
 // Function to open PDF
   Future<void> openPDF(String path) async {
     try {
@@ -499,7 +549,6 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       throw Exception('Failed to open PDF');
     }
   }
-
 
   Future<void> openPDFfile(BuildContext context) async {
     try {
@@ -599,8 +648,6 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
     }
   }
 
-
-
   Future<String> uploadPDFToFirebase(String filePath) async {
     try {
       String fileName = filePath.split('/').last;
@@ -620,14 +667,14 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       final String todayDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
       // Get the project ID
-      final projId = projectId; // Assuming you have a function to get the project ID
+      final projId =
+          projectId; // Assuming you have a function to get the project ID
 
       // Save download URL, project ID, and today's date inside a document in the summary collection
       await FirebaseFirestore.instance.collection(projId!).doc(todayDate).set({
         todayDate: downloadUrl,
         'today-date': todayDate,
       });
-
     } catch (e) {
       if (kDebugMode) {
         print('Error saving download URL to Firestore: $e');
@@ -635,11 +682,6 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
       throw Exception('Failed to save download URL to Firestore');
     }
   }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -698,6 +740,11 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
                 // Find today's and upcoming activities
                 Activity? todayActivity = findTodaysActivity(activities);
                 controller.calculateOverallPercent(activities);
+                // Check if today is a "No Work" day
+                bool isNoWorkDay = noWorkDates.any((noWorkDate) =>
+                    noWorkDate.year == currentDateTimeInPakistan.year &&
+                    noWorkDate.month == currentDateTimeInPakistan.month &&
+                    noWorkDate.day == currentDateTimeInPakistan.day);
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -705,12 +752,16 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
                       children: [
                         const Text(
                           'Project Details',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
                         ),
                         const Expanded(child: SizedBox()),
                         Text(
                           'Date: ${_getFormattedDate(DateTime.now())}',
-                          style: const TextStyle(fontSize: 16, color: Colors.black),
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black),
                         ),
                       ],
                     ),
@@ -727,20 +778,15 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
                     const SizedBox(height: 20),
                     const Text(
                       'TODAY\'S OVERALL PROGRESS',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                     _buildDynamicHeightTextField(
-                      '${capitalizeFirstLetter(todayActivity?.name ?? 'No')} activity was scheduled today. The activity progress was ${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%. After the execution of the work, the activity progress is ${calculatePercentComplete1(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%. The activity is estimated to complete in ${activities.isNotEmpty
-                          ? (todayActivity != null
-                          ? (calculateDaysLeft(
-                          todayActivity
-                              .finishDate) ==
-                          1
-                          ? '1 day.'
-                          : '${calculateDaysLeft(todayActivity.finishDate)} days.')
-                          : 'No Activity')
-                          : '.'}  The overall progress of the project is ${controller
-                          .overAllPercent1.value}%',
+                      isNoWorkDay
+                          ? '${capitalizeFirstLetter(todayActivity?.name ?? 'No')} activity was scheduled today. The activity progress was ${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%. No work was done today. Today\'s progress is 0%. The activity is estimated to complete in ${activities.isNotEmpty ? (todayActivity != null ? (calculateDaysLeft(todayActivity.finishDate) == 1 ? '1 day.' : '${calculateDaysLeft(todayActivity.finishDate)} days.') : 'No Activity') : '.'}  The overall progress of the project is ${controller.overAllPercent1.value}%.'
+                          : '${capitalizeFirstLetter(todayActivity?.name ?? 'No')} activity was scheduled today. The activity progress was ${calculatePercentComplete(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%. After the execution of the work, the activity progress is ${calculatePercentComplete1(todayActivity?.startDate ?? "", todayActivity?.finishDate ?? "")}%. The activity is estimated to complete in ${activities.isNotEmpty ? (todayActivity != null ? (calculateDaysLeft(todayActivity.finishDate) == 1 ? '1 day.' : '${calculateDaysLeft(todayActivity.finishDate)} days.') : 'No Activity') : '.'}  The overall progress of the project is ${controller.overAllPercent1.value}%',
                       overallProgressController,
                     ),
                   ],
@@ -767,13 +813,12 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
     );
   }
 
-
-
   String _getFormattedDate(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
 
-  Widget _buildDynamicHeightTextField(String labelText, TextEditingController controller) {
+  Widget _buildDynamicHeightTextField(
+      String labelText, TextEditingController controller) {
     controller.text = labelText; // Set initial text
 
     return TextField(
@@ -793,14 +838,16 @@ class DailyProgressReportScreenState extends State<DailyProgressReportScreen> {
     );
   }
 
-  Widget _buildTextField(String labelText, TextEditingController controller, {bool isLabel = true}) {
+  Widget _buildTextField(String labelText, TextEditingController controller,
+      {bool isLabel = true}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (isLabel)
           Text(
             labelText,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            style: const TextStyle(
+                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
           ),
         SizedBox(
           height: 30, // Reduced height

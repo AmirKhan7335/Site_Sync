@@ -81,7 +81,7 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
         MaterialPageRoute(builder: (context) => ConsultantSplash()),
       );
     } else {
-      Get.snackbar('Sorry', 'Please Fill All the Fields and Select Location');
+      Get.snackbar('Sorry', 'Please Fill All the Fields and Select Location', backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -94,7 +94,7 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
         'office': selectedLocation ?? officeController.text,
       });
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -163,7 +163,7 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
                       child: Padding(
                         padding: EdgeInsets.only(left: 6.0),
                         child: Text(
-                          'Chairman',
+                          'Project Director',
                           style:
                               TextStyle(fontSize: 18.0, color: Colors.blueGrey),
                           textAlign: TextAlign.left,
@@ -273,7 +273,7 @@ class _CompanyInfoState extends State<CnsltCompanyInfo> {
                               MaterialPageRoute(
                                   builder: (context) => ConsultantSplash()));
                         } else {
-                          Get.snackbar('Sorry', 'Please Fill All the Fields');
+                          Get.snackbar('Sorry', 'Please Fill All the Fields', backgroundColor: Colors.white, colorText: Colors.black);
                         }
                       },
                     ),

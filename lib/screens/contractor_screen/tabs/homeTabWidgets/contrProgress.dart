@@ -1,10 +1,5 @@
-import 'package:amir_khan1/controllers/progressTrackingController.dart';
-import 'package:amir_khan1/screens/consultant_screens/cnsltSchedule.dart';
-import 'package:amir_khan1/screens/consultant_screens/widgets/progressWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:excel/excel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,26 +12,31 @@ class ContrProgressPage extends StatefulWidget {
 
 class _ScheduleProjectsState extends State<ContrProgressPage> {
   final user = FirebaseAuth.instance.currentUser;
-  calculateProgress(DateTime startDate, DateTime endDate) {
+  Map<String, double> projectProgress = {};
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProgress(); // Call fetchProgress when the widget initializes
+  }
+
+  Future<void> fetchProgress() async {
     try {
-      if (endDate.isBefore(startDate)) {
-        throw ArgumentError('End date cannot be before start date.');
-      }
-      final now = DateTime.now();
-      final totalDuration = endDate.difference(startDate).inSeconds;
-      final elapsedDuration = now.difference(startDate).inSeconds;
+      final projectsSnapshot = await FirebaseFirestore.instance.collection('Projects').get();
 
-      if (elapsedDuration < 0) {
-        return 0.0;
-      } else if (elapsedDuration >= totalDuration) {
-        return 100.0;
+      for (var projectDoc in projectsSnapshot.docs) {
+        final projectId = projectDoc.id;
+        final projectData = projectDoc.data();
+        final overallPercent = projectData.containsKey('overallPercent')
+            ? (projectData['overallPercent'] as num).toDouble()
+            : 0.0;
+        projectProgress[projectId] = overallPercent;
+        print("Project ID: $projectId, Progress: $overallPercent");
       }
 
-      // Calculate progress as a percentage
-      final progress = elapsedDuration / totalDuration * 100.0;
-      return progress.roundToDouble();
+      setState(() {}); // Update the state after fetching progress values
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -57,14 +57,13 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
 
       final contrProj = await FirebaseFirestore.instance
           .collection('Projects')
-      // .where(FieldPath.documentId, whereIn: contrProjId)
-          .where('endDate',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          .where('overallPercent', isLessThan: 100)
           .get();
 
       final contrResult = await contrProj.docs
           .where((doc) => contrProjId.contains(doc.id))
           .map((doc) {
+        final overallPercentExists = doc.data().containsKey('overallPercent');
         return [
           doc['title'],
           doc['budget'],
@@ -74,7 +73,8 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
           doc['location'],
           doc['creationDate'],
           doc.id,
-          'enrolledByContr'
+          'enrolledByContr',
+          overallPercentExists ? doc['overallPercent'] : 0,
         ];
       }).toList();
 //===========================================================
@@ -82,11 +82,11 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
-          .where('endDate',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(currentDate))
+          .where('overallPercent', isLessThan: 100)
           .get();
       final userData = collectionData.docs.map(
             (doc) {
+              final overallPercentExists = doc.data().containsKey('overallPercent');
           return [
             doc['title'],
             doc['budget'],
@@ -96,7 +96,8 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
             doc['location'],
             doc['creationDate'],
             doc.id,
-            'createdByContr'
+            'createdByContr',
+            overallPercentExists ? doc['overallPercent'] : 0,
           ];
         },
       ).toList();
@@ -105,7 +106,73 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
       return userData;
 //..
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print("Error: $e");
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> fetchAllProjects() async {
+    try {
+      final contractorQuery = await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(user!.email)
+          .collection('projects')
+          .where('reqAccepted', isEqualTo: true)
+          .get();
+
+      final contrProjId = contractorQuery.docs.map((e) => e['projectId']);
+
+      final contrProj = await FirebaseFirestore.instance
+          .collection('Projects')
+          .get();
+
+      final contrResult = await contrProj.docs
+          .where((doc) => contrProjId.contains(doc.id))
+          .map((doc) {
+        final overallPercentExists = doc.data().containsKey('overallPercent');
+        return [
+          doc['title'],
+          doc['budget'],
+          doc['funding'],
+          doc['startDate'],
+          doc['endDate'],
+          doc['location'],
+          doc['creationDate'],
+          doc.id,
+          'enrolledByContr',
+          overallPercentExists ? doc['overallPercent'] : 0,
+        ];
+      }).toList();
+//===========================================================
+
+      final collectionData = await FirebaseFirestore.instance
+          .collection('Projects')
+          .where('email', isEqualTo: user!.email)
+          .get();
+      final userData = collectionData.docs.map(
+            (doc) {
+          final overallPercentExists = doc.data().containsKey('overallPercent');
+          return [
+            doc['title'],
+            doc['budget'],
+            doc['funding'],
+            doc['startDate'],
+            doc['endDate'],
+            doc['location'],
+            doc['creationDate'],
+            doc.id,
+            'createdByContr',
+            overallPercentExists ? doc['overallPercent'] : 0,
+          ];
+        },
+      ).toList();
+
+      userData.addAll(contrResult);
+      return userData;
+    } catch (e) {
+      print(e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
@@ -128,14 +195,13 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
 
       final contrProj = await FirebaseFirestore.instance
           .collection('Projects')
-      // .where(FieldPath.documentId, whereIn: contrProjId)
-
-          .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
+          .where('overallPercent', isEqualTo: 100)
           .get();
 
       final contrResult = await contrProj.docs
           .where((doc) => contrProjId.contains(doc.id))
           .map((doc) {
+        final overallPercentExists = doc.data().containsKey('overallPercent');
         return [
           doc['title'],
           doc['budget'],
@@ -143,17 +209,19 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
           doc['startDate'],
           doc['endDate'],
           doc['location'],
-          doc['creationDate']
+          doc['creationDate'],
+          overallPercentExists ? doc['overallPercent'] : 0,
         ];
       }).toList();
 //===========================================================
       final collectionData = await FirebaseFirestore.instance
           .collection('Projects')
           .where('email', isEqualTo: user!.email)
-          .where('endDate', isLessThan: Timestamp.fromDate(currentDate))
+          .where('overallPercent', isEqualTo: 100)
           .get();
       final userData = collectionData.docs.map(
             (doc) {
+              final overallPercentExists = doc.data().containsKey('overallPercent');
           return [
             doc['title'],
             doc['budget'],
@@ -162,6 +230,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
             doc['endDate'],
             doc['location'],
             doc['creationDate'],
+            overallPercentExists ? doc['overallPercent'] : 0,
             doc.id
           ];
         },
@@ -170,29 +239,28 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
       return userData;
 //..
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print("Error1: $e");
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       return [];
     }
   }
 
   Widget Ongoing() {
-    final controller = Get.put(ProjectProgressController());
+
     return FutureBuilder(
         future: fetchOngoingProjects(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));
           } else if (snapshot.hasData) {
             final data = snapshot.data;
-
             return ListView.builder(
                 itemCount: data!.length,
                 itemBuilder: (context, index) {
-                  controller.fetchActivities(data[index][7]);
                   return Card(
                     elevation: 5,
                     color: Colors.white,
@@ -203,8 +271,8 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                         radius: 30,
                         child: Text(
                           '${index + 1}',
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
                         ),
                       ),
                       title: Container(
@@ -213,34 +281,32 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.only(left:8.0, bottom: 8.0, top: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   '${data[index][0]}',
-                                  style: TextStyle(color: Colors.black),
+                                  style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(height: 10),
                                 Row(
                                   children: [
-                                    Container(
-                                      width: 160,
+                                    SizedBox(
+                                      width: 150,
                                       child: LinearProgressIndicator(
                                         minHeight: 7,
                                         borderRadius: BorderRadius.circular(5),
-                                        value:  controller.overAllPercent1
-                                            .toDouble()/100,
+                                        value:  data[index][9]/100,
                                         backgroundColor: Colors.grey,
                                         valueColor:
-                                        AlwaysStoppedAnimation<Color>(
+                                        const AlwaysStoppedAnimation<Color>(
                                             Colors.green),
                                       ),
                                     ),
-                                    SizedBox(width: 5),
+                                    const SizedBox(width: 5),
                                     Text(
-                                      '${controller.overAllPercent1}%',
-                                      style: TextStyle(color: Colors.black),
+                                      '${data[index][9]}%',
+                                      style: const TextStyle(color: Colors.black),
                                     ),
                                   ],
                                 )
@@ -251,7 +317,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                   );
                 });
           } else {
-            return Center(
+            return const Center(
               child: Text(
                 'No Ongoing Projects',
                 style: TextStyle(color: Colors.black),
@@ -266,7 +332,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
         future: fetchCompletedProjects(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
@@ -285,7 +351,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                     radius: 30,
                     child: Text(
                       '${index + 1}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -295,31 +361,30 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(left:8.0, bottom: 8.0, top: 8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '${data[index][0]}',
-                              style: TextStyle(color: Colors.black),
+                              style: const TextStyle(color: Colors.black),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
-                                Container(
-                                  width: 160,
+                                SizedBox(
+                                  width: 140,
                                   child: LinearProgressIndicator(
                                     minHeight: 7,
                                     borderRadius: BorderRadius.circular(5),
-                                    value: 1,
+                                    value:data[index][7]/100,
                                     backgroundColor: Colors.white,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                    valueColor: const AlwaysStoppedAnimation<Color>(
                                         Colors.green),
                                   ),
                                 ),
-                                SizedBox(width: 10),
-                                Text(
-                                  '100%',
+                                const SizedBox(width: 10),
+                                Text('${data[index][7]}%',
                                   style: TextStyle(color: Colors.black),
                                 ),
                               ],
@@ -331,7 +396,7 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
               ),
             );
           } else {
-            return Center(
+            return const Center(
               child: Text(
                 'No Completed Projects',
                 style: TextStyle(color: Colors.black),
@@ -345,79 +410,90 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Progress',
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back, // Use the back icon here
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop(); // Navigate back to previous screen
+          },
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Schedule',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                ),
-              ],
-            ),
             Padding(
               padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 150,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: isOngoing ? Colors.green : Colors.grey,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        if (isOngoing == false) {
-                          setState(() {
-                            isOngoing = true;
-                          });
-                        }
-                      },
-                      child: Center(
-                        child: Text(
-                          'Ongoing',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: isOngoing ? Colors.black : Colors.white,
-                            fontWeight: FontWeight.bold,
+                  Card(
+                    elevation: 10,
+                    child: Container(
+                      width: 150,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: isOngoing ? const Color(0xff3EED88) : Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          if (isOngoing == false) {
+                            setState(() {
+                              isOngoing = true;
+                            });
+                          }
+                        },
+                        child: const Center(
+                          child: Text(
+                            'Ongoing',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Container(
-                    width: 150,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: !isOngoing ? Colors.green : Colors.grey,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        if (isOngoing == true) {
-                          setState(() {
-                            isOngoing = false;
-                          });
-                        }
-                      },
-                      child: Center(
-                        child: Text(
-                          'Completed',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: !isOngoing ? Colors.black : Colors.white,
-                            fontWeight: FontWeight.bold,
+                  const SizedBox(width: 10),
+                  Card(
+                    elevation: 10,
+                    child: Container(
+                      width: 150,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: !isOngoing ? const Color(0xff3EED88) : Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          if (isOngoing == true) {
+                            setState(() {
+                              isOngoing = false;
+                            });
+                          }
+                        },
+                        child: const Center(
+                          child: Text(
+                            'Completed',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -426,13 +502,13 @@ class _ScheduleProjectsState extends State<ContrProgressPage> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Padding(
-              padding: EdgeInsets.only(right: 8, left: 8, bottom: 0),
+              padding: const EdgeInsets.only(right: 16, left: 16, bottom: 0),
               child: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.68,
                   child: isOngoing ? Ongoing() : Completed(),

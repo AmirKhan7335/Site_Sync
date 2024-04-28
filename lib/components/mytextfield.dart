@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 
 class MyTextField extends StatefulWidget {
   final String hintText;
@@ -9,13 +7,13 @@ class MyTextField extends StatefulWidget {
   final IconData icon; // Add icon property
   final TextInputType keyboardType;
   MyTextField({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.obscureText,
     required this.controller,
     required this.icon,
     required this.keyboardType, // Required icon parameter in constructor
-  }) : super(key: key);
+  });
 
   @override
   MyTextFieldState createState() => MyTextFieldState();
@@ -36,7 +34,7 @@ class MyTextFieldState extends State<MyTextField> {
         height: 50,
         width: 376,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+          borderRadius: const BorderRadius.all(Radius.circular(15)),
           border: Border.all(
             color: isFocused ? Colors.green : Colors.transparent,
           ),
@@ -107,11 +105,11 @@ class MyDateField extends StatefulWidget {
   // Add icon property
 
   MyDateField({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.callback,
     // Required icon parameter in constructor
-  }) : super(key: key);
+  });
 
   @override
   MyDateFieldState createState() => MyDateFieldState();
@@ -160,9 +158,83 @@ class MyDateFieldState extends State<MyDateField> {
             filled: false, // Ensure that the fillColor is applied
             fillColor: const Color(
                 0xFFF3F3F3), // Set the fillColor to the same background color
-            prefixIcon: Icon(
+            prefixIcon: const Icon(
               Icons.calendar_month,
               color: Colors.grey, // Set icon color to white
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MySimpleTextField extends StatefulWidget {
+  final String hintText;
+  bool obscureText;
+  final TextEditingController controller;
+// Add icon property
+  final TextInputType keyboardType;
+  final bool readOnly;
+  MySimpleTextField({
+    super.key,
+    required this.hintText,
+    required this.obscureText,
+    required this.controller,
+    required this.keyboardType,
+    required this.readOnly, // Required icon parameter in constructor
+  });
+
+  @override
+  MySimpleTextFieldState createState() => MySimpleTextFieldState();
+}
+
+class MySimpleTextFieldState extends State<MySimpleTextField> {
+  bool isFocused = false;
+  bool obscure = true;
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      onFocusChange: (hasFocus) {
+        setState(() {
+          isFocused = hasFocus;
+        });
+      },
+      child: Container(
+        height: 50,
+        //width: 376,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(15)),
+          border: Border.all(
+            color:  Colors.transparent,
+          ),
+          color: const Color(0xFFF3F3F3), // Set the background color
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 6.0),
+          child: TextFormField(
+            readOnly: widget.readOnly,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+            ),
+            controller: widget.controller,
+            obscureText: widget.hintText == 'Enter your password' ||
+                widget.hintText == 'Confirm your password'
+                ? obscure
+                : false,
+            keyboardType: widget.keyboardType,
+            // inputFormatters: [ThousandsSeparatorInputFormatter()],
+            decoration: InputDecoration(
+
+              border: InputBorder.none,
+              hintText: widget.hintText,
+              hintStyle: const TextStyle(
+                color: Colors.black,
+              ),
+              filled: false, // Ensure that the fillColor is applied
+              fillColor: const Color(
+                  0xFFF3F3F3), // Set the fillColor to the same background color
             ),
           ),
         ),

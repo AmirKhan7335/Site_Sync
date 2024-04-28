@@ -41,9 +41,9 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
         await uploadFileToFirebase(file);
 
         controller.isDocumentLoading.value = false;
-        Get.snackbar('Success', 'File Uploaded');
+        Get.snackbar('Success', 'File Uploaded', backgroundColor: Colors.white, colorText: Colors.black);
       } catch (e) {
-        Get.snackbar('Error', e.toString());
+        Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
       }
     }
   }
@@ -73,7 +73,7 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
         ]),
       });
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
     // Use downloadUrl as needed, e.g., save to Firestore database
     // print('File uploaded to: $downloadUrl');
@@ -115,7 +115,7 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
         OpenFile.open(filePath);
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -188,7 +188,7 @@ class _FoundationDocumentScreenState extends State<FoundationDocumentScreen> {
                               _checkFileAndOpen(getlist[1], getlist[0]);
                               controller.isDocumentLoading.value = false;
                             } catch (e) {
-                              Get.snackbar('Error', e.toString());
+                              Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
                             }
                           },
                           leading: ClipOval(

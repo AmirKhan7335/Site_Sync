@@ -104,6 +104,7 @@ class MyDrawerState extends State<MyDrawer> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 25,),
                         // Profile tile
                         Padding(
                           padding: const EdgeInsets.only(left: 25, right: 25),
@@ -123,23 +124,23 @@ class MyDrawerState extends State<MyDrawer> {
                           ),
                         ),
                         // Users tile
-                        Padding(
-                          padding: const EdgeInsets.only(left: 25, right: 25),
-                          child: Card(
-                            elevation: 10,
-                            color: Colors.white,
-                            child: ListTile(
-                              leading: const Icon(Icons.group,color:Colors.black),
-                              title: const Text('USERS',style: TextStyle(color: Colors.black)),
-                              onTap: () {
-                                // this is already the home screen so just pop drawer
-                                Navigator.pop(context);
-                                // navigate to users page
-                                Navigator.pushNamed(context, '/users_page');
-                              },
-                            ),
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.only(left: 25, right: 25),
+                        //   child: Card(
+                        //     elevation: 10,
+                        //     color: Colors.white,
+                        //     child: ListTile(
+                        //       leading: const Icon(Icons.group,color:Colors.black),
+                        //       title: const Text('USERS',style: TextStyle(color: Colors.black)),
+                        //       onTap: () {
+                        //         // this is already the home screen so just pop drawer
+                        //         Navigator.pop(context);
+                        //         // navigate to users page
+                        //         Navigator.pushNamed(context, '/users_page');
+                        //       },
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     // Logout tile

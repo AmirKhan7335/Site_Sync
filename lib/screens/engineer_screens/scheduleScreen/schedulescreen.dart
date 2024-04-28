@@ -4,7 +4,7 @@ import 'package:amir_khan1/models/activity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 import 'package:excel/excel.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,6 +29,7 @@ enum ExportFormat {
 
 class ScheduleScreen extends StatefulWidget {
   final bool isClient;
+
   const ScheduleScreen({super.key, required this.isClient});
 
   @override
@@ -40,6 +41,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   bool isLoading = false;
   static List<Activity> loadedActivities = [];
   int? newUserOrder;
+
   // Define TextEditingController variables
   final TextEditingController _newOrderController = TextEditingController();
   final TextEditingController _newActivityNameController =
@@ -88,13 +90,43 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           var sheet = excel.tables[table]!;
 
           // Check if the first row contains headers
-          bool hasHeaders = sheet.rows.isNotEmpty && sheet.rows.first.any((cell) => cell?.value != null && cell!.value.toString().isNotEmpty);
+          bool hasHeaders = sheet.rows.isNotEmpty &&
+              sheet.rows.first.any((cell) =>
+                  cell?.value != null && cell!.value.toString().isNotEmpty);
 
           // Define a mapping of expected column names to their variations
           Map<String, List<String>> columnHeaderVariations = {
-            'name': ['activity', 'activity name', 'activityname', 'activity_name', 'name', 'Activity', 'Activity Name', 'ActivityName', 'Activity_Name'],
-            'startDate': ['start date', 'startdate', 'start_date', 'start','Start', 'Start Date', 'StartDate', 'Start_Date'],
-            'finishDate': ['finish date', 'finishdate', 'finish_date', 'finish', 'Finish Date', 'FinishDate', 'Finish_Date','Finish']
+            'name': [
+              'activity',
+              'activity name',
+              'activityname',
+              'activity_name',
+              'name',
+              'Activity',
+              'Activity Name',
+              'ActivityName',
+              'Activity_Name'
+            ],
+            'startDate': [
+              'start date',
+              'startdate',
+              'start_date',
+              'start',
+              'Start',
+              'Start Date',
+              'StartDate',
+              'Start_Date'
+            ],
+            'finishDate': [
+              'finish date',
+              'finishdate',
+              'finish_date',
+              'finish',
+              'Finish Date',
+              'FinishDate',
+              'Finish_Date',
+              'Finish'
+            ]
           };
 
           // Find the column indices based on expected column names and variations
@@ -104,9 +136,12 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
           if (hasHeaders) {
             // If headers are provided, find the corresponding column indices
-            nameIndex = findColumnIndex(sheet.rows.first, columnHeaderVariations['name']!);
-            startDateIndex = findColumnIndex(sheet.rows.first, columnHeaderVariations['startDate']!);
-            finishDateIndex = findColumnIndex(sheet.rows.first, columnHeaderVariations['finishDate']!);
+            nameIndex = findColumnIndex(
+                sheet.rows.first, columnHeaderVariations['name']!);
+            startDateIndex = findColumnIndex(
+                sheet.rows.first, columnHeaderVariations['startDate']!);
+            finishDateIndex = findColumnIndex(
+                sheet.rows.first, columnHeaderVariations['finishDate']!);
           } else {
             // If headers are not provided, use default column indices
             nameIndex = 0;
@@ -120,9 +155,15 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             if (row.isEmpty) continue;
 
             // Extract data from the row
-            String name = row.length > nameIndex ? row[nameIndex]?.value?.toString() ?? '' : '';
-            String startDate = row.length > startDateIndex ? row[startDateIndex]?.value?.toString() ?? '' : '';
-            String finishDate = row.length > finishDateIndex ? row[finishDateIndex]?.value?.toString() ?? '' : '';
+            String name = row.length > nameIndex
+                ? row[nameIndex]?.value?.toString() ?? ''
+                : '';
+            String startDate = row.length > startDateIndex
+                ? row[startDateIndex]?.value?.toString() ?? ''
+                : '';
+            String finishDate = row.length > finishDateIndex
+                ? row[finishDateIndex]?.value?.toString() ?? ''
+                : '';
 
             // If any of the required fields are empty, skip the row
             if (name.isEmpty || startDate.isEmpty || finishDate.isEmpty) {
@@ -141,11 +182,14 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             }
 
             // Convert to 'dd/MM/yy' format for displaying
-            String formattedStartDate = DateFormat('dd/MM/yyyy').format(startDateParsed);
-            String formattedFinishDate = DateFormat('dd/MM/yyyy').format(finishDateParsed);
+            String formattedStartDate =
+                DateFormat('dd/MM/yyyy').format(startDateParsed);
+            String formattedFinishDate =
+                DateFormat('dd/MM/yyyy').format(finishDateParsed);
 
             var activity = Activity(
-              id: 'your_unique_identifier', // Update this accordingly
+              id: 'your_unique_identifier',
+              // Update this accordingly
               name: name,
               startDate: formattedStartDate,
               finishDate: formattedFinishDate,
@@ -185,7 +229,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 // Function to find the index of a column with variations of the expected name
   int findColumnIndex(List<dynamic> row, List<String> expectedVariations) {
     for (var variation in expectedVariations) {
-      var index = row.indexWhere((cell) => cell?.value?.toString().toLowerCase().contains(variation) ?? false);
+      var index = row.indexWhere((cell) =>
+          cell?.value?.toString().toLowerCase().contains(variation) ?? false);
       if (index != -1) {
         return index;
       }
@@ -194,16 +239,35 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     return 0;
   }
 
-
-
   DateTime parseDate(String dateString) {
     try {
       List<String> formats = [
-        'dd/MM/yyyy', // Common date format
-        'dd-MM-yyyy', 'dd-MM-yy', 'dd/MM/yy', 'MM/dd/yyyy', 'MM-dd-yyyy', 'MM-dd-yy',
-        'MM/dd/yy', 'yyyy-MM-dd', // ISO 8601 format
-        'M/d/yyyy', 'M-d-yyyy', 'M-d-yy', 'M/d/yy', 'yyyy/MM/dd', 'MM/d/yyyy', 'MM-d-yyyy', 'MM-d-yy',
-        'MM/d/yy', 'd/M/yyyy', 'd-M-yyyy', 'd-M-yy', 'M/dd/yyyy', 'M-dd-yyyy', '44945'
+        'dd/MM/yyyy',
+        // Common date format
+        'dd-MM-yyyy',
+        'dd-MM-yy',
+        'dd/MM/yy',
+        'MM/dd/yyyy',
+        'MM-dd-yyyy',
+        'MM-dd-yy',
+        'MM/dd/yy',
+        'yyyy-MM-dd',
+        // ISO 8601 format
+        'M/d/yyyy',
+        'M-d-yyyy',
+        'M-d-yy',
+        'M/d/yy',
+        'yyyy/MM/dd',
+        'MM/d/yyyy',
+        'MM-d-yyyy',
+        'MM-d-yy',
+        'MM/d/yy',
+        'd/M/yyyy',
+        'd-M-yyyy',
+        'd-M-yy',
+        'M/dd/yyyy',
+        'M-dd-yyyy',
+        '44945'
         // Add more formats as needed
       ];
       for (String format in formats) {
@@ -240,25 +304,22 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     // Replace "-" with "/" in start and finish dates
     String formattedStartDate = activity.startDate.replaceAll('-', '/');
     String formattedFinishDate = activity.finishDate.replaceAll('-', '/');
+    final today = DateTime.now().subtract(Duration(days: 1));
+
+    // Parse the finish date
+    final finishDate = DateFormat('dd/MM/yyyy').parse(activity.finishDate);
+    var email = FirebaseAuth.instance.currentUser!.email;
 
     return InkWell(
       onTap: () {
-        if (mainHeading == 'Foundation') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const FoundationScheduleScreen(),
-            ),
-          );
-        } else {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => DetailsScreen(
-                  mainHeading: mainHeading,
-                  subHeading: subHeading,
-                  image: activity.image),
-            ),
-          );
-        }
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => DetailsScreen(
+                mainHeading: mainHeading,
+                subHeading: subHeading,
+                image: activity.image, activityId: activity.id,engineerEmail: email ),
+          ),
+        );
       },
       child: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16.0),
@@ -266,10 +327,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           elevation: 5,
           color: Colors.white,
           child: Container(
-            height: 71,
             width: double.infinity,
             margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8.0),
@@ -278,7 +339,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               children: [
                 Container(
                   width: 7.0,
-                  height: 45,
+                  height: 50,
                   color: Colors.green,
                 ),
                 const SizedBox(width: 12.0),
@@ -286,13 +347,21 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        displayText, // Use the modified display text
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 19.0,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              displayText, // Use the modified display text
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 19.0,
+                              ),
+                            ),
+                          ),
+                          if (finishDate.isBefore(today)) // Check finish date
+                            Icon(Icons.check_circle, color: Colors.green),
+                        ],
                       ),
                       const SizedBox(height: 4.0),
                       Text(
@@ -325,15 +394,17 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            backgroundColor: const Color(0xFF6B8D9F),
-            title: const Text('Select an Activity to Edit'),
+            backgroundColor: Colors.white,
+            title: const Text('Select an Activity to Edit',
+                style: TextStyle(color: Colors.black)),
             children: loadedActivities.asMap().entries.map((entry) {
               return SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context);
                   _navigateToEditScreen(entry.value, entry.key);
                 },
-                child: Text(entry.value.name),
+                child: Text(entry.value.name,
+                    style: TextStyle(color: Colors.black)),
               );
             }).toList(),
           );
@@ -458,15 +529,18 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   final controller = Get.put(AddActivityController());
+
   void _addActivity() async {
     setState(() => isLoading = true);
     // Show a dialog to get activity details (name, start date, finish date, and order)
     final result = await showDialog(
-
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        backgroundColor:  const Color(0xFFF3F3F3),
-        title: const Text('Add New Activity',style: TextStyle(color: Colors.black),),
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Add New Activity',
+          style: TextStyle(color: Colors.black),
+        ),
         content: Obx(
           () => Column(
             mainAxisSize: MainAxisSize.min,
@@ -482,13 +556,12 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               MyDateField(
                   hintText: controller.selectedDate == null
                       ? 'Start Date'
-                      : '${controller.selectedDate!.value.toLocal()}'
-                          .split(' ')[0],
+                      : '${DateFormat('dd-MM-yyyy').format(controller.selectedDate!.value)}',
                   callback: controller.SelectDate),
               MyDateField(
                   hintText: controller.endDate == null
                       ? 'End Date'
-                      : '${controller.endDate!.value.toLocal()}'.split(' ')[0],
+                      : '${DateFormat('dd-MM-yyyy').format(controller.endDate!.value)}',
                   callback: controller.EndDate),
               MyTextField(
                 hintText: 'Order (e.g., 1)',
@@ -505,7 +578,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             onPressed: () {
               Navigator.of(context).pop(null); // Cancel
             },
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () {
@@ -519,7 +592,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   newUserOrder != null) {
                 // Create the new activity with the specified order
                 final newActivity = Activity(
-                  id: 'activity_${DateTime.now().millisecondsSinceEpoch}', // Unique ID
+                  id: 'activity_${DateTime.now().millisecondsSinceEpoch}',
+                  // Unique ID
                   name: newName,
                   startDate: DateFormat('dd/MM/yyyy')
                       .format(controller.selectedDate!.value),
@@ -538,7 +612,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 );
               }
             },
-            child: const Text('Add'),
+            child: const Text('Add', style: TextStyle(color: Colors.blue)),
           ),
         ],
       ),
@@ -589,14 +663,62 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
+  void _noWork() async {
+    Activity? todayActivity = findTodaysActivity(loadedActivities);
+    if (todayActivity != null) {
+      // Get necessary information
+      var email = FirebaseAuth.instance.currentUser!.email;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var projId = (await firestore.collection('engineers').doc(email).get()).data()!['projectId'];
+      String todaysDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+
+      // Create or update document in "No Work" collection
+      await firestore.collection('No_Work').doc(todayActivity.id).set({
+        'activityName': todayActivity.name,
+        'date': todaysDate,
+        'projectId': projId,
+        'activityId': todayActivity.id,
+        'startDate': todayActivity.startDate,
+        'finishDate': todayActivity.finishDate,
+      });
+
+      // Send notification (optional)
+      NotificationCases().scheduleNotification(email!, 'No Work');
+    } else {
+      print('No activity found for today');
+    }
+  }
+  Activity? findTodaysActivity(List<Activity> activities) {
+    DateTime today = DateTime.now();
+    String formattedToday =
+    DateFormat('dd/MM/yyyy').format(today); // Format current date
+
+    try {
+      DateTime todayDate = DateFormat('dd/MM/yyyy')
+          .parse(formattedToday); // Convert formattedToday to DateTime
+      return activities.firstWhere((activity) {
+        // Parse activity dates
+        DateTime startDate = parseDate(activity.startDate);
+        DateTime finishDate = parseDate(activity.finishDate);
+
+        // Compare todayDate with activity dates
+        return startDate.isBefore(todayDate) && finishDate.isAfter(todayDate) ||
+            startDate.isAtSameMomentAs(todayDate) ||
+            finishDate.isAtSameMomentAs(todayDate);
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
   void _deleteActivity() async {
     final Activity? activityToDelete = await showDialog<Activity?>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF6B8D9F),
+          backgroundColor: Colors.white,
           title: const Text('Confirm Delete',
-              style: TextStyle(color: Colors.white)),
+              style: TextStyle(color: Colors.black)),
           content: SingleChildScrollView(
             child: ListBody(
               children: loadedActivities
@@ -605,9 +727,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                         child: TextButton(
                           onPressed: () => Navigator.of(context).pop(activity),
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.white,
+                            foregroundColor: Colors.black,
                           ),
-                          child: Text(activity.name),
+                          child: Text(activity.name,
+                              style: TextStyle(color: Colors.black)),
                         ),
                       ))
                   .toList(),
@@ -617,9 +740,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(null),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
+                foregroundColor: Colors.black,
               ),
-              child: const Text('Cancel'),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.black)),
             ),
           ],
         );
@@ -682,29 +806,30 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       var engEmails = sameEngineer.docs.map((e) => e.id).toList();
       var activitiesSnapshot = widget.isClient
           ? await FirebaseFirestore.instance
-          .collection('engineers')
-          .doc(engEmails[0])
-          .collection('activities')
-          .orderBy('order')
-          .get()
-      //----------------------------------------------------------------------
+              .collection('engineers')
+              .doc(engEmails[0])
+              .collection('activities')
+              .orderBy('order')
+              .get()
+          //----------------------------------------------------------------------
           : await FirebaseFirestore.instance
-          .collection('engineers')
-          .doc(email)
-          .collection('activities')
-          .orderBy('order') // Sort by order
-          .get();
+              .collection('engineers')
+              .doc(email)
+              .collection('activities')
+              .orderBy('order') // Sort by order
+              .get();
 
       List<Activity> tempActivities = [];
       for (var doc in activitiesSnapshot.docs) {
         var data = doc.data();
         tempActivities.add(Activity(
-            id: data['id'], // Use the Firestore document ID as the activity ID
+            id: data['id'],
+            // Use the Firestore document ID as the activity ID
             name: data['name'],
             startDate:
-            DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
+                DateFormat('dd/MM/yyyy').format(doc['startDate'].toDate()),
             finishDate:
-            DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
+                DateFormat('dd/MM/yyyy').format(doc['finishDate'].toDate()),
             order: data['order'],
             image: data['image']));
       }
@@ -713,7 +838,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         loadedActivities = tempActivities;
       });
     } catch (e) {
-      Get.snackbar('11Error', '$e');
+      Get.snackbar('Error', '$e', backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -766,12 +891,11 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       });
       //------------------------------------------------Sending Notification-------
       NotificationCases().scheduleNotification(email!, 'Updated');
-
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
@@ -780,8 +904,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       // Check and request storage permission
       var status = await Permission.storage.request();
       if (status.isGranted) {
-        // File URL
-        String url = 'https://firebasestorage.googleapis.com/v0/b/amir-e8895.appspot.com/o/sample.xlsx?alt=media&token=068351f0-2bc9-4cfd-b46a-ea609d3e69a0';
+        // Load the asset
+        ByteData data =
+            await rootBundle.load('assets/excel/Sample Excel Sheet.xlsx');
+        List<int> bytes = data.buffer.asUint8List();
 
         // Get the Downloads directory
         Directory? downloadsDirectory = await getExternalStorageDirectory();
@@ -789,82 +915,153 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         // Create a File instance pointing to the file to be downloaded
         File file = File('${downloadsDirectory?.path}/sample.xlsx');
 
-        // Download the file and write it to the file system
-        http.Response response = await http.get(Uri.parse(url));
-        await file.writeAsBytes(response.bodyBytes);
-        Get.snackbar('Sample File Downloaded', '');
+        // Write the asset data to the file system
+        await file.writeAsBytes(bytes);
+
+        Get.snackbar('Sample File Downloaded', '', backgroundColor: Colors.white, colorText: Colors.black);
       } else {
-        Get.snackbar('Permission Denied', 'Storage permission is required');
+        Get.snackbar('Permission Denied', 'Storage permission is required', backgroundColor: Colors.white, colorText: Colors.black);
       }
     } catch (e) {
       if (kDebugMode) {
         print("An error occurred: $e");
       }
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
 
   Future<int> calculateDayNo() async {
     int totalDayCount = 0;
+    var email = FirebaseAuth.instance.currentUser!.email;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    var role = (await firestore.collection('users').doc(email).get()).data()!['role'];
     try {
-      var email = FirebaseAuth.instance.currentUser!.email;
-      var activitiesSnapshot = await FirebaseFirestore.instance
-          .collection('engineers')
-          .doc(email)
-          .collection('activities')
-          .orderBy('order') // Sort by order
-          .get();
-
-      DateTime currentDate = DateTime.now();
-
-      for (var doc in activitiesSnapshot.docs) {
-        DateTime startDate = doc['startDate'].toDate();
-        DateTime finishDate = doc['finishDate'].toDate();
-
-        // Ensure that the activity's finish date is on or before today's date
-        if (finishDate.isBefore(currentDate)) {
-          // Calculate the total days from start date till finish date excluding Sundays
-          int totalDays = finishDate.difference(startDate).inDays + 1;
-          // int sundays = 0;
-          for (int i = 0; i < totalDays; i++) {
-            DateTime date = startDate.add(Duration(days: i));
-            // if (date.weekday == DateTime.sunday) {
-            //   sundays++;
-            // }
-          }
-          // int dayCount = totalDays - sundays;
-          int dayCount = totalDays;
-          // Add the calculated day count to the total
-          totalDayCount += dayCount;
-        }
-      }
-      totalDayCount += 1;
+      role == 'Engineer'
+          ? totalDayCount = await _calculateForNonClient()
+          : totalDayCount = await _calculateForClient();
     } catch (e) {
-      Get.snackbar('Error', '$e');
+      Get.snackbar('Error', '$e', backgroundColor: Colors.white, colorText: Colors.black);
     }
-
-    // Return the total day count
     return totalDayCount;
   }
 
+  Future<int> _calculateForClient() async {
+    var email = FirebaseAuth.instance.currentUser!.email;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    var projId = (await firestore.collection('clients').doc(email).get()).data()!['projectId'];
+    final engineerQuerySnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .where('projectId',isEqualTo: projId)// Sort by order
+        .get();
+    final engineerDoc = engineerQuerySnapshot.docs.first;
+    var engEmail = engineerDoc.id;
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc(engEmail)
+        .collection('activities')
+        .orderBy('order') // Sort by order
+        .get();
+
+    // Get yesterday's date
+    DateTime currentDate = DateTime.now();
+    int totalDaysCount = 0;
+
+    for (var doc in activitiesSnapshot.docs) {
+      DateTime startDate = doc['startDate'].toDate();
+      DateTime finishDate = doc['finishDate'].toDate();
+
+      // Ensure that the activity's finish date is on or before today's date
+      if (finishDate.isBefore(currentDate) ||
+          finishDate.isAtSameMomentAs(currentDate)) {
+        // Calculate the total days from start date till finish date excluding Sundays
+        int totalDays = finishDate.difference(startDate).inDays + 1;
+        print(
+            "start date = $startDate, finish date = $finishDate, total days = $totalDays, current date = $currentDate");
+        int dayCount = totalDays;
+
+        // Add the calculated day count to the total
+        totalDaysCount += dayCount;
+      }
+
+      // Ensure that the activity's start date is the same as today's date
+      if (startDate.year == currentDate.year &&
+          startDate.month == currentDate.month &&
+          startDate.day == currentDate.day) {
+        totalDaysCount += 1; // Increment by 1 if start date is today
+      }
+    }
+
+    return totalDaysCount;
+  }
+
+  Future<int> _calculateForNonClient() async {
+    var email = FirebaseAuth.instance.currentUser!.email;
+    var activitiesSnapshot = await FirebaseFirestore.instance
+        .collection('engineers')
+        .doc(email)
+        .collection('activities')
+        .orderBy('order') // Sort by order
+        .get();
+
+    // Get yesterday's date
+    DateTime currentDate = DateTime.now();
+    int totalDaysCount = 0;
+
+    for (var doc in activitiesSnapshot.docs) {
+      DateTime startDate = doc['startDate'].toDate();
+      DateTime finishDate = doc['finishDate'].toDate();
+
+      // Ensure that the activity's finish date is on or before today's date
+      if (finishDate.isBefore(currentDate) ||
+          finishDate.isAtSameMomentAs(currentDate)) {
+        // Calculate the total days from start date till finish date excluding Sundays
+        int totalDays = finishDate.difference(startDate).inDays + 1;
+        print(
+            "start date = $startDate, finish date = $finishDate, total days = $totalDays, current date = $currentDate");
+        int dayCount = totalDays;
+
+        // Add the calculated day count to the total
+        totalDaysCount += dayCount;
+      }
+
+      // Ensure that the activity's start date is the same as today's date
+      if (startDate.year == currentDate.year &&
+          startDate.month == currentDate.month &&
+          startDate.day == currentDate.day) {
+        totalDaysCount += 1; // Increment by 1 if start date is today
+      }
+    }
+
+    return totalDaysCount;
+  }
 
   Future<void> _showExportOptions(BuildContext context) async {
     final ExportFormat? selectedFormat = await showDialog<ExportFormat>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select Export Format'),
+          title: const Text(
+            'Select Export Format',
+            style: TextStyle(color: Colors.black),
+          ),
+          backgroundColor: Colors.white,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: const Text('Excel'),
+                title: const Text(
+                  'Excel',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onTap: () {
                   Navigator.of(context).pop(ExportFormat.excel);
                 },
               ),
               ListTile(
-                title: const Text('PDF'),
+                title: const Text(
+                  'PDF',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onTap: () {
                   Navigator.of(context).pop(ExportFormat.pdf);
                 },
@@ -879,7 +1076,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       await _exportActivities(selectedFormat);
     }
   }
-
 
   Future<void> _exportActivities(ExportFormat format) async {
     try {
@@ -903,7 +1099,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       if (kDebugMode) {
         print('File saved at: $filePath');
       }
-      Get.snackbar('Export Successful', 'File downloaded as $fileName');
+      Get.snackbar('Export Successful', 'File downloaded as $fileName', backgroundColor: Colors.white, colorText: Colors.black);
     } catch (e, stackTrace) {
       if (kDebugMode) {
         print('Export Error: $e');
@@ -911,11 +1107,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       if (kDebugMode) {
         print('Stack Trace: $stackTrace');
       }
-      Get.snackbar('Export Error', 'An error occurred during export: $e');
+      Get.snackbar('Export Error', 'An error occurred during export: $e', backgroundColor: Colors.white, colorText: Colors.black);
     }
   }
-
-
 
   Future<String> _generateExcelExportData(List<Activity> activities) async {
     try {
@@ -931,14 +1125,17 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       for (int i = 0; i < activities.length; i++) {
         final activity = activities[i];
         sheet.getRangeByIndex(i + 2, 1).setText(activity.name);
-        DateTime startDate = DateTime.tryParse(activity.startDate) ?? DateTime.now();
-        DateTime finishDate = DateTime.tryParse(activity.finishDate) ?? DateTime.now();
+        DateTime startDate =
+            DateTime.tryParse(activity.startDate) ?? DateTime.now();
+        DateTime finishDate =
+            DateTime.tryParse(activity.finishDate) ?? DateTime.now();
         sheet.getRangeByIndex(i + 2, 2).setDateTime(startDate);
         sheet.getRangeByIndex(i + 2, 3).setDateTime(finishDate);
       }
 
       // Construct the file path
-      final String? downloadsDirectory = (await getExternalStorageDirectory())?.path;
+      final String? downloadsDirectory =
+          (await getExternalStorageDirectory())?.path;
       if (downloadsDirectory != null) {
         final String filePath = '$downloadsDirectory/activities_export.xlsx';
 
@@ -981,8 +1178,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       headerRow.cells[2].value = 'Finish Date';
 
       // Set header font.
-      headerRow.style.font =
-          PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
+      headerRow.style.font = PdfStandardFont(PdfFontFamily.helvetica, 10,
+          style: PdfFontStyle.bold);
 
       // Add rows to the grid.
       for (int i = 0; i < activities.length; i++) {
@@ -1008,7 +1205,8 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       );
 
       // Get the downloads directory path
-      final String? downloadsDirectory = (await getExternalStorageDirectory())?.path;
+      final String? downloadsDirectory =
+          (await getExternalStorageDirectory())?.path;
       if (downloadsDirectory != null) {
         final String filePath = '$downloadsDirectory/activities_export.pdf';
 
@@ -1034,10 +1232,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     tz.initializeTimeZones(); // Load time zone database
   }
 
-
-
-
-
   bool isdownloading = false;
 
   @override
@@ -1060,137 +1254,141 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     final currentDayOfWeek = currentDateTimeInPakistan.weekday;
     print("current day of week =$currentDayOfWeek");
     // Convert the day of the week to a string representation
-    final List<String> dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final List<String> dayNames = [
+      'Mon',
+      'Tue',
+      'Wed',
+      'Thu',
+      'Fri',
+      'Sat',
+      'Sun'
+    ];
     // Format the date in 'Month Year' format
-    final String monthYear = DateFormat('MMMM yyyy').format(currentDateTimeInPakistan);
+    final String monthYear =
+        DateFormat('MMMM yyyy').format(currentDateTimeInPakistan);
     // Determine if it's a working day (Monday to Thursday)
-    final bool isWorkingDay = currentDateTimeInPakistan.weekday != 0; // Sunday = 0, Saturday = 6
+    final bool isWorkingDay =
+        currentDateTimeInPakistan.weekday != 0; // Sunday = 0, Saturday = 6
 
     return SingleChildScrollView(
       child: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20,
-                ),
-                child: Container(
-                  color: const Color(0xFF42F98F),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 30),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                          child: Row(
-                            children: [
-                              Text(
-                                monthYear,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30.0,
-                                ),
+              Container(
+                color: const Color(0xFF42F98F),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 40),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              monthYear,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30.0,
                               ),
-                              const Expanded(child: SizedBox()),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                child: Text(
-                                  isWorkingDay ? 'Working Day' : 'Off Day',
-                                  style: const TextStyle(
-                                    color: Color(0xFFFFFFFF),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                            const Expanded(child: SizedBox()),
+                            Image.asset(
+                              'assets/images/icons8-schedule-100 1.png',
+                              // Replace with the path to your image asset
+                              width: 75, // Set the width of the image
+                              height: 75, // Set the height of the image
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                          child: Row(
-                            children: [
-                              FutureBuilder<int>(
-                                future: calculateDayNo(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return const CircularProgressIndicator(); // Show loading indicator while calculating
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  } else {
-                                    return Text(
-                                      'Day ${snapshot.data}',
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18.0,
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                              const Expanded(child: SizedBox()),
-                              Image.asset(
-                                'assets/images/schedule.png', // Replace with the path to your image asset
-                                width: 75, // Set the width of the image
-                                height: 75, // Set the height of the image
-                              ),
-                              const Expanded(child: SizedBox()),
-                            ],
-                          ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                        child: Row(
+                          children: [
+                            FutureBuilder<int>(
+                              future: calculateDayNo(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator(
+                                      color: Colors
+                                          .blue); // Show loading indicator while calculating
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  return Text(
+                                    'Day ${snapshot.data}',
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18.0,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List.generate(7, (index) {
-                              // Calculate the date for each day of the week relative to the current day
-                              final int dayIndex = index - 3;
-                              print("day index = $dayIndex");
-                              final day = currentDateTimeInPakistan.subtract(Duration(days: currentDayOfWeek - dayIndex -2));
-                              print("day = $day");
-                              // Format the date to 'd' (day of the month)
-                              final formattedDate = DateFormat('d').format(day);
-                              print("formatted date = $formattedDate");
-                              // Get the abbreviated day name
-                              final dayOfWeek = dayNames[(currentDayOfWeek + dayIndex-1) % 7];
-                              // Check if the current day matches today's date
-                              final bool isToday = dayIndex == 0;
-                              print("is today = $isToday");
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(7, (index) {
+                            // Calculate the date for each day of the week relative to the current day
+                            final int dayIndex = index - 3;
+                            print("day index = $dayIndex");
+                            final day = currentDateTimeInPakistan.subtract(
+                                Duration(
+                                    days: currentDayOfWeek - dayIndex - currentDayOfWeek));
+                            print("day = $day");
+                            // Format the date to 'd' (day of the month)
+                            final formattedDate = DateFormat('d').format(day);
+                            print("formatted date = $formattedDate");
+                            // Get the abbreviated day name
+                            final dayOfWeek =
+                                dayNames[(currentDayOfWeek + dayIndex - 1) % 7];
+                            // Check if the current day matches today's date
+                            final bool isToday = dayIndex == 0;
+                            print("is today = $isToday");
 
-                              return Container(
-                                padding: const EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  color: isToday ? Colors.black : Colors.white, // Set background color
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      formattedDate,
-                                      style: TextStyle(
-                                        color: isToday ? Colors.white : Colors.black, // Set text color
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
-                                      ),
+                            return Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: isToday ? Colors.black : Colors.white,
+                                // Set background color
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    formattedDate,
+                                    style: TextStyle(
+                                      color: isToday
+                                          ? Colors.white
+                                          : Colors.black, // Set text color
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
                                     ),
-                                    Text(
-                                      dayOfWeek,
-                                      style: TextStyle(
-                                        color: isToday ? Colors.white : Colors.black,
-                                        fontSize: 14.0,
-                                      ),
+                                  ),
+                                  Text(
+                                    dayOfWeek,
+                                    style: TextStyle(
+                                      color:
+                                          isToday ? Colors.white : Colors.black,
+                                      fontSize: 14.0,
                                     ),
-                                  ],
-                                ),
-                              );
-                            }),
-                          ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -1204,7 +1402,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Expanded(
-                      child:  Center(
+                      child: Center(
                         child: Text(
                           'Activities',
                           style: TextStyle(
@@ -1215,20 +1413,148 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                         ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.file_upload),
-                          onPressed: isLoading ? null : pickFile,
-                          color: const Color(0xFF2CF07F),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.file_download), // Add export icon
-                          onPressed: isLoading ? null : () => _showExportOptions(context),
-                          color: Colors.green,
-                        ),
-                      ],
-                    ),
+                    widget.isClient
+                        ? Row(
+                            children: [
+                              PopupMenuButton<String>(
+                                color: Colors.white,
+                                icon: const Icon(Icons.more_vert,
+                                    color: Colors.black),
+                                onSelected: (String choice) {
+                                  switch (choice) {
+                                    case 'Sample':
+                                      downloadSampleFile();
+                                      break;
+                                    case 'Download':
+                                      _showExportOptions(context);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  return [
+                                    // Conditionally add edit and delete options
+                                    if (loadedActivities.isNotEmpty) ...[
+                                      const PopupMenuItem<String>(
+                                        value: 'Download',
+                                        child: Text('Download Updated File',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                      ), // Add a divider
+                                    ],
+                                    const PopupMenuItem(
+                                      value: 'Sample',
+                                      child: Text('Download Sample Excel',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ),
+                                  ];
+                                },
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              // IconButton(
+                              //   icon: const Icon(Icons.file_upload),
+                              //   onPressed: isLoading ? null : pickFile,
+                              //   color: const Color(0xFF2CF07F),
+                              // ),
+                              // IconButton(
+                              //   icon: const Icon(Icons.file_download), // Add export icon
+                              //   onPressed: isLoading ? null : () => _showExportOptions(context),
+                              //   color: Colors.green,
+                              // ),
+                              // Add the PopupMenuButton
+                              PopupMenuButton<String>(
+                                color: Colors.white,
+                                icon: const Icon(Icons.more_vert,
+                                    color: Colors.black),
+                                onSelected: (String choice) {
+                                  switch (choice) {
+                                    case 'Edit':
+                                      _showEditOptions();
+                                      break;
+                                    case 'Delete':
+                                      _deleteActivity();
+                                      break;
+                                    case 'Sample':
+                                      downloadSampleFile();
+                                      break;
+                                    case 'Add':
+                                      _addActivity();
+                                      break;
+                                    case 'No Work':
+                                      _noWork();
+                                      break;
+                                    case 'Upload':
+                                      pickFile();
+                                      break;
+                                    case 'Download':
+                                      _showExportOptions(context);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  return [
+                                    // Conditionally add edit and delete options
+                                    if (loadedActivities.isNotEmpty) ...[
+                                      const PopupMenuItem(
+                                        value: 'Edit',
+                                        child: Text('Edit Activity',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'Delete',
+                                        child: Text('Delete Activity',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                      ),
+                                      const PopupMenuItem<String>(
+                                        value: 'Download',
+                                        child: Text('Download Updated File',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                      ), // Add a divider
+                                      const PopupMenuItem<String>(
+                                        value: 'No Work',
+                                        child: Text('No Work Done Today',
+                                            style:
+                                            TextStyle(color: Colors.black)),
+                                      ),
+                                    ],
+                                    // const PopupMenuItem<String>(
+                                    //   value: 'Edit',
+                                    //   child: Text('Edit Activity'),
+                                    // ),
+                                    // const PopupMenuItem<String>(
+                                    //   value: 'Delete',
+                                    //   child: Text('Delete Activity'),
+                                    // ),
+                                    const PopupMenuItem<String>(
+                                      value: 'Add',
+                                      child: Text('Add Activity',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'Upload',
+                                      child: Text('Upload File',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ),
+
+                                    const PopupMenuItem(
+                                      value: 'Sample',
+                                      child: Text('Download Sample Excel',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ),
+                                  ];
+                                },
+                              ),
+                            ],
+                          ),
                   ],
                 ),
               ),
@@ -1252,99 +1578,102 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                             ),
                           ),
                         if (loadedActivities.isEmpty)
-                          Center(
+                          const Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text('No activities to display',
-                                    style: TextStyle(fontSize: 18,color: Colors.black)),
-                                const SizedBox(height: 16),
-                                widget.isClient
-                                    ? const Text('')
-                                    :Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: _addActivity,
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.green),
-                                      ),
-                                      child: const Text('Add Activity',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        setState(() {
-                                          isdownloading = true;
-                                        });
-                                        await downloadSampleFile();
-
-                                        setState(() {
-                                          isdownloading = false;
-                                        });
-                                      },
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.green),
-                                      ),
-                                      child: isdownloading
-                                          ? const Padding(
-                                              padding:
-                                                  EdgeInsets.all(8.0),
-                                              child: CircularProgressIndicator(
-                                                color: Colors.black,
-                                              ),
-                                            )
-                                          : const Text('Download File',
-                                              style: TextStyle(
-                                                  color: Colors.black)),
-                                    ),
-                                  ],
-                                ),
+                                SizedBox(height: 100),
+                                Text('No activities to display',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.black)),
+                                SizedBox(height: 16),
+                                // widget.isClient
+                                //     ? const Text('')
+                                //     : Row(
+                                //         mainAxisAlignment:
+                                //             MainAxisAlignment.center,
+                                //         children: [
+                                //           ElevatedButton(
+                                //             onPressed: _addActivity,
+                                //             style: ButtonStyle(
+                                //               backgroundColor:
+                                //                   MaterialStateProperty.all<
+                                //                       Color>(Colors.green),
+                                //             ),
+                                //             child: const Text('Add Activity',
+                                //                 style: TextStyle(
+                                //                     color: Colors.black)),
+                                //           ),
+                                //           const SizedBox(
+                                //             width: 10,
+                                //           ),
+                                //           ElevatedButton(
+                                //             onPressed: () async {
+                                //               setState(() {
+                                //                 isdownloading = true;
+                                //               });
+                                //               await downloadSampleFile();
+                                //
+                                //               setState(() {
+                                //                 isdownloading = false;
+                                //               });
+                                //             },
+                                //             style: ButtonStyle(
+                                //               backgroundColor:
+                                //                   MaterialStateProperty.all<
+                                //                       Color>(Colors.green),
+                                //             ),
+                                //             child: isdownloading
+                                //                 ? const Padding(
+                                //                     padding:
+                                //                         EdgeInsets.all(8.0),
+                                //                     child:
+                                //                         CircularProgressIndicator(
+                                //                             color: Colors.blue),
+                                //                   )
+                                //                 : const Text('Download File',
+                                //                     style: TextStyle(
+                                //                         color: Colors.black)),
+                                //           ),
+                                //         ],
+                                //       ),
                               ],
                             ),
                           ),
-                        if (loadedActivities.isNotEmpty)
-                          widget.isClient
-                              ? const Text('')
-                              :Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: const ColorFiltered(
-                                  colorFilter: ColorFilter.mode(
-                                    Colors.green,
-                                    BlendMode.srcIn,
-                                  ),
-                                  child: ImageIcon(AssetImage(
-                                      "assets/images/edit_icon.png")),
-                                ),
-                                onPressed: _showEditOptions,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                color: Colors.green,
-                                onPressed: _deleteActivity,
-                              ),
-                              ElevatedButton(
-                                onPressed: _addActivity,
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.green),
-                                ),
-                                child: const Text('Add Activity',
-                                    style: TextStyle(color: Colors.black)),
-                              ),
-                            ],
-                          )
+                        // if (loadedActivities.isNotEmpty)
+                        //   widget.isClient
+                        //       ? const Text('')
+                        //       :Row(
+                        //     mainAxisAlignment: MainAxisAlignment.center,
+                        //     children: [
+                        //       IconButton(
+                        //         icon: const ColorFiltered(
+                        //           colorFilter: ColorFilter.mode(
+                        //             Colors.green,
+                        //             BlendMode.srcIn,
+                        //           ),
+                        //           child: ImageIcon(AssetImage(
+                        //               "assets/images/edit_icon.png")),
+                        //         ),
+                        //         onPressed: _showEditOptions,
+                        //       ),
+                        //       IconButton(
+                        //         icon: const Icon(Icons.delete),
+                        //         color: Colors.green,
+                        //         onPressed: _deleteActivity,
+                        //       ),
+                        //       ElevatedButton(
+                        //         onPressed: _addActivity,
+                        //         style: ButtonStyle(
+                        //           backgroundColor:
+                        //               MaterialStateProperty.all<Color>(
+                        //                   Colors.green),
+                        //         ),
+                        //         child: const Text('Add Activity',
+                        //             style: TextStyle(color: Colors.black)),
+                        //       ),
+                        //     ],
+                        //   )
                       ],
                     ),
             ],
@@ -1352,4 +1681,3 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 }
-
