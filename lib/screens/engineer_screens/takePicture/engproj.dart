@@ -5,10 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-import '../contractor_screen/projectdetailcontractor.dart';
 
-class ProjectScreen extends StatefulWidget {
-  ProjectScreen({
+class ProjectScreen1 extends StatefulWidget {
+  ProjectScreen1({
     super.key,
     required bool this.isCnslt,
   });
@@ -16,11 +15,12 @@ class ProjectScreen extends StatefulWidget {
   bool isCnslt;
 
   @override
-  State<ProjectScreen> createState() => _ProjectScreenState();
+  State<ProjectScreen1> createState() => _ProjectScreen1State();
 }
 
-class _ProjectScreenState extends State<ProjectScreen> {
+class _ProjectScreen1State extends State<ProjectScreen1> {
   final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
+  String projTitle = '';
 
   getprojIdFromEngineer() async {
     final query = await FirebaseFirestore.instance
@@ -52,7 +52,8 @@ class _ProjectScreenState extends State<ProjectScreen> {
           .collection('Projects')
           .where(FieldPath.documentId, isEqualTo: projIdFromEngineer)
           .get();
-       result = query.docs.map((doc) {
+      result = query.docs.map((doc) {
+        projTitle = doc['title'];
         return [
           doc['title'],
           doc['startDate'],
@@ -63,7 +64,9 @@ class _ProjectScreenState extends State<ProjectScreen> {
           doc['location'],
           doc.id
         ];
+
       }).toList();
+
     }
     // final currentUserEmail1 = FirebaseAuth.instance.currentUser!.email;
     // final query2 = await FirebaseFirestore.instance
@@ -125,29 +128,13 @@ class _ProjectScreenState extends State<ProjectScreen> {
         docData['funding'],
         docData['location'],
         contractorProjectsQuery.id];
+      projTitle = docData['title'];
 
       print("contractorProjects");
       return contractorProjects;
     }
 
     return result;
-  }
-
-  Future<String> getEngineer(projId) async {
-    try {
-      final engineerEmail = await FirebaseFirestore.instance
-          .collection('engineers')
-          .where('projectId', isEqualTo: projId)
-          .get();
-      final email = engineerEmail.docs.map((doc) => doc.id).toList();
-      final userName = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(email[0])
-          .get();
-      return userName.data()!['username'];
-    } catch (e) {
-      return 'No Engineer Assigned';
-    }
   }
 
   @override
@@ -173,44 +160,32 @@ class _ProjectScreenState extends State<ProjectScreen> {
             final role1 = getRole();
             print("data index 2 = ${data![0][2]}");
             return ListView.builder(
-                itemCount: data!.length,
+                itemCount: 1,
                 itemBuilder: ((context, index) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 5,
-                        color: Colors.white,
-                        child: ListTile(
-                          onTap: () async {
-                            final id = data[index][7];
-                            final getname = await getEngineer(id);
-                            if (widget.isCnslt) {
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) {
-                                  return ProjectDetail(
-                                    projectDataList: data[index],
-                                    engineerName: getname,
-                                  );
-                                },
-                              ));
-                            }
-                          },
-                          leading: ClipOval(
-                            child: Text(
-                              '${index + 1}',
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          title: Text(data[index][0],
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold)),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    elevation: 5,
+                    color: Colors.white,
+                    child: ListTile(
+                      onTap: () async {
+                      },
+                      leading: ClipOval(
+                        child: Text(
+                          '${index + 1}',
+                          style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
-                    )));
+                      title: Text(projTitle,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                )));
           }),
     );
   }

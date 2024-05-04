@@ -52,7 +52,7 @@ class SiteCamera extends StatefulWidget {
 
 class _SiteCameraState extends State<SiteCamera> {
 final VlcPlayerController _videoPlayerController = VlcPlayerController.network(
-  'rtsp://Amir :123456@192.168.137.74/live',
+  'rtsp://Amir :123456@192.168.137.169/live',
   hwAcc: HwAcc.full,
   autoPlay: true,
   options: VlcPlayerOptions(

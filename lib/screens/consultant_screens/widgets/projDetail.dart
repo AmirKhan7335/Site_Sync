@@ -47,7 +47,7 @@ class _RequestBodyState extends State<ProjectDetail> {
       final clientName = projectData.containsKey('clientName') ? projectData['clientName'] : 'No client Enrolled yet';
 
       // Retrieve the contractor name from the project document, or set it to empty string if not found
-      final contractorName = projectData.containsKey('contractorName') ? projectData['contractorName'] : 'No contractor Enrolled yet';
+      final contractorName = projectData.containsKey('companyName') ? projectData['companyName'] : 'No contractor Enrolled yet';
 
       setState(() {
         this.clientName = clientName;

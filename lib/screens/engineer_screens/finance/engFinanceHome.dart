@@ -290,6 +290,7 @@ class _CnsltFinanceHomeState extends State<EngFinanceHome> {
       child: SingleChildScrollView(
         child: Column(
           children: [
+
             FutureBuilder(
                 future: Query().getProjectPrice(widget.isClient),
                 builder: (context, snapshot) {
@@ -318,6 +319,9 @@ class _CnsltFinanceHomeState extends State<EngFinanceHome> {
                     return SizedBox();
                   }
                 }),
+
+
+
             FutureBuilder(
                 future: Query().getData(widget.isClient),
                 builder: ((context, snapshot) {
@@ -351,11 +355,12 @@ class _CnsltFinanceHomeState extends State<EngFinanceHome> {
                             report(),
                           ],
                         ),
-                        invoiceList(isContrCreator, invoiceData),
+                       invoiceList(isContrCreator, invoiceData),
                       ],
                     );
                   }
                 }))
+
           ],
         ),
       ),

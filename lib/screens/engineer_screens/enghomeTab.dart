@@ -9,6 +9,7 @@ import 'package:amir_khan1/screens/centralBarScreens/projectScreen.dart';
 import 'package:amir_khan1/screens/centralBarScreens/TestingTab/testingScreen.dart';
 import 'package:amir_khan1/models/activity.dart';
 import 'package:amir_khan1/screens/engineer_screens/notificationsscreen.dart';
+import 'package:amir_khan1/screens/engineer_screens/takePicture/engproj.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -595,7 +596,7 @@ class _EngineerHomeTabState extends State<EngineerHomeTab> {
                                 onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => ProjectScreen(
+                                        builder: (context) => ProjectScreen1(
                                               isCnslt: false,
                                             ))),
                                 child: Card(

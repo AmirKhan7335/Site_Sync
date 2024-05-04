@@ -29,6 +29,7 @@ class _RequestBodyState extends State<ProjectDetailContractor> {
 
   Future<void> fetchClientandContractorName() async {
     try {
+      print(widget.projectDataList[0]);
       final projectName = widget.projectDataList[0]; // Project name
       final currentUser = FirebaseAuth.instance.currentUser!.email;
 
@@ -43,7 +44,9 @@ class _RequestBodyState extends State<ProjectDetailContractor> {
 
       // Assume only one project matches the project name
       final projectDoc = projectsSnapshot.docs.first;
+      print(projectDoc.data());
       final contractorName1= projectDoc.data()['contractorName'];
+      print(contractorName1);
       final projectData = projectDoc.data();
 
       // Retrieve the client name from the project document, or set it to empty string if not found
@@ -66,6 +69,7 @@ class _RequestBodyState extends State<ProjectDetailContractor> {
 
       setState(() {
         this.clientName = clientName;
+        print("client name = $clientName");
         this.contractorName = contractorName;
       });
     } catch (e) {
